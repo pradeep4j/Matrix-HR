@@ -1644,7 +1644,7 @@ export const compliancesSaveandApprove = (data) => async (dispatch) => {
                 dispatch({ type: COMPLIANCE_SUCCESS_GET_APPROVE, payload: response.data });    
                 if(response.status===201)
                 {
-                        toast.success('All Compliace is Approved Successfully!', {
+                        toast.success('Compliace is Approved Successfully!', {
                                 position: "bottom-right",
                                 hideProgressBar: false,
                                 progress: undefined,
@@ -1721,7 +1721,7 @@ export const compliancesReject = (data) => async (dispatch) => {
                 dispatch({ type: COMPLIANCE_SUCCESS_REJECT, payload: response.data });    
                 if(response.status===201)
                 {
-                        toast.success('All Compliace is Approved Successfully!', {
+                        toast.success('Compliace is Rejected Successfully!', {
                                 position: "bottom-right",
                                 hideProgressBar: false,
                                 progress: undefined,
@@ -2281,7 +2281,7 @@ export const checklistsReject = (data) => async (dispatch) => {
                 dispatch({ type: CHECKLIST_SUCCESS_REJECT, payload: response.data });    
                 if(response.status===201)
                 {
-                        toast.success('All Checklist is Rejected Successfully!', {
+                        toast.success('Checklist is Rejected Successfully!', {
                                 position: "bottom-right",
                                 hideProgressBar: false,
                                 progress: undefined,
@@ -4029,7 +4029,7 @@ export const licenseGetonCreate = () => async (dispatch) => {
 
                 await companyL().then(response=>{
                 dispatch({ type: COMPANYL_GET_SUCCESS, payload: response.data });    
-                if(response.status===201)
+                if(response.status===200)
                 {
                         // toast.success('Company License is created Successfully!', {
                         //         position: "bottom-right",
@@ -4101,18 +4101,18 @@ export const licenseGetByid = (postbody) => async (dispatch) => {
                         });                                         
                 });  
 }    
-export const licenseUpdateByid = (postbody) => async (dispatch) => {
+export const licenseUpdateByid = (postbody,id) => async (dispatch) => {
         dispatch({ type: COMPANYL_GET_REQUEST_BY_ID });
 
-                await companyLUpdateById(postbody).then(response=>{
+                await companyLUpdateById(postbody,id).then(response=>{
                 dispatch({ type: COMPANYL_GET_SUCCESS_BY_ID, payload: response.data });    
                 if(response.status===201)
                 {
-                        // toast.success('Company License is created Successfully!', {
-                        //         position: "bottom-right",
-                        //         hideProgressBar: false,
-                        //         progress: undefined,
-                        // });
+                        toast.success('Company License is Updated Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
                 }
                 else
                 {
@@ -4494,7 +4494,7 @@ export const assignCreate = (postbody) => async (dispatch) => {
                 dispatch({ type: COMPANY_ASSIGN_CREATE_SUCCESS, payload: response.data });    
                 if(response.status===201)
                 {
-                        toast.success('Company Ineraction License is created Successfully!', {
+                        toast.success('Company is Assigned to Selected Executive Successfully!', {
                                 position: "bottom-right",
                                 hideProgressBar: false,
                                 progress: undefined,
@@ -4572,7 +4572,7 @@ export const assignUpdateById = (postbody,id) => async (dispatch) => {
                 dispatch({ type: COMPANY_ASSIGN_SUCCESS_UPDATE_BYID, payload: response.data });    
                 if(response.status===201 )
                 {
-                        toast.success('Company Interaction License is Updated Successfully!', {
+                        toast.success('Company is Assigned to Selected Executive is Updated Successfully!', {
                                 position: "bottom-right",
                                 hideProgressBar: false,
                                 progress: undefined,

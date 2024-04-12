@@ -84,7 +84,6 @@ const complianceschema = new mongoose.Schema({
     },
     duedate: {
         type: Date, 
-        default: null, 
         index: true 
     },      
     status  : { 

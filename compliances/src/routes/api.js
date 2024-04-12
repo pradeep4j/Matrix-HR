@@ -762,7 +762,8 @@ export const companyLUpdateById = async(data,id) => {
     const config = {
         headers: {
             "Content-Type":"application/json",
-            Authorization : `Bearer ${getToken()}`
+            Authorization : `Bearer ${getToken()}`,
+            'content-Type': 'multipart/form-data'
         }
     }
     return await axios.put(`${URL}/companyLUpdateById/${id}`,data,config);
@@ -934,8 +935,7 @@ export const createAssign = async(data) => {
     const config = {
         headers: {
             "Content-Type":"application/json",
-            Authorization : `Bearer ${getToken()}`,
-            'content-Type': 'multipart/form-data'
+            Authorization : `Bearer ${getToken()}`
         }
     }
     return await axios.post(`${URL}/createAssign`,data,config);

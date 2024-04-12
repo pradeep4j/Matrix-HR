@@ -46,9 +46,9 @@ const Companyprofile = () => {
     }
     //const [date, setDate] = useState(defaultDate)
     const [date, setDate] = useState('');
-    const toggleTables = (id) => {
-      setIdForEdit(id);
-      setShowTable1(false);
+    const toggleTables = () => {
+      // setIdForEdit(id);
+      setShowTable1(!showTable1);
   }
 
   //   const toggleTables = () => {
@@ -142,7 +142,7 @@ const Companyprofile = () => {
                     status: item.status === 1 ? (
                         <a href="#" className='text-white btn btn-success text-decoration-none mx-2'>Approved</a>
                     ) : (
-                      <a onClick={() => toggleTables(item._id)}>
+                      <a onClick={() => { toggleTables(); editPage(item._id) }}>
                         <Link className='text-white btn btn-danger text-decoration-none mx-2'>Pending</Link>
                       </a>
                     ),
@@ -164,7 +164,7 @@ const Companyprofile = () => {
                     status: item.status === 1 ? (
                         <a href="#" className='text-white btn btn-success text-decoration-none mx-2'>Approved</a>
                     ) : (
-                        <a onClick={(e) => { toggleTables(e); editPage(item._id) }}>
+                        <a onClick={(e) => { toggleTables(); editPage(item._id) }}>
                             <Link className='text-white btn btn-danger text-decoration-none mx-2'>Pending</Link>
                         </a>
                     ),
@@ -445,10 +445,10 @@ const Companyprofile = () => {
                                     </div>
                                 </div>
                             </div>                          
-                          ) : (
+                           ) : ( 
                           
-                            <CompanyEdit editId={idForEdit} />
-                        )}
+                            <CompanyEdit editId={idForEdit} /> 
+                            )} 
     </>            
   )
 }

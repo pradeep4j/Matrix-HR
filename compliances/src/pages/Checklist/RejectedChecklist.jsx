@@ -499,7 +499,16 @@ const RejectedChecklist = () =>{
            ...getColumnSearchProps('risk'),
            sorter: (a, b) => a.risk.length - b.risk.length,
            sortDirections: ['descend', 'ascend']
-        },   
+        },  
+        {
+          title: 'Branch Name',
+          dataIndex: 'branchname',
+          key: 'branchname',
+          width: 100,
+          // ...getColumnSearchProps('branchname'),
+          sorter: (a, b) => a.branchname.length - b.branchname.length,
+          sortDirections: ['descend', 'ascend']
+        }, 
         {
             title: 'Due Date',
             dataIndex: 'duedate',
@@ -557,7 +566,7 @@ const RejectedChecklist = () =>{
                             <select className="form-select" ref={myElementRefBranch} aria-label="Default select example" id="branch" name="branch" onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                                 <option value="">Select Branch</option>
                                 {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                                    <option value={item._id}>{item.name}</option>
+                                    <option value={item.id}>{item.name}</option>
                                 )};
                             </select>
                         </div>

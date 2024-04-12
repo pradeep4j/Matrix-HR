@@ -8,7 +8,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
 import { Link,NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {regsGets,companyGet,usersGet,stateGets,branchGet,liseregAllFilter} from "../../store/actions/otherActions";
+import {regsGets,companyTableGet,usersGet,stateGets,branchGet,liseregAllFilter} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 import LiseRegsEdit from './LiseRegsEdit';
 import Loading from '../../components/layout/Loading';
@@ -40,8 +40,8 @@ const LisRegsTables = () => {
     const { usersInfo } = userGet;  
     const getBranch = useSelector((state) => state.getBranch);
     const { branchInfo } = getBranch; 
-    const getCompney = useSelector((state) => state.getCompney);
-    const { companyInfo } = getCompney; 
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
     const getRegs = useSelector(state => state.getRegs)
@@ -90,10 +90,23 @@ const LisRegsTables = () => {
     useEffect(() => {
         dispatch(stateGets());
         dispatch(usersGet());
-        dispatch(companyGet());
-        dispatch(branchGet());
+        dispatch(companyTableGet());
+        const elementcompanybranch = myElementRefCompany.current;
+        const postBody = {
+          id : elementcompanybranch.value
+        }
+        if (elementcompanybranch) {
+          dispatch(branchGet(postBody));
+        }
         dispatch(regsGets());
     },[dispatch])
+    const getBbranch = (company) => {
+      const elementcompanybranch = myElementRefCompany.current;
+      const postBody = {
+       id : elementcompanybranch.value
+     }
+      dispatch(branchGet(postBody));
+    }
     useEffect(() => {
         setShowTable1(showTable1);
         if(showTable1===false){
@@ -433,11 +446,11 @@ const LisRegsTables = () => {
     return (
     <>
                 <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                    <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter();}} required>
+                    <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter();getBbranch(e.target.value)}} required>
                         <option value="">Select Company</option>
-                    {companyInfo != 'undefind' && companyInfo?.length > 0 && companyInfo.map(item => 
-                        <option value={item._id}>{item.companyname}</option>
-                    )};
+                        {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                          <option value={item._id}>{item.companyname}</option>
+                        )};
                     </select>
                 </div>   
                 <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
@@ -452,7 +465,7 @@ const LisRegsTables = () => {
                     <select className="form-select" ref={myElementRefBranch} aria-label="Default select example"  id="branchs" name="branch" value={branch} onChange={(e)=>{setBranch(e.target.value);filter()}}  required>
                             <option value="">Select Branch</option>
                             {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                                <option value={item._id}>{item.name}</option>
+                                <option value={item.id}>{item.name}</option>
                             )};
                             
                         </select>
@@ -473,7 +486,7 @@ const LisRegsTables = () => {
                             <div className="col-12 col-lg-12">
                                 <div className="card p-3 ">
                                     <div className="table-responsive">
-                                    {/* {loadingLicense && <Loading />} */}
+                                    {(loadingLicense || loadingregsFilter) && <Loading />}
                                         <Table dataSource={dataSource} columns={columns} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 2000 }} sticky={true}/>
                                     </div>
                                 </div>

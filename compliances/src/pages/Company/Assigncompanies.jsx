@@ -9,7 +9,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import { Button, Input, Space, Table ,Modal,Form,message, Checkbox} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {stateGets,branchGet,companyTableGet,auditGetDataAll,assignGetOnCreate} from "../../store/actions/otherActions";
+import {stateGets,branchGet,companyTableGet,assignGetTable,assignGetOnCreate} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 // import ChecklistPopup from './ChecklistPopup';
 import Loading from '../../components/layout/Loading';
@@ -89,8 +89,8 @@ const Assigncompanies = () => {
     const { branchInfo } = getBranch; 
     // const getCompney = useSelector((state) => state.getCompney);
     // const { companyInfo } = getCompney; 
-    const createOnAudit = useSelector((state) => state.createOnAudit);
-    const { auditorCreateInfo } = createOnAudit;
+    const companyGetAssignOnCreate = useSelector((state) => state.companyGetAssignOnCreate);
+    const {loadingcagoc,companyAssignGetOnCreateInfo } = companyGetAssignOnCreate;
     const getAuditor = useSelector((state) => state.getAuditor);
     const { auditorInfo } = getAuditor; 
     const onCreateChecklistAudit = useSelector((state) => state.onCreateChecklistAudit);
@@ -107,7 +107,7 @@ const Assigncompanies = () => {
           dispatch(branchGet(postBody));
         }
         dispatch(companyTableGet());
-        dispatch(auditGetDataAll())
+        dispatch(assignGetTable())
         dispatch(assignGetOnCreate());
     },[dispatch]);
     const getBbranch = (company) => {
@@ -118,264 +118,38 @@ const Assigncompanies = () => {
       dispatch(branchGet(postBody));
     }
     useEffect(()=>{
-        setState('');
-        setCompany('');
-        setBranch('');
-        setSelectedRows([])
-       
-     
-    },[auditorChecklistInfoOncreate,stateInfo,branchInfo,auditorCreateInfo]);
-    
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     const elementtitle = myElementRefTitle.current;
-    //     const elementcompany = myElementRefCompany.current;
-    //     const elementstate = myElementRefState.current;
-    //     const elementbranch = myElementRefBranch.current;
-    //     const elementsdate = myElementRefStartdate.current;
-    //     const elementedate =  myElementRefEnddate.current;
-    //     const elementrisk = myElementRefRisk.current;
-    //     const elementauditstatus = myElementRefAuditStatus.current;
-    //     const elementscope =  myElementRefScope.current;
-    //     const elementauditor =  myElementRefAuditor.current;
-    //     const elementbauditor =  myElementRefBriefAuditor.current;
-    //     let i=true;
-    //     //alert(typeof(title))
-    //     if(title === '')
-    //     {
-    //         // alert(elementtitle)
-    //         elementtitle.focus();
-    //         elementtitle.innerText='Please select a Title!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementtitle.style.display='none';
-    //         elementtitle.innerText='';
-    //     }
-    //     // alert(i+'1')
-    //     if(company ==='')
-    //     {
-    //         elementcompany.focus();
-    //         elementcompany.innerText='Please select a Company!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementcompany.style.display='none';
-    //         elementcompany.innerText='';
-    //     }
-    //     // alert(i+'2')
-    //     if(state === '')
-    //     {
-    //         elementstate.focus();
-    //         elementstate.innerText='Please select a State!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementstate.style.display='none';
-    //         elementstate.innerText='';
-    //     }
-    //     // alert(i+'3')
-    //     if( branch === '')
-    //     {
-    //         elementbranch.focus();
-    //         elementbranch.innerText='Please select a Branch!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementbranch.style.display='none';
-    //         elementbranch.innerText='';
-    //     }
-    //     // alert(i+'4')
-    //     if(startDate === '')
-    //     {
-    //         elementsdate.focus();
-    //         elementsdate.innerText='Please select a Start Date!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementsdate.style.display='none';
-    //         elementsdate.innerText='';
-    //     }
-    //     // alert(i+'5')
-    //     if(endDate === '' )
-    //     {
-    //         elementedate.focus();
-    //         elementedate.innerText='Please select a End date!';
-    //         i=false;
-    //     }
-    //     else{
-    //         elementedate.innerText='';
-    //         // elementedate.style.display='none';
-    //     }
-    //     // alert(i+'6')
-    //     if(risk === '' )
-    //     {
-    //         elementrisk.focus();
-    //         elementrisk.innerText='Please select a Risk!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementrisk.style.display='none';
-    //         elementrisk.innerText='';
-    //     } 
-    //     // alert(i+'7')
-    //     if(auditstatus === '' )
-    //     {
-    //         elementauditstatus.focus();
-    //         elementauditstatus.innerText='Please select a Audit Status!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementauditstatus.style.display='none';
-    //         elementauditstatus.innerText='';
-    //     }
-    //     // alert(i+'8')
-    //     if(scope === ''  )
-    //     {
-    //         elementscope.focus();
-    //         elementscope.innerText='Please select a Scope!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementscope.style.display='none';
-    //         elementscope.innerText='';
-    //     }
-    //     // alert(i+'9')
-    //     if(auditor === '' )
-    //     {
-    //         elementauditor.focus();
-    //         elementauditor.innerText='Please select an Auditor!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementauditor.style.display='none';
-    //         elementauditor.innerText='';
-    //     }
-    //     // alert(i+'10')
-    //     if(briefauditor === '')
-    //     {
-    //         elementbauditor.focus();
-    //         elementbauditor.innerText='Please select a brief of Auditor!';
-    //         i=false;
-    //     }
-    //     else{
-    //         // elementbauditor.style.display='none';
-    //         elementbauditor.innerText='';
-    //     }
-    //     // alert(i+'11')
-    //     const selectedRowIds = selectedRows.map((row) => row.id);
-    //     const elementtable = myElementRefTable.current;
-    //     const elementtableinput = myElementRefTableInput.current;
-        
-    //     if(elementtable.style.display === 'none')
-    //     {
-    //         // alert(elementtableinput)
-    //         elementtableinput.innerText='Please click on Select Checklist!';
-    //         i=false;
-    //     } 
-    //     else if (selectedRows.length === 0) {
-    //         // Prompt user to select at least one item
-    //         Modal.error({
-    //           title: 'Error',
-    //           content: 'Please click Add Button or select at least one checklist from list.',
-    //         });
-    //         i=false;
-    //     } 
-    //     // alert(i)
-    //     if(i===true)
-    //     {
-    //         // showtable();
-    //         // alert('start')
-    //         const formData = new FormData();
-    //         formData.append("title", title);
-    //         formData.append("state", state);
-    //         formData.append("company", company);
-    //         formData.append("branch", branch);
-    //         formData.append("start_date", startDate);
-    //         formData.append("end_date", endDate);
-    //         formData.append("executive", '659d4f2609c9923c9e7b8f72');
-    //         formData.append("auditor", auditor);
-    //         formData.append("scope", scope);
-    //         formData.append("briefauditor", briefauditor);
-    //         formData.append("checkboxlist", selectedRowIds);
-    //         formData.append("risk", risk);
-    //         formData.append("auditstatus", auditstatus);
-    //         // alert('end')
-    //         dispatch(auditOnCreate(formData));
-    //         // alert('after')
-    //         setAuditor('');
-    //         setTitle('');
-    //         setStartDate('');
-    //         setEndDate('');
-    //         setScope('');
-    //         setBriefAuditor('');
-    //         setState('');
-    //         setCompany('');
-    //         setBranch('');
-    //         setRisk('');
-    //         setAuditStatus('');
-    //         setSelectedRows([])
-    //         const elementtitle = myElementRefTitle.current;
-    //         const elementcompany = myElementRefCompany.current;
-    //         const elementstate = myElementRefState.current;
-    //         const elementbranch = myElementRefBranch.current;
-    //         const elementsdate = myElementRefStartdate.current;
-    //         const elementedate =  myElementRefEnddate.current;
-    //         const elementrisk = myElementRefRisk.current;
-    //         const elementauditstatus = myElementRefAuditStatus.current;
-    //         const elementscope =  myElementRefScope.current;
-    //         const elementauditor =  myElementRefAuditor.current;
-    //         const elementbauditor =  myElementRefBriefAuditor.current;
-    //         // alert(typeof(myElementRefTable))
-    //         if(typeof(myElementRefTable) === 'object') {
-    //             elementtable.style.display = 'none';
-    //         }
-    //         const elementtableinput = myElementRefTableInput.current;
-    //         if(elementtable)
-    //         {
-    //            elementtableinput.innerText='';
-    //         } 
-            
-    //         elementtitle.innerText='';
-    //         elementcompany.innerText='';
-    //         elementstate.innerText='';
-    //         elementbranch.innerText='';
-    //         elementsdate.innerText='';
-    //         elementedate.innerText='';  
-    //         elementrisk.innerText='';
-    //         elementauditstatus.innerText='';
-    //         elementscope.innerText='';
-    //         elementauditor.innerText='';
-    //         elementbauditor.innerText='';
-    //         unsetRefValue(elementtitle);
-    //         unsetRefValue(elementcompany);
-    //         unsetRefValue(elementstate);
-    //         unsetRefValue(elementbranch);
-    //         unsetRefValue(elementrisk);
-    //         unsetRefValue(elementauditstatus);
-    //         unsetRefValue(elementauditor);
-    //         unsetRefValue(elementbauditor);
-    //         unsetRefValue(elementtableinput);
-    //         unsetRefValue(elementtable);
-    //         // setTimeout(() => {
-    //         //     navigate(0);
-    //         // }, 5000);
-            
-    //         const elementTab1 = myElementRefTab1.current;
-    //         if (elementTab1) {
-    //             elementTab1.click();
-    //         }
-    //     }
-        
-    //     // console.log('Selected Row IDs:', selectedRowIds);
-    //     // dispatch(auditOnCreate())
-    // }   
-    const unsetRefValue = (ref) => {
-        ref = null;
-    };
+      let companyAssignGetOnCreateArr = [];
+      if(companyAssignGetOnCreateInfo!==undefined && companyAssignGetOnCreateInfo.length>0)
+      {
+        companyAssignGetOnCreateInfo.map((item, index) => {
+        companyAssignGetOnCreateArr.push({
+          key:index+1,
+          id: item._id,
+          company:item.company,
+          state:item.state,
+          branchname: item.branchname,
+          executive:item.executive,
+          assigndate:formatDate(item.assigndate),
+        })
+      })
+    }
+      setDataSource(companyAssignGetOnCreateArr);
+    },[companyAssignGetOnCreateInfo])
+    const formatDate = (currentDate) => {
+      const dates = new Date(currentDate);
+      const year = dates.getFullYear();
+      const month = String(dates.getMonth() + 1).padStart(2, '0');
+      const date = String(dates.getDate()).padStart(2, '0');
+      const hours = String(dates.getHours()).padStart(2, '0');
+      const minutes = String(dates.getMinutes()).padStart(2, '0');
+      const seconds = String(dates.getSeconds()).padStart(2, '0');
+
+      const formattedDateTime = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+      return (formattedDateTime);
+  }
     const viewall = () => {
         setTimeout(() => {
-            dispatch(auditGetDataAll());
+            dispatch(assignGetTable());
         }, 2000);
     }
     const createnew = () => {
@@ -508,7 +282,7 @@ const Assigncompanies = () => {
             title: 'Sr. No.',
             dataIndex: 'key',
             key: 'key',
-            width: 70,
+            width: 50,
            // ...getColumnSearchProps('key'),
            // sorter: (a, b) => a.key.length - b.key.length,
            // sortDirections: ['descend', 'ascend']
@@ -535,7 +309,7 @@ const Assigncompanies = () => {
               title: 'Branch Name',
               dataIndex: 'branchname',
               key: 'branchname',
-              width: 70,
+              width: 100,
               // ...getColumnSearchProps('branchname'),
               sorter: (a, b) => a.branchname.length - b.branchname.length,
               sortDirections: ['descend', 'ascend']
@@ -648,11 +422,11 @@ const Assigncompanies = () => {
                                         </div> */}
                                         <div className="col-12 col-lg-12">
                                             <div className="card p-3 position-relative h-100">
-                                            {loadingoncreate && <Loading />}    
+                                            {loadingcagoc && <Loading />}    
                                             {/* {showTable1 ? (
                                                   <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1250 }} sticky={true}/>
                                               ) : ( */}
-                                                  <Table dataSource={dataSource} columns={columns1} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 3500 }} sticky={true}/>
+                                                  <Table dataSource={dataSource} columns={columns1} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1000 }} sticky={true}/>
                                               {/* )}  */}
                                                 <button className='btn btn-light border mb-2 text-decoration-none  bottom-10 start-30 ' style={{ width:'150px' }} onClick={() => openInPopupForAdd()}>  <AddCircleOutlineIcon /> Add More </button>
                                                 <Popup openPopup={openPopup} pageTitle={pageTitle} setOpenPopup={setOpenPopup} modalWidth={modalWidth}>

@@ -323,6 +323,19 @@ const ChecklistApprove = () =>{
     const [errors, setErrors] = useState({});
   
     const showModal = () => {
+      if (selectedRows1.length === 0) {
+        Modal.error({
+          title: 'Error',
+          content: 'Please select at least one checklist from list.',
+        });
+        // <Alert
+        //   message="Error"
+        //   description="Please select at least one item from list."
+        //   type="error"
+        //   showIcon
+        // />
+        return;
+      }
       setVisible(true);
     };
   
@@ -365,12 +378,25 @@ const ChecklistApprove = () =>{
         relodreport();
     }     
     const saveandapprove = () => {
+      if (selectedRows1.length === 0) {
+        Modal.error({
+          title: 'Error',
+          content: 'Please select at least one checklist from list.',
+        });
+        // <Alert
+        //   message="Error"
+        //   description="Please select at least one item from list."
+        //   type="error"
+        //   showIcon
+        // />
+        return;
+      }
       const postBody = {
           approvedate: defaultDate,
           status:1,
           id:selectedRowIds1
       }
-     // dispatch(checklistSaveandApprove(postBody));//relodreport
+      dispatch(checklistSaveandApprove(postBody));//relodreport
       relodreport();
   }
     const filter = () => {
@@ -708,7 +734,7 @@ const ChecklistApprove = () =>{
                             <select className="form-select" ref={myElementRefBranch} aria-label="Default select example" id="branch" name="branch"   onChange= {(e)=>{setBranch(e.target.value);filter();}} value={branch} required>
                             <option value="">Select Branch</option>
                             {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                            <option value={item._id}>{item.name}</option>
+                            <option value={item.id}>{item.name}</option>
                             )};
                             </select>
                         </div>   
@@ -724,7 +750,7 @@ const ChecklistApprove = () =>{
                             <input type="date" className="form-control" id="dates" ref={myElementRefDate} placeholder='Date' value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                         </div>
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                            <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={saveandapprove}>Save And Apporove</button>
+                            <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={saveandapprove}>Save And Approve</button>
                         </div>
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                             <button type="submit" className="w-100 btn btn-danger" disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } /*onClick={reject}*/ onClick={showModal}>Reject</button>

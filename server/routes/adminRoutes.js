@@ -103,7 +103,7 @@ router.get('/gettingCompanyTable',protectRoute, gettingCompanyTable);
 router.get('/gettingCompanyById/:id',protectRoute, gettingCompanyById);
 router.post('/companyLcreate',upload.any(),protectRoute, companyLcreate);
 router.get('/companyLById/:id',protectRoute, companyLById);
-router.get('/companyLUpdateById/:id',protectRoute, companyLUpdateById);
+router.put('/companyLUpdateById/:id',upload.any(),protectRoute, companyLUpdateById);
 router.get('/companyL',protectRoute, companyL);
 router.post('/createcompanyinteraction',upload.any(),protectRoute, createCompanyProfile);
 router.get('/gettingComppanyInterationById/:id',protectRoute, getCompanyProfileById);

@@ -27,6 +27,7 @@ const Checklist = () => {
     const { loadingu,usersInfo } = userGet;  
     const getBranch = useSelector((state) => state.getBranch);
     const { branchInfo } = getBranch; 
+    console.log(branchInfo);
     const getCompney = useSelector((state) => state.getCompney);
     const { companyInfo } = getCompney; 
     const checklistGet = useSelector((state) => state.checklistGet);
@@ -807,7 +808,7 @@ const Checklist = () => {
                                             <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                                             <option value="">Select Branch</option>
                                             {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                                                <option value={item._id}>{item.name}</option>
+                                                <option value={item.id}>{item.name}</option>
                                             )};
                                             
                                             </select>

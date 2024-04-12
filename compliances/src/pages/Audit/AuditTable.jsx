@@ -443,7 +443,7 @@ const Audit = () => {
                         <select className="form-select" ref={myElementRefBranch} aria-label="Default select example" id="branch" name="branch" onChange={(e)=>{setBranch(e.target.value);filter();}} value={branch} required>
                             <option value="">Select Branch</option>
                             {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                            <option value={item._id}>{item.name}</option>
+                            <option value={item.id}>{item.name}</option>
                         )};
                         </select>
                     </div> 

@@ -810,7 +810,7 @@ const Companies = () => {
 
     const getcompanyall = () => {
         setTimeout(() => {
-            //   alert('yes getting')
+            //    alert('yes getting')
               dispatch(companyTableGet());
         }, 2000);
     }
@@ -3005,7 +3005,7 @@ const Companies = () => {
                             <div className="tab-pane fade" id="pills-profile-creat-li" role="tabpanel" aria-labelledby="pills-profile-tab-creat-li" >
                                     <div className="row">
                                         <Companylicense />
-                                        pradeep
+                                        
                                     </div> 
                             </div>
                         </div> 

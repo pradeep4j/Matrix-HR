@@ -40,10 +40,11 @@ const AssignPopup = ({ addOrEdit,recordForEdit }) => {
     const { loadingg,checklistInfoId } = checklistId;
     const getCompanyTable = useSelector(state => state.getCompanyTable)
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
+    const [assigndate, setassigndate] = useState('');
     const [state, setState] = useState('');
     const [executive, setExecutive] = useState();
     const [company, setCompany] = useState('');
-    const [branch,setBranch] = useState('');
+    const [branchname,setBranch] = useState('');
     const handleClose = () => {
        // setDescription('');
         addOrEdit();
@@ -84,9 +85,9 @@ const AssignPopup = ({ addOrEdit,recordForEdit }) => {
             formData.append("state", state);
             formData.append("company", company);
             formData.append("executive", executive);
-            formData.append("branch", branch);
+            formData.append("branchname", branchname);
             formData.append("dates",date);
-            // dispatch(checklistUpdateById(formData,recordForEdit?.id));
+            dispatch(assignUpdateById(formData,recordForEdit?.id));
             setState('');
             setCompany('');
             setExecutive('');
@@ -98,9 +99,9 @@ const AssignPopup = ({ addOrEdit,recordForEdit }) => {
             formData.append("state", state);
             formData.append("company", company);
             formData.append("executive", executive);
-            formData.append("branch", branch);
-            formData.append("dates",date);
-            // dispatch(checklistCreate(formData));
+            formData.append("branchname", branchname);
+            formData.append("assigndate",date);
+            dispatch(assignCreate(formData));
             setState('');
             setCompany('');
             setExecutive('');
@@ -222,21 +223,21 @@ const AssignPopup = ({ addOrEdit,recordForEdit }) => {
             </div>                           
             <div class="col-md-12 col-lg-12 mb-2">
                 <label for="cat" class="form-label">Branch *</label>
-                <select className="form-select" aria-label="Default select example" id="branch" name="branch" onChange={(e)=>setBranch(e.target.value)} value={branch} required>
+                <select className="form-select" aria-label="Default select example" id="branchname" name="branchname" onChange={(e)=>setBranch(e.target.value)} value={branchname} required>
                     <option value="">Select Branch</option>
                     {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                        <option value={item._id}>{item.name}</option>
+                        <option value={item.id}>{item.name}</option>
                     )};
                 </select>
             </div>
         {recordForEdit?.id !== undefined && recordForEdit?.id !== null ? 
         (<div class="col-12 col-lg-12 col-md-12 mb-2">
-            <label for="" className="form-label">Updated Date *</label>
+            <label for="" className="form-label">Assign Date *</label>
             <input type="date" className="form-control" 
-                id="dates"
-                name="dates" 
-                value={date.toLocaleDateString('en-CA')} 
-                onChange={onSetDate}
+                id="assigndate"
+                name="assigndate" 
+                value={assigndate} 
+                onChange={(e)=>setassigndate(e.target.value)}
                 required
             />
         </div>):(<div class="col-12 col-lg-12 col-md-12 mb-2">
@@ -244,8 +245,8 @@ const AssignPopup = ({ addOrEdit,recordForEdit }) => {
             <input type="date" className="form-control" 
                 id="dates"
                 name="dates" 
-                value={date.toLocaleDateString('en-CA')} 
-                onChange={onSetDate}
+                value={assigndate} 
+                onChange={(e)=>setassigndate(e.target.value)}
                 required
             />
         </div>)}     

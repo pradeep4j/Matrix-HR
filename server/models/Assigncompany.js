@@ -8,7 +8,7 @@ const assignSchema = new mongoose.Schema({
     },
     branchname: {
         type : String,
-        required : true,
+        // required : true,
         trim : true,
         index : true
     },
@@ -28,7 +28,6 @@ const assignSchema = new mongoose.Schema({
     },
     assigndate:{
         type : Date,
-        default: null,
     },
     created_at : { 
         type: Date, 

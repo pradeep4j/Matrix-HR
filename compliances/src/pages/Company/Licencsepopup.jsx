@@ -3,7 +3,7 @@ import { FormGroup,styled,ImageListItem,ImageList } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {licenseCompanyInteractionCreate,companyinteractionLicUpdateById,companyinteractionLicGetByid,companyTableGet} from "../../store/actions/otherActions";
+import {licenseCreate,licenseUpdateByid,licenseGetByid,companyTableGet} from "../../store/actions/otherActions";
 
 //import { updatestatuswithremark } from '../../routes/api';
 import { useForm, Form } from '../../components/useForm';
@@ -33,8 +33,8 @@ const Companyinteractionlicensepopup = ({ addOrEdit,recordForEdit }) => {
     // const { branchInfo } = getBranch; 
     const getCompanyTable = useSelector(state => state.getCompanyTable)
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
-    const companyinteractGetById = useSelector((state) => state.companyinteractGetById);
-    const { loadingcigbid,companyinteractionGetByIDInfo } = companyinteractGetById; 
+    const getCompLById = useSelector((state) => state.getCompLById);
+    const { loadingcigbid,companyLGetByIdInfo } = getCompLById; 
     const checklistId = useSelector((state) => state.checklistId);
     const { loadingg,checklistInfoId } = checklistId;
     const [company,  setCompany] = useState();
@@ -87,7 +87,7 @@ const Companyinteractionlicensepopup = ({ addOrEdit,recordForEdit }) => {
         //setOpenPopup(false);
        // recordForEdit(false)
     };
-    // alert(recordForEdit?.id)
+    //  alert(recordForEdit?.id)
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -100,7 +100,7 @@ const Companyinteractionlicensepopup = ({ addOrEdit,recordForEdit }) => {
             formData.append("activatedDate", activatedDate);
             formData.append("renewalDate", renewalDate);
             formData.append("expiryDate", expiryDate);
-            dispatch(companyinteractionLicUpdateById(formData,recordForEdit?.id));
+            dispatch(licenseUpdateByid(formData,recordForEdit?.id));
             setlicenseTitle('')
             setexpirydate('')
             setdetails('')
@@ -117,7 +117,7 @@ const Companyinteractionlicensepopup = ({ addOrEdit,recordForEdit }) => {
             formData.append("activatedDate", activatedDate);
             formData.append("renewalDate", renewalDate);
             formData.append("expiryDate", expiryDate);
-            dispatch(licenseCompanyInteractionCreate(formData));
+            dispatch(licenseCreate(formData));
             setlicenseTitle('')
             setexpirydate('')
             setdetails('')
@@ -131,38 +131,54 @@ const Companyinteractionlicensepopup = ({ addOrEdit,recordForEdit }) => {
     },[dispatch])
     useEffect(()=>{
         if(recordForEdit?.id !== undefined && recordForEdit?.id !== null) {
-            dispatch(companyinteractionLicGetByid(recordForEdit.id));
+            dispatch(licenseGetByid(recordForEdit.id));
         }
     },[dispatch]);
     useMemo(() => {
         if(recordForEdit?.id !== undefined && recordForEdit?.id !== null) {
-            if(companyinteractionGetByIDInfo !== undefined ) {
-                alert(companyinteractionGetByIDInfo?.companyUpload)
-                if(companyinteractionGetByIDInfo?.companyUpload !==  undefined ){
-                    // const imagedocsplit = (companyinteractionGetByIDInfo?.companyUpload).split('/');
-                    // if(imagedocsplit[4]  !==  undefined ){
-                    //     const fileext = ((imagedocsplit[4].indexOf('pdf')))
+            if(companyLGetByIdInfo !== undefined ) {
+                // alert(companyLGetByIdInfo?.licenseUpload)
+                if(companyLGetByIdInfo?.licenseUpload !==  undefined ){
+                    const imagedocsplit = (companyLGetByIdInfo?.licenseUpload).split('/');
+                    if(imagedocsplit[4]  !==  undefined ){
+                        const fileext = ((imagedocsplit[4].indexOf('pdf')))
                        
-                    //     if(fileext !=-1){
-                    //         setPdf(<a href={companyinteractionGetByIDInfo?.companyUpload} target="_blank">Click to show pdf</a>)
-                    //         setCheckPdf(true);
-                    //     }
-                    //     else{
-                    //         //setImageShow(<a href={complianceInfoId?.form} target="_blank">Click to show pdf</a>)
-                    //         setImage(companyinteractionGetByIDInfo?.companyUpload)
-                    //     }
-                    // }
+                        if(fileext !=-1){
+                            setPdf(<a href={companyLGetByIdInfo?.licenseUpload} target="_blank">Click to show pdf</a>)
+                            setCheckPdf(true);
+                        }
+                        else{
+                            //setImageShow(<a href={complianceInfoId?.form} target="_blank">Click to show pdf</a>)
+                            setImage(companyLGetByIdInfo?.licenseUpload)
+                        }
+                    }
                     
                 }
-                // setlicenseTitle('')
-                // setexpirydate('')
-                // setdetails('')
-                // setactivateddate('')
-                // setrenewaldate('')
-                // setFile(companyinteractionGetByIDInfo?)
+                setCompany(companyLGetByIdInfo?.company)
+                setlicenseTitle(companyLGetByIdInfo?.licenseTitle)
+                setexpirydate(formatDate(companyLGetByIdInfo?.expiryDate))
+                setdetails(companyLGetByIdInfo?.details)
+                setactivateddate(formatDate(companyLGetByIdInfo?.activatedDate))
+                setrenewaldate(formatDate(companyLGetByIdInfo?.renewalDate))
+                if(companyLGetByIdInfo?.licenseUpload !==  undefined ){
+                    setFile(companyLGetByIdInfo?.licenseUpload)
+                }
             }
         }    
-    },[companyinteractionGetByIDInfo])
+    },[companyLGetByIdInfo])
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        
+        if (month.length < 2) 
+          month = '0' + month;
+        if (day.length < 2) 
+          day = '0' + day;
+        
+        return [year, month, day].join('-');
+    }
     const tocategorypage = () => {
         navigate('/dashboard')
     };

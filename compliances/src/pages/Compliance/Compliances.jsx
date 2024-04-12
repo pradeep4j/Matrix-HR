@@ -1,3 +1,4 @@
+
 import React,{useState,useEffect,useRef} from 'react'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import EditIcon from '@mui/icons-material/Edit';
@@ -5,7 +6,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Highlighter from 'react-highlight-words';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
+import { Button, Input, Space, Table ,Modal,Form,message, Checkbox} from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 // import CompliancePopup from './CompliancePopup';
@@ -20,6 +21,7 @@ const Compliances = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const searchInput = useRef(null);
+    const [selectedRows1, setSelectedRows1] = useState([]);
     const [openPopup, setOpenPopup] = useState(false);
     const [pageTitle, setPageTitle] = useState('');
     const [modalWidth, setModalWidth] = useState();
@@ -35,7 +37,7 @@ const Compliances = () => {
     //const [loading, setLoading] = useState(false);
     let defaultDate = new Date()
     //defaultDate.setDate(defaultDate.getDate() )
-
+    let selectedRowIds1 = [];
     //const [date, setDate] = useState(defaultDate)
     
     const getCompliance = useSelector((state) => state.getCompliance);
@@ -69,7 +71,7 @@ const Compliances = () => {
          relodreport();
         setRecordForEdit(null);
         setOpenPopup(false);
-    }
+    } 
     const relodreport = async () => {
         setTimeout(() => {
             dispatch(compliancesGetonCreate());
@@ -119,6 +121,7 @@ const Compliances = () => {
         }
         setDataSource(complianceArr);
     },[complianceInfoOnCreate])
+    useEffect(()=>{setSelectedRows1([]);},[complianceInfoOnCreate])
     useEffect(() => {
       setShowTable1(showTable1);
         let complianceFilterArr = [];
@@ -183,14 +186,7 @@ const Compliances = () => {
             dispatch(compliancesGetOnreject());
         }, 2000);
     }
-    const saveandapprove = () => {
-            const postBody = {
-                duedate: defaultDate,
-                status:1
-            }
-            dispatch(compliancesSaveandApprove(postBody));//relodreport
-            relodreport();
-    }
+    
     
     const filter = () => {
       const elementstate = myElementRefState.current;
@@ -305,7 +301,53 @@ const Compliances = () => {
             text
           ),
       });
+      const handleSelectAllRows = (checked) => {
+        if (checked) {
+          setSelectedRows1(dataSource);
+        } else {
+          setSelectedRows1([]);
+        }
+      };
+    
+      const handleDeselectAllRows = () => {
+        setSelectedRows1([]);
+      };
+    
+      const handleCheckboxChange = (e, record) => {
+        const { checked } = e.target;
+        setSelectedRows1((prevSelectedRows) => {
+          if (checked) {
+            return [...prevSelectedRows, record];
+          } else {
+            return prevSelectedRows.filter((row) => row.id !== record.id);
+          }
+        });
+      };
+
+  const isSelected = (record) => {
+    return selectedRows1 && selectedRows1.some((row) => row.id === record.id);
+  };    
   const columns1 = [
+    {
+      title: (
+          <Checkbox
+              onChange={(e) =>
+                  e.target.checked
+                  ? handleSelectAllRows(e.target.checked)
+                  : handleDeselectAllRows()
+              }
+              />
+        ),
+        dataIndex: 'checkbox',
+        key: 'checkbox',
+        width: 20,
+        render: (text, record) => (
+          <Checkbox
+            onChange={(e) => handleCheckboxChange(e, record)}
+            checked={isSelected(record)}
+          />
+        ),
+      },
       {
         title: 'Sr. No.',
         dataIndex: 'key',
@@ -449,6 +491,30 @@ const Compliances = () => {
           }, 
       },
   ];  
+  selectedRowIds1 = selectedRows1.map((row) => row.id);
+  console.log(selectedRowIds1);
+  const saveandapprove = () => {
+    if (selectedRows1.length === 0) {
+      Modal.error({
+        title: 'Error',
+        content: 'Please select at least one checklist from list.',
+      });
+      // <Alert
+      //   message="Error"
+      //   description="Please select at least one item from list."
+      //   type="error"
+      //   showIcon
+      // />
+      return;
+    }
+    const postBody = {
+        approvedate: defaultDate,
+        status:1,
+        id:selectedRowIds1
+    }
+    dispatch(compliancesSaveandApprove(postBody));//relodreport
+    relodreport();
+}
     return (
         <React.Fragment>
             <div className='dashboard_wrapper'>
@@ -498,7 +564,7 @@ const Compliances = () => {
                                                 <input type="date" ref={myElementRefDate} id="dates" name="created_at" className="form-control" value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                                             </div>
                                             <div className="col-md-3 mb-lg-3">
-                                                <button type="button" className="w-100 btn btn-primary" onClick={saveandapprove}>Save And Apporove</button>
+                                                <button type="button" className="w-100 btn btn-primary" onClick={saveandapprove}>Save And Approve</button>
                                             </div>
                                         </form>
                                         <div className="col-12 col-lg-12">

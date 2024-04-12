@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const licenseSchema = new mongoose.Schema({
-    licenseName : {
+    licenseTitle : {
         type : String,
         required : true,
         trim : true,
@@ -14,31 +14,24 @@ const licenseSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Companydata"
     },
-    state : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "State"
+    activatedDate : {
+        type : Date,
+        required : true,
     },
-    branchname : {
+    renewalDate : {
+        type : Date,
+        required : true,
+    },
+    expiryDate : {
+        type : Date,
+        required : true
+    },
+    details : {
         type : String,
         required : true,
         trim : true,
         index : true
     },
-    executive : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "User"
-    },
-    activatedDate : {
-        type : Date,
-        default : new Date(),
-    },
-    approved_at : {
-        type : Date,
-    },
-    expiryDate : {
-        type : Date,
-    }
-
 }, {timestamps : true})
 
 const License = mongoose.model ('License', licenseSchema)

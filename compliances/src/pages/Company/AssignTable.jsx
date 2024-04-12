@@ -6,7 +6,7 @@ import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
 import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {assignGetTable,stateGets,executiveGet,companyTableGet,branchGet,checklistRejectFilter} from "../../store/actions/otherActions";
+import {assignGetTable,stateGets,executiveGet,companyTableGet,branchGet} from "../../store/actions/otherActions";
 import Loading from '../../components/layout/Loading';
 const AssignTable = () =>{
     const navigate = useNavigate();
@@ -48,9 +48,9 @@ const AssignTable = () =>{
     const { companyInfo } = getCompney; 
     const getCompanyTable = useSelector(state => state.getCompanyTable)
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
-    const rejectFilterChecklist = useSelector((state) => state.rejectFilterChecklist);
-    const { loadingreject,checklistRejectinfo } = rejectFilterChecklist;
-    console.log(checklistRejectinfo)
+    const companyAssignTable = useSelector((state) => state.companyAssignTable);
+    const { loadingcat,companyAssignTableInfo } = companyAssignTable;
+    // console.log(checklistRejectinfo)
     const openInPopupForUpdate = (item) => {
         setRecordForEdit(item);
         setOpenPopup(true);
@@ -103,6 +103,24 @@ const AssignTable = () =>{
      }
       dispatch(branchGet(postBody));
     }
+    useEffect(()=>{
+      let companyAssignGetOnTableArr = [];
+      if(companyAssignTableInfo!==undefined && companyAssignTableInfo.length>0)
+      {
+        companyAssignTableInfo.map((item, index) => {
+          companyAssignGetOnTableArr.push({
+          key:index+1,
+          id: item._id,
+          company:item.company,
+          state:item.state,
+          branchname: item.branchname,
+          executive:item.executive,
+          assigndate:formatDate(item.assigndate),
+        })
+      })
+    }
+      setDataSource(companyAssignGetOnTableArr);
+    },[companyAssignTableInfo])
     // useEffect(() => {
     //   let checklistArrAllReject = [];
     //     if (typeof (checklistInfoOnReject) !== 'undefined' && checklistInfoOnReject?.length > 0 ) {
@@ -143,41 +161,41 @@ const AssignTable = () =>{
     useEffect(() => {
          resetForm();
     },[checklistInfoOnReject])
-    useEffect(() => {
-      setShowTable1(showTable1);
-      if(showTable1===false){
-        toggleTables();
-      }
-        let checklistFilterArr = [];
-          if (typeof (checklistRejectinfo) !== 'undefined' && checklistRejectinfo?.length > 0 ) {
-              //alert(categoryInfo?.length);
-              checklistRejectinfo.map((item, index) => {
-                checklistFilterArr.push({
-                  key:index+1,
-                  id: item._id,
-                  state:item.state,
-                  compliance: item.compliance,
-                  rule:<div className='new-line'>{item.rule}</div>,
-                  category:item.category,
-                  question:<div className='new-line'>{item.question}</div>,
-                  description:<div className='new-line'>{item.description}</div>,
-                  image:<a href={item.image} target="_blank">Form</a>,
-                  documents:<a href={item.documents} target="_blank">Document</a>,
-                  recurrence:item.frequency,
-                  branchname:item.branchname,
-                  company:item.company,
-                  risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-                  reason:item.reason,
-                  executive:name?'admin':item.executive,
-                  updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
-                  revise: <Link className='text-white btn btn-danger text-decoration-none mx-2' disabled>Rejected</Link>,
-                  rejected_at:item.rejected_at!==undefined?formatDate(item.rejected_at):item.rejected_at,
-                  created_at:item.created_at!==null?formatDate(item.created_at):item.created_at,
-                })
-            });
-          }
-          setDataSource(checklistFilterArr);
-      },[checklistRejectinfo]);
+    // useEffect(() => {
+    //   setShowTable1(showTable1);
+    //   if(showTable1===false){
+    //     toggleTables();
+    //   }
+    //     let checklistFilterArr = [];
+    //       if (typeof (checklistRejectinfo) !== 'undefined' && checklistRejectinfo?.length > 0 ) {
+    //           //alert(categoryInfo?.length);
+    //           checklistRejectinfo.map((item, index) => {
+    //             checklistFilterArr.push({
+    //               key:index+1,
+    //               id: item._id,
+    //               state:item.state,
+    //               compliance: item.compliance,
+    //               rule:<div className='new-line'>{item.rule}</div>,
+    //               category:item.category,
+    //               question:<div className='new-line'>{item.question}</div>,
+    //               description:<div className='new-line'>{item.description}</div>,
+    //               image:<a href={item.image} target="_blank">Form</a>,
+    //               documents:<a href={item.documents} target="_blank">Document</a>,
+    //               recurrence:item.frequency,
+    //               branchname:item.branchname,
+    //               company:item.company,
+    //               risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
+    //               reason:item.reason,
+    //               executive:name?'admin':item.executive,
+    //               updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
+    //               revise: <Link className='text-white btn btn-danger text-decoration-none mx-2' disabled>Rejected</Link>,
+    //               rejected_at:item.rejected_at!==undefined?formatDate(item.rejected_at):item.rejected_at,
+    //               created_at:item.created_at!==null?formatDate(item.created_at):item.created_at,
+    //             })
+    //         });
+    //       }
+    //       setDataSource(checklistFilterArr);
+    //   },[checklistRejectinfo]);
       const formatDate = (currentDate) => {
         const dates = new Date(currentDate);
         const year = dates.getFullYear();
@@ -205,7 +223,7 @@ const AssignTable = () =>{
             branchname:elementbranch.value,
             executive:elementuser.value
         }
-        dispatch(checklistRejectFilter(postBody));
+        // dispatch(checklistRejectFilter(postBody));
     }
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -435,7 +453,7 @@ const AssignTable = () =>{
                     <div className="col-12 col-lg-12">
                       <div className="card p-3 ">
                         <div className="table-responsive">
-                        {/* {(loadingu || loadingreject) && <Loading />} */}
+                        {(loadingcat ) && <Loading />}
                         {/* {showTable1 ? (
                             <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1000 }} sticky={true}/>
                         ) : ( */}

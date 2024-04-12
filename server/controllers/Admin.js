@@ -398,14 +398,14 @@ export const gettingAuditDetail = async (request, response, next) => {
                     as: "stateData"
                 }
             },
-            {
-                $lookup: {
-                    from: "branches",
-                    localField: "branch",
-                    foreignField: "_id",
-                    as: "branchData"
-                }
-            },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branch",
+            //         foreignField: "_id",
+            //         as: "branchData"
+            //     }
+            // },
             {
                 $lookup: {
                     from: "users",
@@ -427,6 +427,7 @@ export const gettingAuditDetail = async (request, response, next) => {
                     title: 1,
                     start_date: 1,
                     end_date: 1,
+                    branch:1,
                     overdue: {
                         $cond: {
                             if: { $lt: ["$end_date", new Date()] },
@@ -467,11 +468,21 @@ export const gettingAuditDetail = async (request, response, next) => {
                     },
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
-                    branch: { $arrayElemAt: ["$branchData.name", 0] }
+                    // branch: { $arrayElemAt: ["$branchData.name", 0] }
                 }
             }
         ]);
+        if (auditData.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            auditData.forEach(async (item) => {
+                gettingCompany.forEach(companyItem => {
+                    if (item.company === companyItem.companyname) {
+                        item.branch = companyItem.F1branch.map(item => item.name).join(",")
+                    }
 
+                })
+            })
+        }
         response.status(200).json(auditData);
     } catch (error) {
         next(error);
@@ -594,6 +605,7 @@ export const auditFilter = async (request, response, next) => {
         const data = request.body;
         const matchStage = {};
         const { company, state, branch, executive, auditor, start_date, end_date, overdue, auditstatus, risk } = data;
+
         let auditDataFilter
 
         // Define filters
@@ -603,9 +615,9 @@ export const auditFilter = async (request, response, next) => {
         // Build match stage based on filters
         if (filterKeys.length > 0) {
             for (const key of filterKeys) {
-                if (key === "company" || key === "state" || key === "branch" || key === "executive" || key === "auditor") {
+                if (key === "company" || key === "state" || key === "executive" || key === "auditor") {
                     matchStage[key] = new mongoose.Types.ObjectId(filters[key]);
-                } else if (key === "auditstatus" || key === "risk") {
+                } else if (key === "auditstatus" || key === "risk" || key === "branch") {
                     matchStage[key] = filters[key];
                 }
                 // else if(key === "overdue"){
@@ -622,6 +634,9 @@ export const auditFilter = async (request, response, next) => {
                 }
             }
         }
+        // else {
+
+        // }
 
         // Perform aggregation
         auditDataFilter = await Audit.aggregate([
@@ -667,14 +682,14 @@ export const auditFilter = async (request, response, next) => {
                     as: "companyData",
                 },
             },
-            {
-                $lookup: {
-                    from: "branches",
-                    localField: "branch",
-                    foreignField: "_id",
-                    as: "branchData",
-                },
-            },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branch",
+            //         foreignField: "_id",
+            //         as: "branchData",
+            //     },
+            // },
 
             {
                 $project: {
@@ -682,6 +697,7 @@ export const auditFilter = async (request, response, next) => {
                     start_date: 1,
                     end_date: 1,
                     overdue: 1,
+                    branch: 1,
                     auditstatus: 1,
                     overdue: {
                         $cond: {
@@ -722,11 +738,23 @@ export const auditFilter = async (request, response, next) => {
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
-                    branch: { $arrayElemAt: ["$branchData.name", 0] }
+                    // branch: { $arrayElemAt: ["$branchData.name", 0] }
                 }
             }
 
         ]);
+        if (auditDataFilter.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    auditDataFilter.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branch) {
+                            filteredItem.branch = branch.name
+                        }
+                    })
+                })
+            })
+        }
         // console.log(auditDataFilter);
         if (overdue !== undefined && overdue !== "") {
             // const currentDate = new Date();
@@ -734,7 +762,6 @@ export const auditFilter = async (request, response, next) => {
                 return doc.overdue == overdue
             });
         }
-        console.log(auditDataFilter);
 
         response.status(200).json(auditDataFilter);
     } catch (error) {
@@ -1294,7 +1321,7 @@ export const gettingCompliances = async (request, response, next) => { /////////
                 $match: {
                     $and: [
                         { status: { $eq: 0 } },
-                        { executive: { $ne: new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72") } }
+                        // { executive: { $ne: new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72") } }
                     ]
                 }
             },
@@ -2228,15 +2255,7 @@ export const complianceApporve = async (request, response, next) => {
         //console.log(request.body);return;
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
-        const compliancesApprove = await Compliance.updateMany({ status: request.body.status, approvedate: request.body.approvedate });Compliance.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues }, (err, result) => {
-            if (err) {
-              console.error(err);
-              // Handle error
-            } else {
-              console.log(result);
-              // Handle success
-            }
-          });
+        const compliancesApprove = await Compliance.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
           
         response.status(201).json(compliancesApprove);
     } catch (error) {
@@ -2251,13 +2270,7 @@ export const complianceReject = async (request, response, next) => {
             { _id: { $in: idsToUpdate } }, // Match documents with IDs in the array
             { $set: updateValues }, // Set the update values
             { multi: true } // Update multiple documents
-          )
-            .then(result => {
-              console.log(`${result.nModified} documents updated successfully.`);
-            })
-            .catch(error => {
-              console.error('Error updating documents:', error);
-            });
+          );
         response.status(201).json(compliances);
     } catch (error) {
         next(error);
@@ -2546,10 +2559,12 @@ export const checklistApporve = async (request, response, next) => {
           { status: request.body.status, approvedate: request.body.approvedate }
         );
         // Update Compliance documents
-        const complianceApprove = await Compliance.updateMany(
+        if(complianceIds){
+            const complianceApprove = await Compliance.updateMany(
                 { _id: { $in: complianceIds.map(id => id.replace('-c', '')) } }, // Update documents with IDs from complianceIds without "-c"
                 {status: request.body.status, approvedate: request.body.approvedate }
             );
+        }
         response.status(201).json(checklistApprove);
     } catch (error) {
         next(error);
@@ -2784,7 +2799,7 @@ export const checklistApprovegetting = async (request, response, next) => {
                 $match: {
                     $and: [
                         { status: { $eq: 0 } },
-                        { executive: { $ne: new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72") } }
+                        // { executive: { $ne: new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72") } }
                     ]
                 }
             },
@@ -2994,13 +3009,7 @@ export const rejectChecklist = async (request, response, next) => {
             { _id: { $in: idsToUpdate } }, // Match documents with IDs in the array
             { $set: updateValues }, // Set the update values
             { multi: true } // Update multiple documents
-          )
-            .then(result => {
-              console.log(`${result.nModified} documents updated successfully.`);
-            })
-            .catch(error => {
-              console.error('Error updating documents:', error);
-            });
+          );
         response.status(201).json(checklist);
     } catch (error) {
         next(error);
@@ -3015,289 +3024,7 @@ export const gettingchecklistAllCompliance = async (request, response, next) => 
         next(error);
     }
 }
-// ------------------------------- Checklist All Filter-------------------------------------
 export const checkListAllFilter = async (request, response, next) => {
-    try {
-
-        const stateFilter = request.body.state;
-        const companyFilter = request.body.company;
-        const executiveFilter = request.body.executive;
-        const dateFilter = request.body.created_at;
-
-        const matchStage = {};
-        matchStage['status'] = { $eq: 1 }
-        if (stateFilter !== undefined && dateFilter !== undefined && executiveFilter !== undefined && companyFilter !== undefined && stateFilter !== "" && dateFilter !== "" && executiveFilter !== "" && companyFilter !== "") {
-            // Both state and createdAt are provided
-            console.log('you are in all');
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && companyFilter !== undefined && companyFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-
-        }
-        else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (executiveFilter !== undefined && executiveFilter !== "" && companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (executiveFilter !== undefined && executiveFilter !== "" && companyFilter !== undefined && companyFilter !== "") {
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-
-        }
-        else if (executiveFilter !== undefined && executiveFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-
-        }
-        else if (executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (dateFilter !== undefined && dateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "") {
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (dateFilter !== undefined && dateFilter !== "" && companyFilter !== undefined && companyFilter !== "") {
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (dateFilter !== undefined && dateFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-
-        }
-        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-
-        }
-        else if (stateFilter !== undefined && stateFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-
-        else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "") {
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-        }
-        else if (companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-        else if (companyFilter !== undefined && companyFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-        }
-        else if (executiveFilter !== undefined && executiveFilter !== "") {
-            // matchStage['admin'] = "659d4f2609c9923c9e7b8f72"
-            matchStage['admin'] = new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72")
-        }
-        else if (stateFilter !== undefined && stateFilter !== "") {
-            console.log('you are in state');
-            // Only state is provided
-            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());;
-        }
-        else if (executiveFilter !== undefined && executiveFilter !== "") {
-            console.log('you are in exeec');
-            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-        }
-        else if (companyFilter !== undefined && companyFilter !== "") {
-            console.log('you are in company');
-            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-        }
-        else if (dateFilter !== undefined && dateFilter !== "") {
-            // Only createdAt is provided
-            const dateObject = new Date(dateFilter);
-            const nextDay = new Date(dateObject);
-            nextDay.setDate(dateObject.getDate() + 1);
-            matchStage['created_at'] = {
-                $gte: dateObject,
-                $lt: nextDay
-            };
-        }
-
-
-        // console.log(matchStage);
-        const filter = await CheckList.aggregate([
-            {
-                $match: matchStage,
-            },
-            {
-                $lookup: {
-                    from: "categories",
-                    localField: "category",
-                    foreignField: "_id",
-                    as: "categoryData",
-                },
-            },
-            {
-                $lookup: {
-                    from: "compliances",
-                    localField: "compliance",
-                    foreignField: "_id",
-                    as: "complianceData",
-                },
-            },
-            {
-                $lookup: {
-                    from: "states",
-                    localField: "state",
-                    foreignField: "_id",
-                    as: "stateData",
-                },
-            },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "executive",
-                    foreignField: "_id",
-                    as: "executiveData",
-                },
-            },
-            {
-                $lookup: {
-                    from: "companydatas",
-                    localField: "company",
-                    foreignField: "_id",
-                    as: "companyData",
-                },
-            },
-            {
-                $lookup: {
-                    from: "branches",
-                    localField: "branchname",
-                    foreignField: "_id",
-                    as: "branchData",
-                },
-            },
-            {
-                $project: {
-                    _id: 1,
-                    approvedate: 1,
-                    status: 1,
-                    image: 1,
-                    documents: 1,
-                    rule: 1,
-                    description: 1,
-                    question: 1,
-                    frequency: 1,
-                    risk: 1,
-                    created_at: 1,
-                    executive: {
-                        $concat: [
-                            { $arrayElemAt: ["$executiveData.firstName", 0] },
-                            " ",
-                            { $arrayElemAt: ["$executiveData.lastName", 0] }
-                        ]
-                    },
-                    state: { $arrayElemAt: ["$stateData.name", 0] },
-                    category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    company: { $arrayElemAt: ["$companyData.companyname", 0] },
-                    compliance: { $arrayElemAt: ["$complianceData.act", 0] },
-                    branchname: { $arrayElemAt: ["$branchData.name", 0] },
-                }
-            }
-        ]);
-        // console.log(filter);
-
-        response.status(201).json(filter);
-    } catch (error) {
-        next(error);
-    }
-}
-
-// ------------------------------- Checklist Approve Filter----------------------------------
-export const checkListApproveFilter = async (request, response, next) => {
     try {
 
         const stateFilter = request.body.state;
@@ -3305,14 +3032,15 @@ export const checkListApproveFilter = async (request, response, next) => {
         const executiveFilter = request.body.executive;
         const branchFilter = request.body.branchname;
         const dateFilter = request.body.created_at;
+
         // console.log(request.body);
         const matchStage = {};
-        matchStage['status'] = { $eq: 0 };
+        matchStage['status'] = { $eq: 1 };
         if (stateFilter !== undefined && dateFilter !== undefined && executiveFilter !== undefined && companyFilter !== undefined && branchFilter !== undefined && stateFilter !== "" && dateFilter !== "" && executiveFilter !== "" && companyFilter !== "" && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3327,7 +3055,7 @@ export const checkListApproveFilter = async (request, response, next) => {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -3346,7 +3074,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3359,7 +3087,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3380,7 +3108,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -3398,7 +3126,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -3415,7 +3143,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         }
         else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3428,7 +3156,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
         }
         else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -3446,7 +3174,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             // Both state and createdAt are provided
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3458,7 +3186,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         }
         else if (executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3480,7 +3208,7 @@ export const checkListApproveFilter = async (request, response, next) => {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
         }
         else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
         }
         else if (stateFilter !== undefined && stateFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -3500,7 +3228,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         }
         else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString());
+            matchStage['branchname'] = branchFilter;
         }
         else if (companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
@@ -3526,7 +3254,7 @@ export const checkListApproveFilter = async (request, response, next) => {
             };
         }
         else if (branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
             nextDay.setDate(dateObject.getDate() + 1);
@@ -3548,7 +3276,7 @@ export const checkListApproveFilter = async (request, response, next) => {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
         }
         else if (branchFilter !== undefined && branchFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
         }
         else if (dateFilter !== undefined && dateFilter !== "") {
 
@@ -3599,14 +3327,14 @@ export const checkListApproveFilter = async (request, response, next) => {
                     as: "companyData",
                 },
             },
-            {
-                $lookup: {
-                    from: "branches",
-                    localField: "branchname",
-                    foreignField: "_id",
-                    as: "branchData",
-                },
-            },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branchname",
+            //         foreignField: "_id",
+            //         as: "branchData",
+            //     },
+            // },
             {
                 $lookup: {
                     from: "compliances",
@@ -3622,6 +3350,7 @@ export const checkListApproveFilter = async (request, response, next) => {
                     status: 1,
                     image: 1,
                     documents: 1,
+                    branchname: 1,
                     rule: 1,
                     description: 1,
                     question: 1,
@@ -3638,12 +3367,394 @@ export const checkListApproveFilter = async (request, response, next) => {
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
                     company: { $arrayElemAt: ["$companyData.name", 0] },
-                    branchname: { $arrayElemAt: ["$branchData.name", 0] },
+                    // branchname: { $arrayElemAt: ["$branchData.name", 0] },
                     compliance: { $arrayElemAt: ["$complianceData.act", 0] },
                 }
             }
 
         ]);
+        if (filter.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    filter.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branchname) {
+                            filteredItem.branchname = branch.name
+                        }
+                    })
+                })
+            })
+        }
+        response.status(201).json(filter);
+    } catch (error) {
+        next(error);
+    }
+}
+// ------------------------------- Checklist All Filter-------------------------------------
+
+
+// ------------------------------- Checklist Approve Filter----------------------------------
+export const checkListApproveFilter = async (request, response, next) => {
+    try {
+
+        const stateFilter = request.body.state;
+        const companyFilter = request.body.company;
+        const executiveFilter = request.body.executive;
+        const branchFilter = request.body.branchname;
+        const dateFilter = request.body.created_at;
+
+        // console.log(request.body);
+        const matchStage = {};
+        matchStage['status'] = { $eq: 0 };
+        if (stateFilter !== undefined && dateFilter !== undefined && executiveFilter !== undefined && companyFilter !== undefined && branchFilter !== undefined && stateFilter !== "" && dateFilter !== "" && executiveFilter !== "" && companyFilter !== "" && branchFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        // ------------- 4 Filter -----------------
+        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+
+        // ------------ 3 Filter --------------
+        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['branchname'] = branchFilter
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+        }
+        else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            // Both state and createdAt are provided
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['branchname'] = branchFilter
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+
+        // ------------------ 2 Filter ----------------
+
+        else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "") {
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
+            matchStage['branchname'] = branchFilter
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+        }
+        else if (stateFilter !== undefined && stateFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            // Only state is provided
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "") {
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+        }
+        else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
+            matchStage['branchname'] = branchFilter;
+        }
+        else if (companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+        }
+        else if (executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+        else if (branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
+            matchStage['branchname'] = branchFilter
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+
+        // ------------------ 1 Filter ----------------------
+        else if (stateFilter !== undefined && stateFilter !== "") {
+            // Only state is provided
+            matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
+        }
+        else if (executiveFilter !== undefined && executiveFilter !== "") {
+            matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
+        }
+        else if (companyFilter !== undefined && companyFilter !== "") {
+            matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
+        }
+        else if (branchFilter !== undefined && branchFilter !== "") {
+            matchStage['branchname'] = branchFilter
+        }
+        else if (dateFilter !== undefined && dateFilter !== "") {
+
+            const dateObject = new Date(dateFilter);
+            const nextDay = new Date(dateObject);
+            nextDay.setDate(dateObject.getDate() + 1);
+            matchStage['created_at'] = {
+                $gte: dateObject,
+                $lt: nextDay
+            };
+        }
+
+
+        // console.log(matchStage);
+        const filter = await CheckList.aggregate([
+            {
+                $match: matchStage,
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "category",
+                    foreignField: "_id",
+                    as: "categoryData",
+                },
+            },
+            {
+                $lookup: {
+                    from: "states",
+                    localField: "state",
+                    foreignField: "_id",
+                    as: "stateData",
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "executive",
+                    foreignField: "_id",
+                    as: "executiveData",
+                },
+            },
+            {
+                $lookup: {
+                    from: "companydatas",
+                    localField: "company",
+                    foreignField: "_id",
+                    as: "companyData",
+                },
+            },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branchname",
+            //         foreignField: "_id",
+            //         as: "branchData",
+            //     },
+            // },
+            {
+                $lookup: {
+                    from: "compliances",
+                    localField: "compliance",
+                    foreignField: "_id",
+                    as: "complianceData",
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    approvedate: 1,
+                    status: 1,
+                    image: 1,
+                    documents: 1,
+                    branchname: 1,
+                    rule: 1,
+                    description: 1,
+                    question: 1,
+                    frequency: 1,
+                    risk: 1,
+                    created_at: 1,
+                    executive: {
+                        $concat: [
+                            { $arrayElemAt: ["$executiveData.firstName", 0] },
+                            " ",
+                            { $arrayElemAt: ["$executiveData.lastName", 0] }
+                        ]
+                    },
+                    state: { $arrayElemAt: ["$stateData.name", 0] },
+                    category: { $arrayElemAt: ["$categoryData.name", 0] },
+                    company: { $arrayElemAt: ["$companyData.name", 0] },
+                    // branchname: { $arrayElemAt: ["$branchData.name", 0] },
+                    compliance: { $arrayElemAt: ["$complianceData.act", 0] },
+                }
+            }
+
+        ]);
+        if (filter.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    filter.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branchname) {
+                            filteredItem.branchname = branch.name
+                        }
+                    })
+                })
+            })
+        }
         // console.log('filter', filter);
         response.status(201).json(filter);
     } catch (error) {
@@ -3666,7 +3777,7 @@ export const checkListCreateFilter = async (request, response, next) => {
         if (stateFilter !== undefined && dateFilter !== undefined && companyFilter !== undefined && branchFilter !== undefined && stateFilter !== "" && dateFilter !== "" && companyFilter !== "" && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3682,7 +3793,7 @@ export const checkListCreateFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -3700,7 +3811,7 @@ export const checkListCreateFilter = async (request, response, next) => {
 
         else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3714,7 +3825,7 @@ export const checkListCreateFilter = async (request, response, next) => {
         else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             // Both state and createdAt are provided
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3733,7 +3844,7 @@ export const checkListCreateFilter = async (request, response, next) => {
         }
 
         else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
         }
         else if (stateFilter !== undefined && stateFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -3750,7 +3861,7 @@ export const checkListCreateFilter = async (request, response, next) => {
 
         else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString());
+            matchStage['branchname'] = branchFilter;
         }
         else if (companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilterFilter.toString());
@@ -3764,7 +3875,7 @@ export const checkListCreateFilter = async (request, response, next) => {
         }
 
         else if (branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
             nextDay.setDate(dateObject.getDate() + 1);
@@ -3783,7 +3894,7 @@ export const checkListCreateFilter = async (request, response, next) => {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
         }
         else if (branchFilter !== undefined && branchFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branchname'] = branchFilter
         }
         else if (dateFilter !== undefined && dateFilter !== "") {
 
@@ -3834,14 +3945,14 @@ export const checkListCreateFilter = async (request, response, next) => {
                     as: "companyData",
                 },
             },
-            {
-                $lookup: {
-                    from: "branches",
-                    localField: "branchname",
-                    foreignField: "_id",
-                    as: "branchData",
-                },
-            },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branchname",
+            //         foreignField: "_id",
+            //         as: "branchData",
+            //     },
+            // },
             {
                 $lookup: {
                     from: "compliances",
@@ -3856,6 +3967,7 @@ export const checkListCreateFilter = async (request, response, next) => {
                     approvedate: 1,
                     status: 1,
                     image: 1,
+                    branchname:1,
                     documents: 1,
                     rule: 1,
                     description: 1,
@@ -3885,7 +3997,7 @@ export const checkListCreateFilter = async (request, response, next) => {
                     //     _id: { $arrayElemAt: ["$companyData._id", 0] },
                     //     name: { $arrayElemAt: ["$companyData.companyname", 0] }
                     // },
-                    branchname: { $arrayElemAt: ["$branchData.name", 0] },
+                    // branchname: { $arrayElemAt: ["$branchData.name", 0] },
                     compliance: { $arrayElemAt: ["$complianceData.act", 0] },
                 }
             }
@@ -3893,58 +4005,66 @@ export const checkListCreateFilter = async (request, response, next) => {
         ]);
         const gettingCompliance = await Compliance.aggregate([
             {
-                $match: {status: { $eq: 0 }}
-            },
-            {
-              $lookup: {
-                from: "states", // Assuming the state collection name is "states"
-                localField: "state",
-                foreignField: "_id",
-                as: "state"
-              }
+                $lookup: {
+                    from: "states", // Assuming the state collection name is "states"
+                    localField: "state",
+                    foreignField: "_id",
+                    as: "state"
+                }
             },
             { $unwind: "$state" },
             {
-              $lookup: {
-                from: "categories", // Assuming the category collection name is "categories"
-                localField: "category",
-                foreignField: "_id",
-                as: "category"
-              }
+                $lookup: {
+                    from: "categories", // Assuming the category collection name is "categories"
+                    localField: "category",
+                    foreignField: "_id",
+                    as: "category"
+                }
             },
             { $unwind: "$category" }
-          ]);
-          
-          const gettingCompany = await Companydata.find({});
-          
-          let newArr = [];
-          
-          filter.forEach(item => {
+        ]);
+
+        const gettingCompany = await Companydata.find({});
+
+        let newArr = [];
+
+        filter.forEach(item => {
             gettingCompany.forEach(companyItem => {
-              gettingCompliance.forEach(complianceItem => {
-                if (
-                  item.category._id.equals(companyItem.companycategory) &&
-                  item.state._id.equals(companyItem.companystate)
-                ) {
-                  if (
-                    companyItem.companycategory._id.equals(complianceItem.category._id.toString()) &&
-                    companyItem.companystate._id.equals(complianceItem.state._id.toString())
-                  ) {
-                    newArr.push(complianceItem);
-                  }
-                }
-              });
+                gettingCompliance.forEach(complianceItem => {
+                    if (
+                        item.category._id.equals(companyItem.companycategory) &&
+                        item.state._id.equals(companyItem.companystate)
+                    ) {
+                        if (
+                            companyItem.companycategory._id.equals(complianceItem.category._id.toString()) &&
+                            companyItem.companystate._id.equals(complianceItem.state._id.toString())
+                        ) {
+                            newArr.push(complianceItem);
+                        }
+                    }
+                });
             });
-          });
-          if(companyFilter !== undefined && companyFilter !== "" && stateFilter !== undefined && stateFilter !== "")
-          {
+        });
+        if (filter.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    filter.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branchname) {
+                            filteredItem.branchname = branch.name
+                        }
+                    })
+                })
+            })
+        }
+
+        if (companyFilter !== undefined && companyFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
             response.status(201).json([...filter, ...newArr]);
-          }
-          else
-          {
+        }
+        else {
             response.status(201).json([...filter]);
-          }
-            
+        }
+
     } catch (error) {
         next(error);
     }
@@ -3957,7 +4077,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         const stateFilter = request.body.state;
         const companyFilter = request.body.company;
         const executiveFilter = request.body.executive;
-        const branchFilter = request.body.branchname;
+        const branchFilter = request.body.branch;
         const dateFilter = request.body.created_at;
         // console.log(stateFilter + '=' + companyFilter + '=' + executiveFilter + '=' + branchFilter + '=' + dateFilter)
 
@@ -3967,7 +4087,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -3982,7 +4102,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4001,7 +4121,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4014,7 +4134,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4035,7 +4155,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4053,7 +4173,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4070,7 +4190,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         }
         else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4083,7 +4203,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
         }
         else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4101,7 +4221,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             // Both state and createdAt are provided
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4113,7 +4233,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         }
         else if (executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4135,7 +4255,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
         }
         else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
         }
         else if (stateFilter !== undefined && stateFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4155,7 +4275,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         }
         else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString());
+            matchStage['branch'] = branchFilter;
         }
         else if (companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
@@ -4181,7 +4301,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
             };
         }
         else if (branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
             nextDay.setDate(dateObject.getDate() + 1);
@@ -4205,7 +4325,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         }
         else if (branchFilter !== undefined && branchFilter !== "") {
             console.log("You are in branch");
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
         }
         else if (dateFilter !== undefined && dateFilter !== "") {
 
@@ -4256,14 +4376,14 @@ export const checkListRejectedFilter = async (request, response, next) => {
                     as: "companyData",
                 },
             },
-            {
-                $lookup: {
-                    from: "branches",
-                    localField: "branchname",
-                    foreignField: "_id",
-                    as: "branchData",
-                },
-            },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branch",
+            //         foreignField: "_id",
+            //         as: "branchData",
+            //     },
+            // },
             {
                 $lookup: {
                     from: "compliances",
@@ -4281,6 +4401,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
                     documents: 1,
                     rule: 1,
                     description: 1,
+                    branch:1,
                     question: 1,
                     frequency: 1,
                     risk: 1,
@@ -4296,12 +4417,24 @@ export const checkListRejectedFilter = async (request, response, next) => {
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
-                    branchname: { $arrayElemAt: ["$branchData.name", 0] },
+                    // branch: { $arrayElemAt: ["$branchData.name", 0] },
                     compliance: { $arrayElemAt: ["$complianceData.act", 0] },
                 }
             }
 
         ]);
+        if (filter.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    filter.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branchname) {
+                            filteredItem.branchname = branch.name
+                        }
+                    })
+                })
+            })
+        }
         // console.log(filter)
         response.status(201).json(filter);
     } catch (error) {
@@ -4492,14 +4625,14 @@ export const liseRegGetting = async (requxest, response, next) => {
                     as: "stateData"
                 },
             },
-            {
-                $lookup: {
-                    from: "branches",
-                    localField: "branch",
-                    foreignField: "_id",
-                    as: "branchData"
-                }
-            },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branch",
+            //         foreignField: "_id",
+            //         as: "branchData"
+            //     }
+            // },
             {
                 $project: {
                     _id: 1,
@@ -4544,13 +4677,24 @@ export const liseRegGetting = async (requxest, response, next) => {
                     },
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
-                    branch: { $arrayElemAt: ["$branchData.name", 0] },
+                    // branch: { $arrayElemAt: ["$branchData.name", 0] },
                     // createdAt: 1,
                     // updatedAt: 1,
                 }
             }
 
         ])
+        if (liseReg.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            liseReg.forEach(async (item) => {
+                gettingCompany.forEach(companyItem => {
+                    if (item.company === companyItem.companyname) {
+                        item.branch = companyItem.F1branch.map(item => item.name).join(",")
+                    }
+
+                })
+            })
+        }
         response.status(201).json(liseReg)
     }
     catch (error) {
@@ -4709,7 +4853,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         const stateFilter = request.body.state;
         const companyFilter = request.body.company;
         const executiveFilter = request.body.executive;
-        const branchFilter = request.body.branchname;
+        const branchFilter = request.body.branch;
         const dateFilter = request.body.created_at;
         // console.log(request.body);
         const matchStage = {};
@@ -4720,7 +4864,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4736,7 +4880,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4755,7 +4899,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4768,7 +4912,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4789,7 +4933,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4807,7 +4951,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
         }
         else if (stateFilter !== undefined && stateFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4824,7 +4968,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         }
         else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4837,7 +4981,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
         }
         else if (companyFilter !== undefined && companyFilter !== "" && executiveFilter !== undefined && executiveFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4855,7 +4999,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             // Both state and createdAt are provided
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4867,7 +5011,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         }
         else if (executiveFilter !== undefined && executiveFilter !== "" && branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
 
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
@@ -4889,7 +5033,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
         }
         else if (stateFilter !== undefined && stateFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
             matchStage['state'] = new mongoose.Types.ObjectId(stateFilter.toString());
         }
         else if (stateFilter !== undefined && stateFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
@@ -4908,8 +5052,9 @@ export const liseRegHistoryFilter = async (request, response, next) => {
             matchStage['executive'] = new mongoose.Types.ObjectId(executiveFilter.toString())
         }
         else if (companyFilter !== undefined && companyFilter !== "" && branchFilter !== undefined && branchFilter !== "") {
+            console.log("You are in company branch");
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString());
+            matchStage['branch'] = branchFilter
         }
         else if (companyFilter !== undefined && companyFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString());
@@ -4935,7 +5080,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
             };
         }
         else if (branchFilter !== undefined && branchFilter !== "" && dateFilter !== undefined && dateFilter !== "") {
-            matchStage['branchname'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
             const dateObject = new Date(dateFilter);
             const nextDay = new Date(dateObject);
             nextDay.setDate(dateObject.getDate() + 1);
@@ -4958,7 +5103,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
             matchStage['company'] = new mongoose.Types.ObjectId(companyFilter.toString())
         }
         else if (branchFilter !== undefined && branchFilter !== "") {
-            matchStage['branch'] = new mongoose.Types.ObjectId(branchFilter.toString())
+            matchStage['branch'] = branchFilter
         }
         else if (dateFilter !== undefined && dateFilter !== "") {
 
@@ -4973,9 +5118,9 @@ export const liseRegHistoryFilter = async (request, response, next) => {
 
         // console.log(matchStage);
         const filter = await Lisereg.aggregate([
-            {
-                $match: matchStage,
-            },
+            // {
+            //     $match: matchStage,
+            // },
             {
                 $lookup: {
                     from: "states",
@@ -5000,21 +5145,24 @@ export const liseRegHistoryFilter = async (request, response, next) => {
                     as: "companyData",
                 },
             },
-            {
-                $lookup: {
-                    from: "branches",
-                    localField: "branch",
-                    foreignField: "_id",
-                    as: "branchData",
-                },
-            },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branch",
+            //         foreignField: "_id",
+            //         as: "branchData",
+            //     },
+            // },
             {
                 $project: {
                     _id: 1,
                     approvedate: 1,
-                    status: 1,
+                    approvalStatus: 1,
+                    sentDate: 1,
                     created_at: 1,
                     regNo: 1,
+                    branch: 1,
+                    status:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -5024,11 +5172,22 @@ export const liseRegHistoryFilter = async (request, response, next) => {
                     },
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
-                    branch: { $arrayElemAt: ["$branchData.name", 0] },
                 }
             }
 
         ]);
+        if (filter.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    filter.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branch) {
+                            filteredItem.branch = branch.name
+                        }
+                    })
+                })
+            })
+        }
         // console.log(filter)
         response.status(201).json(filter);
     } catch (error) {
@@ -6142,9 +6301,9 @@ export const gettingCompanyById = async (request, response, next) => {
 export const companyLcreate = async (request, response, next) => {
     try {
         const data = request.body
-        const { licenseName, licenseUpload, company, activatedDate, approved_at, expiryDate,details } = data
+        const { licenseTitle, company, activatedDate, renewalDate, expiryDate,details } = data
         const uploadImage = async (imageFile) => {
-            console.log(imageFile);
+            // console.log(imageFile);
             let imageUrl
             if (!imageFile) {
                 return null; // Return null if image is not provided
@@ -6184,7 +6343,7 @@ export const companyLcreate = async (request, response, next) => {
             }
             return imageUrl;
         };
-        const companyLicense = { licenseName, licenseUpload:await uploadImage(request.files.find(img => img.fieldname === "licenseUpload")), company,activatedDate, approved_at, expiryDate,details }
+        const companyLicense = { licenseTitle, licenseUpload:await uploadImage(request.files.find(img => img.fieldname === "licenseUpload")), company,activatedDate, renewalDate, expiryDate,details }
         const newCompanyLicense = new License(companyLicense)
         await newCompanyLicense.save()
         response.status(201).json(newCompanyLicense)
@@ -6268,9 +6427,9 @@ export const companyLUpdateById = async (request, response, next) => { ////updat
         if (!checkCompLicenseId) {
             return response.status(404).json("Given company license id does not exists")
         }
-        const data = request.body
+        // const data = request.body
         const uploadImage = async (imageFile) => {
-            console.log(imageFile);
+            // console.log(imageFile);
             let imageUrl
             if (!imageFile) {
                 return null; // Return null if image is not provided
@@ -6310,10 +6469,19 @@ export const companyLUpdateById = async (request, response, next) => { ////updat
             }
             return imageUrl;
         };
-        const companyProfile = {
-            licenseTitle, details, licenseUpload: await uploadImage(request.files.find(img => img.fieldname === "licenseUpload")), remark, company,activatedDate, approved_at, expiryDate,
+        const data = request.body
+        
+        const { licenseTitle, company,activatedDate, renewalDate, expiryDate,details} =  data;
+       
+        let imageload;
+        if(request.files.find(img => img.fieldname === "licenseUpload") !== undefined )
+        {
+            imageload = await uploadImage(request.files.find(img => img.fieldname === "licenseUpload"))
         }
-        const updatedCompLicense = await License.findByIdAndUpdate({ _id: companyLicenseId }, data, { new: true })
+        const companylicenceupdated = {
+            licenseTitle, details, licenseUpload: imageload,company,activatedDate, renewalDate, expiryDate,details
+        }
+        const updatedCompLicense = await License.findByIdAndUpdate({ _id: companyLicenseId }, companylicenceupdated, { new: true })
         response.status(201).json(updatedCompLicense)
     } catch (error) {
         next(error)
@@ -6547,7 +6715,7 @@ export const licenseCompanyInteractcreate = async (request, response, next) => {
         const data = request.body
         const { licenseTitle, details, activatedDate,renewalDate,expiryDate,company } = data;
         const uploadImage = async (imageFile) => {
-            console.log(imageFile);
+            // console.log(imageFile);
             let imageUrl
             if (!imageFile) {
                 return null; // Return null if image is not provided
@@ -6832,6 +7000,7 @@ export const gettingCompanyBranch = async (request, response, next) => {
 export const createAssign = async (request, response, next) => {
     try {
         const data = request.body
+        // console.log(data);return;
         const { state, company, branchname,executive,assigndate } = data;
         
         const assignCreate = {
@@ -6847,7 +7016,7 @@ export const createAssign = async (request, response, next) => {
 export const assignGetByid = async (request, response, next) => {
     try {
         const companyProfilelicenseId = request.params.id
-        const checkCompProfilelicenseId = await Companylicense.findOne({ _id: companyProfilelicenseId })
+        const checkCompProfilelicenseId = await Assigncompany.findOne({ _id: companyProfilelicenseId })
         if (!checkCompProfilelicenseId) {
             return response.status(404).json("Given company profile license id does not exists")
         }
@@ -6879,10 +7048,7 @@ export const assignsUpdateById = async (request, response, next) => {
 }
 export const assignTableGet = async (request, response, next) => {
     try {
-        const companyProfile = await Companyprofile.aggregate([
-            {
-                $match: {}
-            },
+        const assigncompanyarr = await Assigncompany.aggregate([
             {
                 $lookup: {
                     from: 'companydatas',
@@ -6899,56 +7065,51 @@ export const assignTableGet = async (request, response, next) => {
                     as: "stateData"
                 }
             },
-            // {
-            //     $lookup: {
-            //         from: "branches",
-            //         localField: "branch",
-            //         foreignField: "_id",
-            //         as: "branchData"
-            //     }
-            // },
-            // {
-            //     $lookup: {
-            //         from: "users",
-            //         localField: "executive",
-            //         foreignField: "_id",
-            //         as: "executiveData"
-            //     }
-            // },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "executive",
+                    foreignField: "_id",
+                    as: "executiveData"
+                }
+            },
             {
                 $project: {
-                    companyTitle: 1,
-                    details: 1,
-                    companyUpload: 1,
-                    assigndate: 1,
-                    company: 1,
-                    // state: 1,
-                    // branch: 1,
-                    // createdAt: 1,
-                    company: { $arrayElemAt: ["$companyData", 0] },
-                    state: { $arrayElemAt: ["$stateData", 0] },
-                    // branch: { $arrayElemAt: ["branchData", 0] },
-                    // executive: {
-                    //     $concat: [
-                    //         { $arrayElemAt: ["executiveData.firstName", 0] },
-                    //         " ",
-                    //         { $arrayElemAt: ["executiveData.lastName", 0] }
-                    //     ]
-                    // }
+                    branchname: 1,
+                    assigndate:1,
+                    company: { $arrayElemAt: ["$companyData.companyname", 0] },
+                    state: { $arrayElemAt: ["$stateData.name", 0] },
+                    executive: {
+                        $concat: [
+                            { $arrayElemAt: ["$executiveData.firstName", 0] },
+                            " ",
+                            { $arrayElemAt: ["$executiveData.lastName", 0] }
+                        ]
+                    },
                 }
-            }
-        ])
-        response.status(200).json(companyProfile)
+            },
+           
+        ]);
+        if (assigncompanyarr.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    assigncompanyarr.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branchname) {
+                            filteredItem.branchname = branch.name
+                        }
+                    })
+                })
+            })
+        }
+        response.status(200).json(assigncompanyarr);
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 export const getAssignOnCreate = async (request, response, next) => {
     try {
-        const companyProfile = await Companyprofile.aggregate([
-            {
-                $match: {}
-            },
+        const assigncompanyarr = await Assigncompany.aggregate([
             {
                 $lookup: {
                     from: 'companydatas',
@@ -6965,47 +7126,45 @@ export const getAssignOnCreate = async (request, response, next) => {
                     as: "stateData"
                 }
             },
-            // {
-            //     $lookup: {
-            //         from: "branches",
-            //         localField: "branch",
-            //         foreignField: "_id",
-            //         as: "branchData"
-            //     }
-            // },
-            // {
-            //     $lookup: {
-            //         from: "users",
-            //         localField: "executive",
-            //         foreignField: "_id",
-            //         as: "executiveData"
-            //     }
-            // },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "executive",
+                    foreignField: "_id",
+                    as: "executiveData"
+                }
+            },
             {
                 $project: {
-                    companyTitle: 1,
-                    details: 1,
-                    companyUpload: 1,
-                    assigndate: 1,
-                    company: 1,
-                    // state: 1,
-                    // branch: 1,
-                    // createdAt: 1,
-                    company: { $arrayElemAt: ["$companyData", 0] },
-                    state: { $arrayElemAt: ["$stateData", 0] },
-                    // branch: { $arrayElemAt: ["branchData", 0] },
-                    // executive: {
-                    //     $concat: [
-                    //         { $arrayElemAt: ["executiveData.firstName", 0] },
-                    //         " ",
-                    //         { $arrayElemAt: ["executiveData.lastName", 0] }
-                    //     ]
-                    // }
+                    branchname: 1,
+                    assigndate:1,
+                    company: { $arrayElemAt: ["$companyData.companyname", 0] },
+                    state: { $arrayElemAt: ["$stateData.name", 0] },
+                    executive: {
+                        $concat: [
+                            { $arrayElemAt: ["$executiveData.firstName", 0] },
+                            " ",
+                            { $arrayElemAt: ["$executiveData.lastName", 0] }
+                        ]
+                    },
                 }
-            }
-        ])
-        response.status(200).json(companyProfile)
+            },
+           
+        ]);
+        if (assigncompanyarr.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    assigncompanyarr.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branchname) {
+                            filteredItem.branchname = branch.name
+                        }
+                    })
+                })
+            })
+        }
+        response.status(200).json(assigncompanyarr);
     } catch (error) {
-        next(error)
+        next(error);
     }
 }

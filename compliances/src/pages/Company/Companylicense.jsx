@@ -186,7 +186,7 @@ const Companylicense = () => {
      });
     const relodreport = async () => {
         setTimeout(() => {
-            // dispatch(checklistGetonCreate('checkilist'));
+            // dispatch(licenseGetonCreate('checkilist'));
         }, 5000);
         
     }   
@@ -274,25 +274,16 @@ const Companylicense = () => {
           title: 'Title',
           dataIndex: 'licenseTitle',
           key: 'licenseTitle',
-          width: 150,
-          ...getColumnSearchProps('licenseTitle'),
+          width: 100,
+          // ...getColumnSearchProps('licenseTitle'),
           sorter: (a, b) => a.licenseTitle.length - b.licenseTitle.length,
           sortDirections: ['descend', 'ascend']
         },
-      // {
-      //   title: 'Category',
-      //   dataIndex: 'category',
-      //   key: 'category',
-      //   width: '40%',
-      //   ...getColumnSearchProps('category'),
-      //   sorter: (a, b) => a.category.length - b.category.length,
-      //   sortDirections: ['descend', 'ascend']
-      // },
       {
         title: 'Upload',
         dataIndex: 'image',
         key: 'image',
-        width: 100,
+        width: 70,
       //   ...getColumnSearchProps('act'),
       //   sorter: (a, b) => a.act.length - b.act.length,
       //   sortDirections: ['descend', 'ascend']
@@ -301,10 +292,10 @@ const Companylicense = () => {
           title: 'Activated Date',
           dataIndex: 'activatedDate',
           key: 'activatedDate',
-          width: 70,
+          width: 100,
           // ...getColumnSearchProps('branchname'),
-          // sorter: (a, b) => a.branchname.length - b.branchname.length,
-          // sortDirections: ['descend', 'ascend']
+          sorter: (a, b) => a.activatedDate.length - b.activatedDate.length,
+          sortDirections: ['descend', 'ascend']
       },
       {
           title: 'Expiry Date',
@@ -312,17 +303,17 @@ const Companylicense = () => {
           key: 'expiryDate',
           width: 100,
           // ...getColumnSearchProps('createdAt'),
-          // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
-          // sortDirections: ['descend', 'ascend']
+          sorter: (a, b) => a.expiryDate.length - b.expiryDate.length,
+          sortDirections: ['descend', 'ascend']
       }, 
       {
           title: 'Renewal Date',
           dataIndex: 'renewalDate',
           key: 'renewalDate',
-          width: 70,
-         // ...getColumnSearchProps('frequency'),
-         // sorter: (a, b) => a.frequency.length - b.frequency.length,
-         // sortDirections: ['descend', 'ascend']
+          width: 100,
+         // ...getColumnSearchProps('renewalDate'),
+         sorter: (a, b) => a.renewalDate.length - b.renewalDate.length,
+         sortDirections: ['descend', 'ascend']
       },          
       {
           title: 'Details',
@@ -330,7 +321,7 @@ const Companylicense = () => {
           key: 'details',
           width: 100,
           // ...getColumnSearchProps('executive'),
-          sorter: (a, b) => a.risk.length - b.risk.length,
+          sorter: (a, b) => a.details.length - b.details.length,
           sortDirections: ['descend', 'ascend']
       }, 
       { 
@@ -353,27 +344,7 @@ const Companylicense = () => {
           }, 
       }, 
   ];
-    // const calling = () =>{
-    //     setTimeout(() => {
-    //         // dispatch(checklistGetAll());
-    //     }, 2000);
-    // }
-    // const callingcreate = () => {
-    //     setTimeout(() => {
-    //         // dispatch(checklistGetonCreate());
-    //     }, 2000);
-    // }
-    // const callingapprove = () => {
-    //     // alert('asas')
-    //     setTimeout(() => {
-    //         // dispatch(checklistGetApprove());
-    //     }, 2000);
-    // } 
-    // const callingrejected = () => {
-    //     setTimeout(() => {
-    //         // dispatch(checklistGetOnreject());
-    //     }, 2000);
-    // }
+  
     const saveandapprove = () => {
         const postBody = {
             approvedate: defaultDate,
