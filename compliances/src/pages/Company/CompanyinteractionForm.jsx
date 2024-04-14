@@ -9,7 +9,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {stateGets,branchGet,licenseGetonCreate,companyTableGet,companyInractionTableGet,/*companyInractionTableGetFilter*/} from "../../store/actions/otherActions";
+import {stateGets,branchGet,licenseGetonCreate,companyTableGet,companyInractionTableGet,profileCompanyFilter,saveandapporveCompanyInteraction} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 import Licencsepopup from './Licencsepopup';
 import CompanyinteractionFormpopup from './CompanyinteractionFormpopup';
@@ -39,10 +39,11 @@ const CompanyinteractionForm = () => {
      console.log(companyinteractionTableGetInfo);
     //console.log(checklistInfoOnCreate);
     //console.log(usersInfo);
-    const filterCreateChecklist = useSelector((state) => state.filterCreateChecklist);
-    const { loadingcreatefilter,checklistInfoFilter } = filterCreateChecklist; 
+    const companyProfileFilter = useSelector((state) => state.companyProfileFilter);
+    const { loadingcompanyintract,companyFilterInteractProfileInfo } = companyProfileFilter; 
     const searchInput = useRef(null);
     const [name, setName] = useState(false);
+    const [ciProfileId, setciProfileId] = useState([]);
     const [openPopup, setOpenPopup] = useState(false); 
     const [pageTitle, setPageTitle] = useState('');
     const [modalWidth, setModalWidth] = useState();
@@ -226,9 +227,11 @@ const CompanyinteractionForm = () => {
     useEffect(() => {
         //  alert('2')
         let companyinteractionCreateArr = [];
+        let ciarr = [];
           if (typeof (companyinteractionTableGetInfo) !== 'undefined' && companyinteractionTableGetInfo?.length > 0 ) {
               //alert(categoryInfo?.length);
               companyinteractionTableGetInfo.map((item, index) => {
+                ciarr.push(item._id);
                 companyinteractionCreateArr.push({
                   key:index+1,
                   id: item._id,
@@ -239,46 +242,38 @@ const CompanyinteractionForm = () => {
                 })
             });
           }
+          setciProfileId(ciarr);
           setDataSource(companyinteractionCreateArr);
       },[companyinteractionTableGetInfo])
+      // console.log(ciProfileId);
       const resetForm = () => {
         // alert(state)
-         setState('');
+        //  setState('');
          setCompany('');
-         setDateUpdate('');
-         setBranch('');
+        //  setDateUpdate('');
+        //  setBranch('');
     }
     useEffect(() => {
          resetForm();
     },[companyinteractionTableGetInfo])
       useEffect(() => {
         //  alert('2')
-        let checklistOnCreateFilterArr = [];
-          if (typeof (checklistInfoFilter) !== 'undefined' && checklistInfoFilter?.length > 0 ) {
+        let companyProfilterArr = [];
+          if (typeof (companyFilterInteractProfileInfo) !== 'undefined' && companyFilterInteractProfileInfo?.length > 0 ) {
               //alert(categoryInfo?.length);
-              checklistInfoFilter.map((item, index) => {
-                checklistOnCreateFilterArr.push({
+              companyFilterInteractProfileInfo.map((item, index) => {
+                companyProfilterArr.push({
                   key:index+1,
                   id: item._id,
-                  state:item.state,
-                  compliance: item.compliance,
-                  rule:<div className='new-line'>{item.rule}</div>,
-                  category:item.category,
-                  question:<div className='new-line'>{item.question}</div>,
-                  description:<div className='new-line'>{item.description}</div>,
-                  image:<a href={item.image} target="_blank">Form</a>,
-                  documents:<a href={item.documents} target="_blank">Document</a>,
-                  frequency:item.frequency,
-                  branchname:item.branchname,
-                  risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-                  created_at:formatDate(item.created_at),
-                  approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                  executive:name?'admin':item.executive,
+                  companyTitle:item.companyTitle,
+                  details: item.details,
+                  remark:item.remark,
+                  companyUpload:<a href={item.companyUpload} target="_blank">Upload</a>,
                 })
             });
           }
-          setDataSource(checklistOnCreateFilterArr);
-      },[checklistInfoFilter])
+          setDataSource(companyProfilterArr);
+      },[companyFilterInteractProfileInfo])
       const formatDate = (currentDate) => {
         const dates = new Date(currentDate);
         const year = dates.getFullYear();
@@ -361,9 +356,10 @@ const CompanyinteractionForm = () => {
     const saveandapprove = () => {
         const postBody = {
             approvedate: defaultDate,
-            status:1
+            status:1,
+            id:ciProfileId
         }
-        // dispatch(checklistSaveandApprove(postBody));//relodreport
+        dispatch(saveandapporveCompanyInteraction(postBody));//relodreport
         relodreport();
     }
     const filter = () => {
@@ -372,12 +368,13 @@ const CompanyinteractionForm = () => {
         const elementbranch = myElementRefBranch.current;
         const elementdate = myElementRefDate.current;
         const postBody = {
-            created_at:elementdate.value,
-            state:elementstate.value,
+            // created_at:elementdate.value,
+            // state:elementstate.value,
             company:elementcompany.value,
-            branch:elementbranch.value
+            // branch:elementbranch.value
         }
-        // dispatch(checklistCreateFilters(postBody));
+        dispatch(profileCompanyFilter(postBody));
+        relodreport();
     }  
     return (
     <React.Fragment>
@@ -403,7 +400,7 @@ const CompanyinteractionForm = () => {
                     <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                     <option value="">Select Branch</option>
                     {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                        <option value={item._id}>{item.name}</option>
+                        <option value={item.id}>{item.name}</option>
                     )};
                     
                     </select>

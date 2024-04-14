@@ -1,7 +1,7 @@
 import express from "express";
 import { isAdmin,protectRoute } from '../middlewares/authMiddleware.js';
 import axios from 'axios'; //here axios only used to validate reCaptcha
-import {login,logout,auditoreGet,executiveGet,createAudit,catCreate,catGettting,catEditById,deleteCat,stateGetting,gettingUser,notificationCreate,createUser,editUser,deleteUser,gettingCompany,gettingCompanyTable,gettingBranch,gettingCompliances,gettingCompliancesAll,createBranch,createCompliances,gettingNotification,gettingCompliancesById,gettingCompliancesOnCreate,updateCompliancesById,complianceApporve,gettingCompliancesReject,complianceReject,complianceFilter,complianceRejectedFilter,gettingCompliancesAllFilter,checkListCreate,checkListFind,updateChecklistsById,checklistOnCreateegetting,gettingchecklistById,checklistAllgetting,checklistApporve,checkListAllFilter,checkListCreateFilter,checklistApprovegetting,checkListApproveFilter,checklistOnRejectegetting,rejectChecklist,checkListRejectedFilter,gettingchecklistAllCompliance,complianceApproveFilter,gettingAuditDetail,createLiseReg,liseRegGetting,liseRegUpdateById,liseRegHistoryFilter,regsApporve,regsReject,liseRegGettingById,auditChecklistFilter,auditchecklistGetonCreate,auditFilter,gettingOnGoingAuditDetail,gettingAuditorOverdueDashboard,elibraryCreate,createCompany,gettingCompanyById,companyLcreate,companyL,companyLById,companyLUpdateById,gettingCompliaceCSById,gettingCompanyBranch,createCompanyProfile,getCompanyProfileById,companyProfileUpdateById,gettingCompanyInractionTable,licenseCompanyInteractcreate,companyinteractLicGetByid,companyinteractLicUpdateById,licenseCompanyInteractGetOnCreate,createAssign,assignGetByid,assignsUpdateById,assignTableGet,getAssignOnCreate} from '../controllers/Admin.js';//elibraryGet ,createRegistrationTab2,createRegistrationTab3,createRegistrationTab4,createRegistrationTab5,createRegistrationTab6,createRegistrationTab7
+import {login,logout,auditoreGet,executiveGet,createAudit,catCreate,catGettting,catEditById,deleteCat,stateGetting,gettingUser,notificationCreate,createUser,editUser,deleteUser,gettingCompany,gettingCompanyTable,gettingBranch,gettingCompliances,gettingCompliancesAll,createBranch,createCompliances,gettingNotification,gettingCompliancesById,gettingCompliancesOnCreate,updateCompliancesById,complianceApporve,gettingCompliancesReject,complianceReject,complianceFilter,complianceRejectedFilter,gettingCompliancesAllFilter,checkListCreate,checkListFind,updateChecklistsById,checklistOnCreateegetting,gettingchecklistById,checklistAllgetting,checklistApporve,checkListAllFilter,checkListCreateFilter,checklistApprovegetting,checkListApproveFilter,checklistOnRejectegetting,rejectChecklist,checkListRejectedFilter,gettingchecklistAllCompliance,complianceApproveFilter,gettingAuditDetail,createLiseReg,liseRegGetting,liseRegUpdateById,liseRegHistoryFilter,regsApporve,regsReject,liseRegGettingById,auditChecklistFilter,auditchecklistGetonCreate,auditFilter,gettingOnGoingAuditDetail,gettingAuditorOverdueDashboard,elibraryCreate,createCompany,gettingCompanyById,companyLcreate,companyL,companyLById,companyLUpdateById,apporveCompanyL,companyLicenseFilter,gettingCompliaceCSById,gettingCompanyBranch,createCompanyProfile,getCompanyProfileById,companyProfileUpdateById,gettingCompanyInractionTable,apporveCompanyInteraction,companyProfileFilter,licenseCompanyInteractcreate,companyinteractLicGetByid,companyinteractLicUpdateById,licenseCompanyInteractGetOnCreate,apporveCompanyInteractionLicense,companyLicenseIntractFilter,createAssign,assignGetByid,assignsUpdateById,assignTableGet,getAssignOnCreate} from '../controllers/Admin.js';//elibraryGet ,createRegistrationTab2,createRegistrationTab3,createRegistrationTab4,createRegistrationTab5,createRegistrationTab6,createRegistrationTab7
 import { upload } from "../middlewares/multerConfig.js";
 const router = express.Router();
 router.post('/login',login); 
@@ -101,18 +101,25 @@ router.post('/createCompany',upload.any(),protectRoute, createCompany);
 router.get('/gettingCompany',protectRoute, gettingCompany);
 router.get('/gettingCompanyTable',protectRoute, gettingCompanyTable);
 router.get('/gettingCompanyById/:id',protectRoute, gettingCompanyById);
+router.patch('/companySaveandApprove',protectRoute, companySaveandApprove);//remem
 router.post('/companyLcreate',upload.any(),protectRoute, companyLcreate);
 router.get('/companyLById/:id',protectRoute, companyLById);
 router.put('/companyLUpdateById/:id',upload.any(),protectRoute, companyLUpdateById);
 router.get('/companyL',protectRoute, companyL);
+router.patch('/apporveCompanyL',protectRoute, apporveCompanyL);
+router.post('/companyLicenseFilter',protectRoute, companyLicenseFilter);
 router.post('/createcompanyinteraction',upload.any(),protectRoute, createCompanyProfile);
 router.get('/gettingComppanyInterationById/:id',protectRoute, getCompanyProfileById);
 router.put('/updatecompanyinteractionById/:id',upload.any(),protectRoute, companyProfileUpdateById)
 router.get('/gettingCompanyInractionTable',protectRoute, gettingCompanyInractionTable)
+router.patch('/apporveCompanyInteraction',protectRoute, apporveCompanyInteraction);//remem
+router.post('/companyProfileFilter',protectRoute, companyProfileFilter);
 router.post('/licenseCompanyInteractcreate',upload.any(),protectRoute, licenseCompanyInteractcreate)
 router.get('/companyinteractLicGetByid/:id',protectRoute, companyinteractLicGetByid)
 router.put('/companyinteractLicUpdateById/:id',upload.any(),protectRoute, companyinteractLicUpdateById)
 router.get('/licenseCompanyInteractGetOnCreate',protectRoute, licenseCompanyInteractGetOnCreate)
+router.post('/companyLicenseIntractFilter',protectRoute, companyLicenseIntractFilter);
+router.patch('/apporveCompanyInteractionLicense',protectRoute, apporveCompanyInteractionLicense);//remem
 router.post('/createAssign',protectRoute, createAssign)
 router.get('/getAssignid/:id',protectRoute, assignGetByid)
 router.put('/assignsUpdateById/:id',protectRoute, assignsUpdateById)

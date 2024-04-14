@@ -32,6 +32,11 @@ const companyLicenseSchema = new mongoose.Schema({
         trim : true,
         index : true
     },
+    status  : { 
+        type: Number, 
+        index: true, 
+        default: 0
+    },  
 }, {timestamps:true})
 
 const Companylicenses = mongoose.model('Companylicense', companyLicenseSchema)

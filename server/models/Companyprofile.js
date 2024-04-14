@@ -38,6 +38,11 @@ const companyProfileSchema = new mongoose.Schema({
     //     type : mongoose.Schema.Types.ObjectId,
     //     ref : "User"
     // }
+    status  : { 
+        type: Number, 
+        index: true, 
+        default: 0
+    },  
 }, {timestamps : true})
 
 const Companyprofile = mongoose.model('Companyprofile', companyProfileSchema)

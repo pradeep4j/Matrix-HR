@@ -715,7 +715,7 @@ export const gettingCompliaceCSById = async(cid,sid) => {
    // alert(`${URL}/gettingCompliancesFilter?state=${state}&created_at=${created_at}`);return;
     return await axios.get(`${URL}/gettingCompliaceCSById/${cid}/${sid}`,config);
 }
-export const companySaveandApproveById = async(data) => {
+export const companySaveandApprove = async(data) => {
 
     const config = {
         headers: {
@@ -724,7 +724,7 @@ export const companySaveandApproveById = async(data) => {
             'content-Type': 'multipart/form-data'
         }
     }
-    return await axios.post(`${URL}/companySaveandApproveById`,data,config);
+    return await axios.post(`${URL}/companySaveandApprove`,data,config);
 }
 export const companyLcreate = async(data) => {
 
@@ -767,6 +767,26 @@ export const companyLUpdateById = async(data,id) => {
         }
     }
     return await axios.put(`${URL}/companyLUpdateById/${id}`,data,config);
+}
+export const apporveCompanyL = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    return await axios.patch(`${URL}/apporveCompanyL`,data,config);
+}
+export const companyLicenseFilter = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    return await axios.post(`${URL}/companyLicenseFilter`,data,config);
 }
 export const companytab1 = async(data) => {
 
@@ -888,6 +908,27 @@ export const gettingCompanyInractionTable = async() => {
     }
     return await axios.get(`${URL}/gettingCompanyInractionTable`,config);
 }
+export const apporveCompanyInteraction = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    return await axios.patch(`${URL}/apporveCompanyInteraction`,data,config);
+}
+
+export const companyProfileFilter = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    return await axios.post(`${URL}/companyProfileFilter`,data,config);
+}
 export const licenseCompanyInteractcreate = async(data) => {
 
     const config = {
@@ -930,6 +971,26 @@ export const licenseCompanyInteractGetOnCreate = async() => {
         }
     }
     return await axios.get(`${URL}/licenseCompanyInteractGetOnCreate`,config);
+}
+export const companyLicenseIntractFilter = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    return await axios.post(`${URL}/companyLicenseIntractFilter`,data,config);
+}
+export const apporveCompanyInteractionLicense = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    return await axios.patch(`${URL}/apporveCompanyInteractionLicense`,data,config);
 }
 export const createAssign = async(data) => {
     const config = {

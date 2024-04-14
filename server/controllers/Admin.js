@@ -6298,6 +6298,18 @@ export const gettingCompanyById = async (request, response, next) => {
         next(error)
     }
 }
+export const companySaveandApprove = async (request, response, next) => {
+    try {
+        //console.log(request.body);return;
+        const idsToUpdate = request.body.id;
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
+        const companyApprove = await License.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+          
+        response.status(201).json(companyApprove);
+    } catch (error) {
+        next(error);
+    }
+}
 export const companyLcreate = async (request, response, next) => {
     try {
         const data = request.body
@@ -6502,7 +6514,46 @@ export const companyLById = async (request, response, next) => { ////getting lic
         next(error)
     }
 }
+export const apporveCompanyL = async (request, response, next) => {
+    try {
+        //console.log(request.body);return;
+        const idsToUpdate = request.body.id;
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
+        const companyLApprove = await License.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+          
+        response.status(201).json(companyLApprove);
+    } catch (error) {
+        next(error);
+    }
+}
+export const companyLicenseFilter = async (request, response, next) => {
+    try {
+        const data = request.body;
+        const { company } = data;
 
+        const filteredData = await License.aggregate([
+            {
+                $match: {
+                    "_id": new mongoose.Types.ObjectId(company)
+                }
+            },
+            {
+                $project: {
+                    licenseTitle: 1,
+                    licenseUpload: 1,
+                    activatedDate: 1,
+                    renewalDate: 1,
+                    expiryDate: 1,
+                    details: 1
+                }
+            }
+        ]);
+        console.log(filteredData);
+        response.status(200).json(filteredData)
+    } catch (error) {
+        next(error);
+    }
+}
 // *************************-------------- Company Interaction Profile -------------*************************
 
 export const createCompanyProfile = async (request, response, next) => {
@@ -6709,6 +6760,45 @@ export const companyProfileUpdateById = async (request, response, next) => {
         next(error)
     }
 }
+export const apporveCompanyInteraction = async (request, response, next) => {
+    try {
+        //console.log(request.body);return;
+        const idsToUpdate = request.body.id;
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
+        const apporveCompanyInteraction = await Companyprofile.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+          
+        response.status(201).json(apporveCompanyInteraction);
+    } catch (error) {
+        next(error);
+    }
+}
+export const companyProfileFilter = async (request, response, next) => {
+    try {
+        const data = request.body
+        const { company } = data
+        console.log(company);
+        const filteredData = await Companyprofile.aggregate([
+            {
+                $match: {
+                    "_id": new mongoose.Types.ObjectId(company.toString())
+                }
+            },
+            {
+                $project: {
+                    companyTitle: 1,
+                    companyUpload: 1,
+                    remark: 1,
+                    details: 1,
+                },
+            }
+        ])
+        console.log(filteredData);
+        response.status(200).json(filteredData)
+    } catch (error) {
+
+    }
+}
+
 ////////company interaction Licencse start
 export const licenseCompanyInteractcreate = async (request, response, next) => {
     try {
@@ -6908,6 +6998,47 @@ export const licenseCompanyInteractGetOnCreate = async (request, response, next)
         response.status(200).json(companyProfilelicense)
     } catch (error) {
         next(error)
+    }
+}
+export const apporveCompanyInteractionLicense = async (request, response, next) => {
+    try {
+        //console.log(request.body);return;
+        const idsToUpdate = request.body.id;
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
+        const apporveCompanyInteractionLicense = await Companyprofile.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+          
+        response.status(201).json(apporveCompanyInteractionLicense);
+    } catch (error) {
+        next(error);
+    }
+}
+export const companyLicenseIntractFilter = async (request, response, next) => {
+    try {
+        const data = request.body;
+        const { company } = data;
+
+        // Perform aggregation
+        const filteredData = await Companylicenses.aggregate([
+            {
+                $match: {
+                    "_id": new mongoose.Types.ObjectId(company)
+                }
+            },
+            {
+                $project: {
+                    licenseTitle: 1,
+                    licenseUpload: 1,
+                    activatedDate: 1,
+                    renewalDate: 1,
+                    expiryDate: 1,
+                    details: 1
+                }
+            }
+        ]);
+        console.log(filteredData);
+        response.status(200).json(filteredData)
+    } catch (error) {
+        next(error);
     }
 }
 export const gettingCompliaceCSById = async (request, response, next) => { //get compliance by category and state id

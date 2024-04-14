@@ -1,4 +1,4 @@
-import { auditoreGet,getExecutive,catCreate,catGet,catEdit,catDelete,gettingState,gettingUser,NotificationCreate,gettingNotification,userCreate,editUser,userDelete,createChecklist,gettingChecklist,gettingCompany,gettingCompanyTable,gettingBranch,createBranch,createCompany,createCompliances,gettingCompliances,gettingCompliancesById,gettingCompliancesOnCreate,complianceApporve,gettingCompliancesReject,complianceReject,updateCompliancesById,gettingCompliancesAll,gettingCompliancesFilter,gettingCompliancesAllFilter,gettingCompliancesRejetFilter,updateChecklistsById,checklistOnCreateegetting,gettingchecklistById,checklistAllgetting,checklistApporve,gettingchecklistAllFilter,gettingchecklistOnCreateFilter,checklistApprovegetting,gettingchecklistOnApproveFilter,checklistOnRejectegetting,rejectChecklist,gettingchecklistOnrejectFilter,gettingchecklistAllCompliance,gettingcomplianceOnApproveFilter,gettingChecklistOnCreate,createLiseReg,gettingAuditDetail,getttingReg,regsApporve,liseRegGettingByIds,liseregsFilters,liseRegUpdateByIds,regsReject,auditCreate,auditoreFilterChecklist,auditchecklistGetonCreate,auditAllFilter,gettingOnGoingAuditDetail,gettingOverviewAuditDetail,ElibraryCreate,ElibraryGet,companytab1,companytab2,companytab3,companytab4,companytab5,companytab6,companytab7,companyL,gettingCompanyById,companyLcreate,companyLById,companyLUpdateById,gettingCompliaceCSById,companySaveandApproveById,createcompanyinteraction,gettingComppanyInterationById,updatecompanyinteractionById,gettingCompanyInractionTable,licenseCompanyInteractcreate,licenseCompanyInteractGetOnCreate,companyinteractLicGetByid,companyinteractLicUpdateById,createAssign,getAssignid,assignsUpdateById,assignTableGet,getAssignOnCreate} from "../../routes/api";
+import { auditoreGet,getExecutive,catCreate,catGet,catEdit,catDelete,gettingState,gettingUser,NotificationCreate,gettingNotification,userCreate,editUser,userDelete,createChecklist,gettingChecklist,gettingCompany,gettingCompanyTable,gettingBranch,createBranch,createCompany,createCompliances,gettingCompliances,gettingCompliancesById,gettingCompliancesOnCreate,complianceApporve,gettingCompliancesReject,complianceReject,updateCompliancesById,gettingCompliancesAll,gettingCompliancesFilter,gettingCompliancesAllFilter,gettingCompliancesRejetFilter,updateChecklistsById,checklistOnCreateegetting,gettingchecklistById,checklistAllgetting,checklistApporve,gettingchecklistAllFilter,gettingchecklistOnCreateFilter,checklistApprovegetting,gettingchecklistOnApproveFilter,checklistOnRejectegetting,rejectChecklist,gettingchecklistOnrejectFilter,gettingchecklistAllCompliance,gettingcomplianceOnApproveFilter,gettingChecklistOnCreate,createLiseReg,gettingAuditDetail,getttingReg,regsApporve,liseRegGettingByIds,liseregsFilters,liseRegUpdateByIds,regsReject,auditCreate,auditoreFilterChecklist,auditchecklistGetonCreate,auditAllFilter,gettingOnGoingAuditDetail,gettingOverviewAuditDetail,ElibraryCreate,ElibraryGet,companytab1,companytab2,companytab3,companytab4,companytab5,companytab6,companytab7,companyL,gettingCompanyById,companyLcreate,companyLById,companyLUpdateById,apporveCompanyL,companyLicenseFilter,gettingCompliaceCSById,companySaveandApprove,createcompanyinteraction,gettingComppanyInterationById,updatecompanyinteractionById,gettingCompanyInractionTable,apporveCompanyInteraction,companyProfileFilter,licenseCompanyInteractcreate,licenseCompanyInteractGetOnCreate,companyinteractLicGetByid,companyinteractLicUpdateById,apporveCompanyInteractionLicense,companyLicenseIntractFilter,createAssign,getAssignid,assignsUpdateById,assignTableGet,getAssignOnCreate} from "../../routes/api";
 
 import { toast } from 'react-toastify';
 import {
@@ -254,6 +254,12 @@ import {
     COMPANYL_GET_REQUEST_BY_ID,
     COMPANYL_GET_SUCCESS_BY_ID,
     COMPANYL_GET_FAIL_BY_ID,
+    COMPANY_LICENSE_REQUEST_GET_APPROVE,
+    COMPANY_LICENSE_SUCCESS_GET_APPROVE,
+    COMPANY_LICENSE_REQUEST_GET_APPROVE_FAIL,
+    COMPANY_LICENSE_REQUEST_GET_FILTER,
+    COMPANY_LICENSE_SUCCESS_GET_FILTER,
+    COMPANY_LICENSE_GET_FAIL_FILTER,
     COMPANY_REQUEST_SAVE_APPROVE,
     COMPANY_SUCCESS_SAVE_APPROVE,
     COMPANY_REQUEST_SAVE_APPROVE_FAIL,
@@ -272,6 +278,12 @@ import {
     COMPANY_INTERACTION_GET_TABLE_REQUEST,
     COMPANY_INTERACTION_GET_TABLE_SUCCESS,
     COMPANY_INTERACTION_GET_TABLE_FAIL,
+    COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE,
+    COMPANY_PROFILE_INERACTION_SUCCESS_GET_APPROVE,
+    COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE_FAIL,
+    COMPANY_INTERACT_REQUEST_GET_FILTER,
+    COMPANY_INTERACT_SUCCESS_GET_FILTER,
+    COMPANY_INTERACT_GET_FAIL_FILTER,
     COMPANY_INTERACTION_LICENSE_GET_REQUEST,
     COMPANY_INTERACTION_LICENSE_GET_SUCCESS,
     COMPANY_INTERACTION_LICENSE_CREATE_FAIL,
@@ -284,6 +296,12 @@ import {
     COMPANY_INTERACTION_LIC_REQUEST_UPDATE_BYID,
     COMPANY_INTERACTION_LIC_SUCCESS_UPDATE_BYID,
     COMPANY_INTERACTION_LIC_FAIL_UPDATE_BYID,
+    COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE,
+    COMPANY_LICENSE_INERACTION_SUCCESS_GET_APPROVE,
+    COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE_FAIL,
+    COMPANY_LICENSE_INTERACT_REQUEST_GET_FILTER,
+    COMPANY_LICENSE_INTERACT_SUCCESS_GET_FILTER,
+    COMPANY_LICENSE_INTERACT_GET_FAIL_FILTER,
     COMPANY_ASSIGN_CREATE_REQUEST,
     COMPANY_ASSIGN_CREATE_SUCCESS,
     COMPANY_ASSIGN_CREATE_FAIL,
@@ -3946,10 +3964,10 @@ export const companyGettingById = (id) => async (dispatch) => {
                                         
                 });  
 }
-export const companySaveandApprove = (id) => async (dispatch) => {
+export const SaveandApproveCompany = (postBody) => async (dispatch) => {
         dispatch({ type: COMPANY_REQUEST_SAVE_APPROVE });
 
-                await companySaveandApproveById(id).then(response=>{
+                await companySaveandApprove(postBody).then(response=>{
                 dispatch({ type: COMPANY_SUCCESS_SAVE_APPROVE, payload: response.data });    
                 if(response.status===201)
                 {
@@ -4139,6 +4157,83 @@ export const licenseUpdateByid = (postbody,id) => async (dispatch) => {
                         });                                         
                 });  
 }    
+export const companylicenseSaveandApprove = (data) => async (dispatch) => {
+        dispatch({ type: COMPANY_LICENSE_REQUEST_GET_APPROVE });
+
+                await apporveCompanyL(data).then(response=>{
+                dispatch({ type: COMPANY_LICENSE_SUCCESS_GET_APPROVE, payload: response.data });    
+                if(response.status===201)
+                {
+                        toast.success('Company Licenses is Approved Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+                else
+                {
+                        dispatch({
+                                type: COMPANY_LICENSE_REQUEST_GET_APPROVE_FAIL,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });                                  
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: COMPANY_LICENSE_REQUEST_GET_APPROVE_FAIL,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                        
+                });  
+}
+export const licenseCompanyFilter = (postBody) => async (dispatch) => {
+        dispatch({ type: COMPANY_LICENSE_REQUEST_GET_FILTER });
+                await companyLicenseFilter(postBody).then(response=>{
+                dispatch({ type: COMPANY_LICENSE_SUCCESS_GET_FILTER, payload: response.data });    
+                if(response.status===200)
+                {
+                        // toast.success('Category is Added Successfully!', {
+                        //         position: "bottom-right",
+                        //         hideProgressBar: false,
+                        //         progress: undefined,
+                        // });
+                }
+                else
+                {
+                        dispatch({
+                                type: COMPANY_LICENSE_GET_FAIL_FILTER,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: COMPANY_LICENSE_GET_FAIL_FILTER,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                   
+                });  
+}
 export const companyinteractionCreate = (postbody) => async (dispatch) => {
         dispatch({ type: COMPANY_INERACTION_CREATE_REQUEST });
 
@@ -4293,8 +4388,123 @@ export const companyInractionTableGet = () => async (dispatch) => {
                 });  
      
 }
+export const saveandapporveCompanyInteraction = (data) => async (dispatch) => {
+        dispatch({ type: COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE });
 
+                await apporveCompanyInteraction(data).then(response=>{
+                dispatch({ type: COMPANY_PROFILE_INERACTION_SUCCESS_GET_APPROVE, payload: response.data });    
+                if(response.status===201)
+                {
+                        toast.success('Company Interaction Profiles is Approved Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+                else
+                {
+                        dispatch({
+                                type: COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE_FAIL,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });                                  
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE_FAIL,
+                                payload:
+                                error.message });
 
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                        
+                });  
+}
+export const saveandapporveCompanyInteractionLicense = (data) => async (dispatch) => {
+        dispatch({ type: COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE });
+
+                await apporveCompanyInteractionLicense(data).then(response=>{
+                dispatch({ type: COMPANY_LICENSE_INERACTION_SUCCESS_GET_APPROVE, payload: response.data });    
+                if(response.status===201)
+                {
+                        toast.success('Company Interaction Liceneses is Approved Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+                else
+                {
+                        dispatch({
+                                type: COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE_FAIL,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });                                  
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE_FAIL,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                        
+                });  
+}
+
+export const profileCompanyFilter = (postBody) => async (dispatch) => {
+        dispatch({ type: COMPANY_INTERACT_REQUEST_GET_FILTER });
+                await companyProfileFilter(postBody).then(response=>{
+                dispatch({ type: COMPANY_INTERACT_SUCCESS_GET_FILTER, payload: response.data });    
+                if(response.status===200)
+                {
+                        // toast.success('Category is Added Successfully!', {
+                        //         position: "bottom-right",
+                        //         hideProgressBar: false,
+                        //         progress: undefined,
+                        // });
+                }
+                else
+                {
+                        dispatch({
+                                type: COMPANY_INTERACT_GET_FAIL_FILTER,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: COMPANY_INTERACT_GET_FAIL_FILTER,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                   
+                });  
+}
 export const licenseCompanyInteractionGetById = (id) => async (dispatch) => {
         dispatch({ type: COMPANY_INTERACTION_REQUEST_GET_BYID });
 
@@ -4485,6 +4695,44 @@ export const companyinteractionLicUpdateById = (postbody,id) => async (dispatch)
                                 hideProgressBar: false,
                                 progress: undefined,
                         }); 
+                });  
+}
+export const licenseCompanyIntractFilter = (postBody) => async (dispatch) => {
+        dispatch({ type: COMPANY_LICENSE_INTERACT_REQUEST_GET_FILTER });
+                await companyLicenseIntractFilter(postBody).then(response=>{
+                dispatch({ type: COMPANY_LICENSE_INTERACT_SUCCESS_GET_FILTER, payload: response.data });    
+                if(response.status===200)
+                {
+                        // toast.success('Category is Added Successfully!', {
+                        //         position: "bottom-right",
+                        //         hideProgressBar: false,
+                        //         progress: undefined,
+                        // });
+                }
+                else
+                {
+                        dispatch({
+                                type: COMPANY_LICENSE_INTERACT_GET_FAIL_FILTER,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: COMPANY_LICENSE_INTERACT_GET_FAIL_FILTER,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                   
                 });  
 }
 export const assignCreate = (postbody) => async (dispatch) => {

@@ -9,7 +9,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import { Button, Input, Space, Table ,Modal,Form,message, Checkbox} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {stateGets,branchGet,companyTableGet,assignGetTable,assignGetOnCreate} from "../../store/actions/otherActions";
+import {stateGets,branchGet,executiveGet,companyTableGet,assignGetTable,assignGetOnCreate} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 // import ChecklistPopup from './ChecklistPopup';
 import Loading from '../../components/layout/Loading';
@@ -29,6 +29,7 @@ const Assigncompanies = () => {
     const [dateupdate, setDateUpdate] = useState('');
     const [modalWidth, setModalWidth] = useState();
     const [showTable1, setShowTable1] = useState(true);
+    const [executive, setUser] = useState('');
     const [recordForEdit, setRecordForEdit] = useState(null);
     const [dataSource, setDataSource] = useState();
     const [searchText, setSearchText] = useState('');
@@ -40,6 +41,7 @@ const Assigncompanies = () => {
     const myElementRefDate = useRef(null);
     const myElementRefCompany = useRef(null);
     const myElementRefBranch = useRef(null);
+    const myElementRefUser = useRef(null);
     const myElementRefTab1 = useRef(null);
     let defaultDate = new Date()
     defaultDate.setDate(defaultDate.getDate() )
@@ -87,8 +89,8 @@ const Assigncompanies = () => {
     const { loadings,stateInfo } = getState;  
     const getBranch = useSelector((state) => state.getBranch);
     const { branchInfo } = getBranch; 
-    // const getCompney = useSelector((state) => state.getCompney);
-    // const { companyInfo } = getCompney; 
+    const getExecutive = useSelector((state) => state.getExecutive);
+    const { executiveInfo } = getExecutive;  
     const companyGetAssignOnCreate = useSelector((state) => state.companyGetAssignOnCreate);
     const {loadingcagoc,companyAssignGetOnCreateInfo } = companyGetAssignOnCreate;
     const getAuditor = useSelector((state) => state.getAuditor);
@@ -164,9 +166,9 @@ const Assigncompanies = () => {
         const elementstate = myElementRefState.current;
         const elementcompany = myElementRefCompany.current;
         const elementbranch = myElementRefBranch.current;
-        // const elementdate = myElementRefDate.current;
+        const elementexecutive = myElementRefUser.current;
         const postBody = {
-            // created_at:elementdate.value,
+            executive:elementexecutive.value,
             state:elementstate.value,
             company:elementcompany.value,
             branch:elementbranch.value
@@ -399,18 +401,27 @@ const Assigncompanies = () => {
                                                     )};
                                                 </select>
                                         </div>
+                                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-2 mb-md-2">
+                                            {/* <label for="" class="form-label">Executive</label> */}
+                                            <select className="form-select" aria-label="Default select example" id="executives" name="executive" ref={myElementRefUser} value={executive} onChange={(e) => {setUser(e.target.value);filter();}} >
+                                                    <option value="">Select Executive</option>
+                                                {executiveInfo != 'undefind' && executiveInfo?.length > 0 && executiveInfo.map(item => 
+                                                    <option value={item._id}>{item.userName}</option>
+                                                )};
+                                            </select>
+                                        </div>
                                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                                             <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                                             <option value="">Select Branch</option>
                                             {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                                                <option value={item._id}>{item.name}</option>
+                                                <option value={item.id}>{item.name}</option>
                                             )};
                                             
                                             </select>
                                         </div>
-                                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
+                                        {/* <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                                             <input type="date" id="dating" ref={myElementRefDate} className="form-control" value={dateupdate} onChange={(e) => {setDateUpdate(e.target.value);filter();}} />
-                                        </div>
+                                        </div> */}
                                         {/* <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                                             <button type="submit" className="w-100 btn btn-primary" onClick={saveandapprove}>Save And Approve</button>
                                         </div> */}
@@ -443,7 +454,7 @@ const Assigncompanies = () => {
                         </div>
                     </div>
                     {/* <form name="save" onSubmit={saveandapprove}> */}
-                      <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove}>Save And Approve</button>
+                      <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove}>Save And Submit</button>
                       {/* </div> */}
                     {/* </form> */}
             </div>

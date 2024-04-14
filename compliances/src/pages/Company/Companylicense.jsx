@@ -9,13 +9,10 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {licenseGetonCreate,companyTableGet} from "../../store/actions/otherActions";
+import {licenseGetonCreate,companyTableGet,companylicenseSaveandApprove,licenseCompanyFilter} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 import Licencsepopup from './Licencsepopup';
 import Loading from '../../components/layout/Loading';
-// import AllChecklistTable from './AllChecklistTable';
-// import ChecklistApprove from './ChecklistApprove';
-// import RejectedChecklist from './RejectedChecklist';
 const Companylicense = () => {
 
     const navigate = useNavigate();
@@ -36,10 +33,11 @@ const Companylicense = () => {
      console.log(companyLGetInfo);
     //console.log(checklistInfoOnCreate);
     //console.log(usersInfo);
-    const filterCreateChecklist = useSelector((state) => state.filterCreateChecklist);
-    const { loadingcreatefilter,checklistInfoFilter } = filterCreateChecklist; 
+    const companyLFilter = useSelector((state) => state.companyLFilter);
+    const { loadingcompanyf,companyLFilterInfo } = companyLFilter; 
     const searchInput = useRef(null);
     const [name, setName] = useState(false);
+    const [cLicenseId, setcLicenseId] = useState([]);
     const [openPopup, setOpenPopup] = useState(false); 
     const [pageTitle, setPageTitle] = useState('');
     const [modalWidth, setModalWidth] = useState();
@@ -186,7 +184,7 @@ const Companylicense = () => {
      });
     const relodreport = async () => {
         setTimeout(() => {
-            // dispatch(licenseGetonCreate('checkilist'));
+             dispatch(licenseGetonCreate());
         }, 5000);
         
     }   
@@ -197,9 +195,10 @@ const Companylicense = () => {
     useEffect(() => {
         //  alert('2')
         let licenseOnCreateArr = [];
+        let clarr = [];
           if (typeof (companyLGetInfo) !== 'undefined' && companyLGetInfo?.length > 0 ) {
-              //alert(categoryInfo?.length);
               companyLGetInfo.map((item, index) => {
+                clarr.push(item._id)
                 licenseOnCreateArr.push({
                   key:index+1,
                   id: item._id,
@@ -212,42 +211,36 @@ const Companylicense = () => {
                 })
             });
           }
+          setcLicenseId(clarr)
           setDataSource(licenseOnCreateArr);
     },[companyLGetInfo])
+    console.log(cLicenseId);
     const resetForm = () => {
          setCompany('');
     }
     useEffect(() => {
          resetForm();
     },[companyLGetInfo])
-      // useEffect(() => {
-      //   //  alert('2')
-      //   let checklistOnCreateFilterArr = [];
-      //     if (typeof (checklistInfoFilter) !== 'undefined' && checklistInfoFilter?.length > 0 ) {
-      //         //alert(categoryInfo?.length);
-      //         checklistInfoFilter.map((item, index) => {
-      //           checklistOnCreateFilterArr.push({
-      //             key:index+1,
-      //             id: item._id,
-      //             state:item.state,
-      //             compliance: item.compliance,
-      //             rule:<div className='new-line'>{item.rule}</div>,
-      //             category:item.category,
-      //             question:<div className='new-line'>{item.question}</div>,
-      //             description:<div className='new-line'>{item.description}</div>,
-      //             image:<a href={item.image} target="_blank">Form</a>,
-      //             documents:<a href={item.documents} target="_blank">Document</a>,
-      //             frequency:item.frequency,
-      //             branchname:item.branchname,
-      //             risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-      //             created_at:formatDate(item.created_at),
-      //             approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-      //             executive:name?'admin':item.executive,
-      //           })
-      //       });
-      //     }
-      //     setDataSource(checklistOnCreateFilterArr);
-      // },[checklistInfoFilter])
+      useEffect(() => {
+        //  alert('2')
+        let companylicnseFilterArr = [];
+          if (typeof (companyLFilterInfo) !== 'undefined' && companyLFilterInfo?.length > 0 ) {
+              //alert(categoryInfo?.length);
+              companyLFilterInfo.map((item, index) => {
+                companylicnseFilterArr.push({
+                  key:index+1,
+                  id: item._id,
+                  licenseTitle:item.licenseTitle,
+                  image:<a href={item.licenseUpload} target="_blank">Form</a>,
+                  activatedDate:formatDate(item.activatedDate),
+                  renewalDate:formatDate(item.renewalDate),
+                  expiryDate:formatDate(item.expiryDate),
+                  details:(item.details),
+                })
+            });
+          }
+          setDataSource(companylicnseFilterArr);
+      },[companyLFilterInfo])
       const formatDate = (currentDate) => {
         const dates = new Date(currentDate);
         const year = dates.getFullYear();
@@ -350,28 +343,28 @@ const Companylicense = () => {
             approvedate: defaultDate,
             status:1
         }
-        // dispatch(checklistSaveandApprove(postBody));//relodreport
+        dispatch(companylicenseSaveandApprove(postBody));//relodreport
         relodreport();
     }
     const filter = () => {
-        const elementstate = myElementRefState.current;
+        // const elementstate = myElementRefState.current;
         const elementcompany = myElementRefCompany.current;
-        const elementbranch = myElementRefBranch.current;
-        const elementdate = myElementRefDate.current;
+        // const elementbranch = myElementRefBranch.current;
+        // const elementdate = myElementRefDate.current;
         const postBody = {
-            created_at:elementdate.value,
-            state:elementstate.value,
+            // created_at:elementdate.value,
+            // state:elementstate.value,
             company:elementcompany.value,
-            branch:elementbranch.value
+            // branch:elementbranch.value
         }
-        // dispatch(checklistCreateFilters(postBody));
+        dispatch(licenseCompanyFilter(postBody));
     }  
     return (
     <React.Fragment>
         <div className="col-lg-12">
             <div className="row">
-                <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                    <select className="form-select" aria-label="Default select example"         id="companies" name="company" ref={myElementRefCompany} value={company} onChange={(e)=>{setCompany(e.target.value);filter()}} required>
+                <div className="col-md-12 col-lg-12 col-xl-12 mb-2 mb-lg-3 mb-md-3">
+                    <select className="form-select" aria-label="Default select example" id="companies" name="company" ref={myElementRefCompany} value={company} onChange={(e)=>{setCompany(e.target.value);filter()}} required>
                             <option value="">Select Company</option>
                           {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
                             <option value={item._id}>{item.companyname}</option>
@@ -390,7 +383,7 @@ const Companylicense = () => {
                     <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                     <option value="">Select Branch</option>
                     {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                        <option value={item._id}>{item.name}</option>
+                        <option value={item.id}>{item.name}</option>
                     )};
                     
                     </select>
@@ -401,7 +394,7 @@ const Companylicense = () => {
                 
                 <div className="col-12 col-lg-12">
                     <div className="card p-3 position-relative h-100">
-                    {loadingLicenseget && <Loading />}    
+                    {(loadingLicenseget || loadingcompanyf) && <Loading />}    
                     <Table columns={columns} dataSource={dataSource} style={{ overflow:'-moz-hidden-unscrollable' }} pagination={{ pageSize: 4, /*total: 50,*/ showSizeChanger: false ,position: ["bottomCenter"],}} scroll={{ x: 1300 }} sticky={true}/>
                         <button className='btn btn-light border mb-2 text-decoration-none  bottom-10 start-30 ' style={{ width:'150px' }} onClick={() => openInPopupForAdd()}>  <AddCircleOutlineIcon /> Add More </button>
                         <Popup openPopup={openPopup} pageTitle={pageTitle} setOpenPopup={setOpenPopup} modalWidth={modalWidth}>

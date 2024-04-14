@@ -242,6 +242,12 @@ import {
     COMPANYL_GET_REQUEST,
     COMPANYL_GET_SUCCESS,
     COMPANYL_GET_FAIL,
+    COMPANY_LICENSE_REQUEST_GET_APPROVE,
+    COMPANY_LICENSE_SUCCESS_GET_APPROVE,
+    COMPANY_LICENSE_REQUEST_GET_APPROVE_FAIL,
+    COMPANY_LICENSE_REQUEST_GET_FILTER,
+    COMPANY_LICENSE_SUCCESS_GET_FILTER,
+    COMPANY_LICENSE_GET_FAIL_FILTER,
     COMPANY_GET_TABLE_REQUEST,
     COMPANY_GET_TABLE_SUCCESS,
     COMPANY_GET_TABLE_FAIL,
@@ -269,6 +275,12 @@ import {
     COMPANY_INTERACTION_GET_TABLE_REQUEST,
     COMPANY_INTERACTION_GET_TABLE_SUCCESS,
     COMPANY_INTERACTION_GET_TABLE_FAIL,
+    COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE,
+    COMPANY_PROFILE_INERACTION_SUCCESS_GET_APPROVE,
+    COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE_FAIL,
+    COMPANY_INTERACT_REQUEST_GET_FILTER,
+    COMPANY_INTERACT_SUCCESS_GET_FILTER,
+    COMPANY_INTERACT_GET_FAIL_FILTER,
     COMPANY_INTERACTION_LICENSE_GET_REQUEST,
     COMPANY_INTERACTION_LICENSE_GET_SUCCESS,
     COMPANY_INTERACTION_LICENSE_CREATE_FAIL,
@@ -281,6 +293,12 @@ import {
     COMPANY_INTERACTION_LIC_REQUEST_UPDATE_BYID,
     COMPANY_INTERACTION_LIC_SUCCESS_UPDATE_BYID,
     COMPANY_INTERACTION_LIC_FAIL_UPDATE_BYID,
+    COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE,
+    COMPANY_LICENSE_INERACTION_SUCCESS_GET_APPROVE,
+    COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE_FAIL,
+    COMPANY_LICENSE_INTERACT_REQUEST_GET_FILTER,
+    COMPANY_LICENSE_INTERACT_SUCCESS_GET_FILTER,
+    COMPANY_LICENSE_INTERACT_GET_FAIL_FILTER,
     COMPANY_ASSIGN_CREATE_REQUEST,
     COMPANY_ASSIGN_CREATE_SUCCESS,
     COMPANY_ASSIGN_CREATE_FAIL,
@@ -970,7 +988,23 @@ export const companyLGetByIDReducer = (state= {}, action) => {
                 default: return state;
         }
 }
-export const companySaveApproveReducer = (state= {}, action) => {
+export const companyLsaveandapproveIDReducer = (state= {}, action) => {
+        switch(action.type) {
+                case COMPANY_LICENSE_REQUEST_GET_APPROVE: return { loadingcompanysa:true };
+                case COMPANY_LICENSE_SUCCESS_GET_APPROVE: return { loadingcompanysa:false, companyLSAInfo: action.payload };
+                case COMPANY_LICENSE_REQUEST_GET_APPROVE_FAIL: return { loadingcompanysa:false, error: action.payload };
+                default: return state;
+        }
+}
+export const companyLFilterReducer = (state= {}, action) => {
+        switch(action.type) {
+                case COMPANY_LICENSE_REQUEST_GET_FILTER: return { loadingcompanyf:true };
+                case COMPANY_LICENSE_SUCCESS_GET_FILTER: return { loadingcompanyf:false, companyLFilterInfo: action.payload };
+                case COMPANY_LICENSE_GET_FAIL_FILTER: return { loadingcompanyf:false, error: action.payload };
+                default: return state;
+        }
+}
+export const companySaveApproveReducer = (state= {}, action) => {  /////company save and approve not implemented in backendyet
         switch(action.type) {
                 case COMPANY_REQUEST_SAVE_APPROVE: return { loadingcompanysaveapprove:true };
                 case COMPANY_SUCCESS_SAVE_APPROVE: return { loadingcompanysaveapprove:false, companysaveapproveInfo: action.payload };
@@ -1018,6 +1052,23 @@ export const companyinteractionTableGetReducer = (state= {}, action) => {
                 default: return state;
         }
 }
+export const companyinteractionSAReducer = (state= {}, action) => { 
+        switch(action.type) {
+                case COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE: return { loadingcisa:true };
+                case COMPANY_LICENSE_INERACTION_SUCCESS_GET_APPROVE: return { loadingcisa:false, companyinteractionSAGetInfo: action.payload };
+                case COMPANY_LICENSE_INERACTION_REQUEST_GET_APPROVE_FAIL: return { loadingcisa:false, error: action.payload };
+                default: return state;
+        }
+}
+export const companyFilterIntractProfileReducer = (state= {}, action) => {
+        switch(action.type) {
+                case COMPANY_INTERACT_REQUEST_GET_FILTER: return { loadingcompanyintract:true };
+                case COMPANY_INTERACT_SUCCESS_GET_FILTER
+                : return { loadingcompanyintract:false, companyFilterInteractProfileInfo: action.payload };
+                case COMPANY_INTERACT_GET_FAIL_FILTER: return { loadingcompanyintract:false, error: action.payload };
+                default: return state;
+        }
+}
 export const companyInteractionLicenseGetOnCreateReducer = (state= {}, action) => {
         switch(action.type) {
                 case COMPANY_INTERACTION_LICENSE_GET_REQUEST: return { loadingcil:true };
@@ -1047,6 +1098,23 @@ export const companyinteractionLicUpdateByIdReducer = (state= {}, action) => {
                 case COMPANY_INTERACTION_LIC_REQUEST_UPDATE_BYID: return { loadingciubd:true };
                 case COMPANY_INTERACTION_LIC_SUCCESS_UPDATE_BYID: return { loadingciubd:false, companyinteractionLicUpdateByIDInfo: action.payload };
                 case COMPANY_INTERACTION_LIC_FAIL_UPDATE_BYID: return { loadingciubd:false, error: action.payload };
+                default: return state;
+        }
+}
+export const companyinteractionLicSAReducer = (state= {}, action) => { 
+        switch(action.type) {
+                case COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE: return { loadingcisap:true };
+                case COMPANY_PROFILE_INERACTION_SUCCESS_GET_APPROVE: return { loadingcisap:false, companyinteractionLicSAInfo: action.payload };
+                case COMPANY_PROFILE_INERACTION_REQUEST_GET_APPROVE_FAIL: return { loadingcisap:false, error: action.payload };
+                default: return state;
+        }
+}        
+export const companyFilterIntractReducer = (state= {}, action) => {
+        switch(action.type) {
+                case COMPANY_LICENSE_INTERACT_REQUEST_GET_FILTER: return { loadingcompanyintract:true };
+                case COMPANY_LICENSE_INTERACT_SUCCESS_GET_FILTER
+                : return { loadingcompanyintract:false, companyFilterInteractInfo: action.payload };
+                case COMPANY_LICENSE_INTERACT_GET_FAIL_FILTER: return { loadingcompanyintract:false, error: action.payload };
                 default: return state;
         }
 }

@@ -6,7 +6,7 @@ import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { categoryGet, stateGets, companytab1create, companytab2create, companytab3create, companytab4create,companytab5create,companytab6create,companytab7create,companyTableGet,licenseGetonCreate,companySaveandApprove,companyGettingById } from "../../store/actions/otherActions";
+import { categoryGet, stateGets, companytab1create, companytab2create, companytab3create, companytab4create,companytab5create,companytab6create,companytab7create,companyTableGet,licenseGetonCreate,SaveandApproveCompany,companyGettingById } from "../../store/actions/otherActions";
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -96,6 +96,8 @@ const Companies = () => {
     const { loadingtab6,companytab6CreateInfo } = createCompanytab6;
     const createCompanytab7 = useSelector((state) => state.createCompanytab7);
     const { loadingtab7,companytab7CreateInfo } = createCompanytab7;
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const [category, setCategory] = useState('')
     const [state, setState] = useState('')
     const [isDisabled, setIsDisabled] = useState(false);
@@ -1188,9 +1190,10 @@ const Companies = () => {
     const saveandapprove = () => {
         const postBody = {
             approvedate: defaultDate,
-            status:1
+            status:1,
+            id:companyGetTableInfo?._id
         }
-        dispatch(companySaveandApprove(postBody));//relodreport
+        dispatch(SaveandApproveCompany(postBody));//relodreport
         // relodreport();
     }
     return (
@@ -2994,9 +2997,9 @@ const Companies = () => {
                                             </div>
                                             
                                         </div>
-                                        <form name="save" onSubmit={saveandapprove}>
+                                        {/* <form name="save" onSubmit={saveandapprove}> */}
                                             <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove} disabled={companytab1CreateInfo && companytab1CreateInfo.created_at === null?'disabled':''}>Save And Approve</button>
-                                        </form>
+                                        {/* </form> */}
                                     </div>
                                 </div>
                             </div>

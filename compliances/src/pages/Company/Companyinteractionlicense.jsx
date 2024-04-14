@@ -9,7 +9,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {licenseCompanyInteractionGetOnCreate,companyTableGet} from "../../store/actions/otherActions";
+import {licenseCompanyInteractionGetOnCreate,companyTableGet,saveandapporveCompanyInteractionLicense,licenseCompanyIntractFilter} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 import Companyinteractionlicensepopup from './Companyinteractionlicensepopup';
 import Loading from '../../components/layout/Loading';
@@ -31,15 +31,11 @@ const Companyinteractionlicense = () => {
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const companyinteractLicOnGetCreate = useSelector((state) => state.companyinteractLicOnGetCreate);
     const { loadingcil,companyInteractionLGetOnCreateInfo } = companyinteractLicOnGetCreate;
-    // const getCheckOnCreate = useSelector((state) => state.getCheckOnCreate);
-    // const { loadingoncreate,checklistInfoOnCreate } = getCheckOnCreate; 
-    //  console.log(checklistInfoOnCreate);
-    //console.log(checklistInfoOnCreate);
-    //console.log(usersInfo);
-    const filterCreateChecklist = useSelector((state) => state.filterCreateChecklist);
-    const { loadingcreatefilter,checklistInfoFilter } = filterCreateChecklist; 
+    const companyIntractFilter = useSelector((state) => state.companyIntractFilter);
+    const { loadingcompanyintract,companyFilterInteractInfo } = companyIntractFilter; 
     const searchInput = useRef(null);
     const [name, setName] = useState(false);
+    const [ciLicenseId, setciLicenseId] = useState([]);
     const [openPopup, setOpenPopup] = useState(false); 
     const [pageTitle, setPageTitle] = useState('');
     const [modalWidth, setModalWidth] = useState();
@@ -195,10 +191,6 @@ const Companyinteractionlicense = () => {
         // dispatch(branchGet());
         dispatch(companyTableGet());
         dispatch(licenseCompanyInteractionGetOnCreate());
-        // dispatch(checklistGetAll());
-        // dispatch(checklistGetApprove());
-        // dispatch(checklistGetOnreject());
-        
     },[dispatch])
     // const getBbranch = (company) => {
     //     const elementcompanybranch = myElementRefCompany.current;
@@ -210,10 +202,11 @@ const Companyinteractionlicense = () => {
     // alert('Companyinteractionlicense====beforeuseEffect')
     // alert(companyInteractionLGetOnCreateInfo?.length);
     useEffect(() => {
-        //  alert('2')
         let companyInteractionlicenseArr = [];
+        let cilarr = [];
           if (typeof (companyInteractionLGetOnCreateInfo) !== 'undefined' && companyInteractionLGetOnCreateInfo?.length > 0 ) {
               companyInteractionLGetOnCreateInfo.map((item, index) => {
+                cilarr.push(item._id);
                 companyInteractionlicenseArr.push({
                     key:index+1,
                     id: item._id,
@@ -226,46 +219,40 @@ const Companyinteractionlicense = () => {
                 })
             });
           }
+          setciLicenseId(cilarr);
           setDataSource(companyInteractionlicenseArr);
       },[companyInteractionLGetOnCreateInfo])
+      console.log(ciLicenseId);
       const resetForm = () => {
         // alert(state)
-         setState('');
+        //  setState('');
          setCompany('');
-         setDateUpdate('');
-         setBranch('');
+        //  setDateUpdate('');
+        //  setBranch('');
     }
-    // useEffect(() => {
-    //      resetForm();
-    // },[checklistInfoOnCreate])
-      // useEffect(() => {
-      //   //  alert('2')
-      //   let checklistOnCreateFilterArr = [];
-      //     if (typeof (checklistInfoFilter) !== 'undefined' && checklistInfoFilter?.length > 0 ) {
-      //         //alert(categoryInfo?.length);
-      //         checklistInfoFilter.map((item, index) => {
-      //           checklistOnCreateFilterArr.push({
-      //             key:index+1,
-      //             id: item._id,
-      //             state:item.state,
-      //             compliance: item.compliance,
-      //             rule:<div className='new-line'>{item.rule}</div>,
-      //             category:item.category,
-      //             question:<div className='new-line'>{item.question}</div>,
-      //             description:<div className='new-line'>{item.description}</div>,
-      //             image:<a href={item.image} target="_blank">Form</a>,
-      //             documents:<a href={item.documents} target="_blank">Document</a>,
-      //             frequency:item.frequency,
-      //             branchname:item.branchname,
-      //             risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-      //             created_at:formatDate(item.created_at),
-      //             approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-      //             executive:name?'admin':item.executive,
-      //           })
-      //       });
-      //     }
-      //     setDataSource(checklistOnCreateFilterArr);
-      // },[checklistInfoFilter])
+    useEffect(() => {
+         resetForm();
+    },[companyInteractionLGetOnCreateInfo])
+      useEffect(() => {
+        //  alert('2')
+        let companyLicIntractFilterArr = [];
+          if (typeof (companyFilterInteractInfo) !== 'undefined' && companyFilterInteractInfo?.length > 0 ) {
+              //alert(categoryInfo?.length);
+              companyFilterInteractInfo.map((item, index) => {
+                companyLicIntractFilterArr.push({
+                  key:index+1,
+                  id: item._id,
+                  licenseTitle:item.licenseTitle,
+                  image:<a href={item.licenseUpload} target="_blank">Upload</a>,
+                  activatedDate:formatDate(item.activatedDate),
+                  renewalDate:formatDate(item.renewalDate),
+                  expiryDate:formatDate(item.expiryDate),
+                  details:(item.details),
+                })
+            });
+          }
+          setDataSource(companyLicIntractFilterArr);
+      },[companyFilterInteractInfo])
       const formatDate = (currentDate) => {
         const dates = new Date(currentDate);
         const year = dates.getFullYear();
@@ -362,47 +349,28 @@ const Companyinteractionlicense = () => {
           }, 
       }, 
   ];
-    // const calling = () =>{
-    //     setTimeout(() => {
-    //         // dispatch(checklistGetAll());
-    //     }, 2000);
-    // }
-    // const callingcreate = () => {
-    //     setTimeout(() => {
-    //         // dispatch(checklistGetonCreate());
-    //     }, 2000);
-    // }
-    // const callingapprove = () => {
-    //     // alert('asas')
-    //     setTimeout(() => {
-    //         // dispatch(checklistGetApprove());
-    //     }, 2000);
-    // } 
-    // const callingrejected = () => {
-    //     setTimeout(() => {
-    //         // dispatch(checklistGetOnreject());
-    //     }, 2000);
-    // }
     const saveandapprove = () => {
         const postBody = {
             approvedate: defaultDate,
-            status:1
+            status:1,
+            id:ciLicenseId
         }
-        // dispatch(checklistSaveandApprove(postBody));//relodreport
+        dispatch(saveandapporveCompanyInteractionLicense(postBody));//relodreport
         relodreport();
     }
     const filter = () => {
-        const elementstate = myElementRefState.current;
+        // const elementstate = myElementRefState.current;
         const elementcompany = myElementRefCompany.current;
-        const elementbranch = myElementRefBranch.current;
-        const elementdate = myElementRefDate.current;
+        // const elementbranch = myElementRefBranch.current;
+        // const elementdate = myElementRefDate.current;
         const postBody = {
-            created_at:elementdate.value,
-            state:elementstate.value,
+            // created_at:elementdate.value,
+            // state:elementstate.value,
             company:elementcompany.value,
-            branch:elementbranch.value
+            // branch:elementbranch.value
         }
-        // dispatch(checklistCreateFilters(postBody));
+        dispatch(licenseCompanyIntractFilter(postBody));
+        relodreport();
     }  
     return (
     <React.Fragment>
@@ -428,7 +396,7 @@ const Companyinteractionlicense = () => {
                     <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                     <option value="">Select Branch</option>
                     {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                        <option value={item._id}>{item.name}</option>
+                        <option value={item.id}>{item.name}</option>
                     )};
                     
                     </select>
@@ -439,7 +407,7 @@ const Companyinteractionlicense = () => {
                 
                 <div className="col-12 col-lg-12">
                     <div className="card p-3 position-relative h-100">
-                    {loadingcil && <Loading />}    
+                    {(loadingcil || loadingcompanyintract )&& <Loading />}    
                     <Table columns={columns} dataSource={dataSource} style={{ overflow:'-moz-hidden-unscrollable' }} pagination={{ pageSize: 4, /*total: 50,*/ showSizeChanger: false ,position: ["bottomCenter"],}} scroll={{ x: 1500 }} sticky={true}/>
                         <button className='btn btn-light border mb-2 text-decoration-none  bottom-10 start-30 ' style={{ width:'150px' }} onClick={() => openInPopupForAdd()}>  <AddCircleOutlineIcon /> Add More </button>
                         <Popup openPopup={openPopup} pageTitle={pageTitle} setOpenPopup={setOpenPopup} modalWidth={modalWidth}>

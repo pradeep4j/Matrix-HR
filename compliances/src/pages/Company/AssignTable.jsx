@@ -40,8 +40,8 @@ const AssignTable = () =>{
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
     // console.log(stateInfo);
-    const userGet = useSelector((state) => state.userGet);
-    const { usersInfo } = userGet;  
+    const getExecutive = useSelector((state) => state.getExecutive);
+    const { executiveInfo } = getExecutive;  
     const getBranch = useSelector((state) => state.getBranch);
     const { branchInfo } = getBranch; 
     const getCompney = useSelector((state) => state.getCompney);
@@ -73,16 +73,6 @@ const AssignTable = () =>{
         }, 3000);
         
     }  
-    useEffect(() => {
-      const saved = localStorage.getItem("userInfo");
-      if(saved){
-          const initialValue = JSON.parse(saved);
-          if(initialValue)
-          {
-          setName(initialValue.name);
-          }
-      }
-    },[usersInfo]);
     useEffect(() => {
       dispatch(stateGets());
       dispatch(executiveGet());
@@ -213,11 +203,11 @@ const AssignTable = () =>{
         const elementstate = myElementRefState.current;
         const elementcompany = myElementRefCompany.current;
         const elementbranch = myElementRefBranch.current;
-        const elementdate = myElementRefDate.current;
+        // const elementdate = myElementRefDate.current;
         const elementuser = myElementRefUser.current;
         // alert(elementbranch.value)
         const postBody = {
-            created_at:elementdate.value,
+            // created_at:elementdate.value,
             state:elementstate.value,
             company:elementcompany.value,
             branchname:elementbranch.value,
@@ -409,7 +399,7 @@ const AssignTable = () =>{
             <div className="row">
                 <div className="col-lg-12">    
                     <div className="row">
-                        <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
+                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-2 mb-md-2">
                             <label for="" class="form-label">Company</label>
                             <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter();getBbranch(e.target.value)}} required>
                                 <option value="">Select Company</option>
@@ -418,7 +408,7 @@ const AssignTable = () =>{
                                 )};
                         </select>
                         </div>
-                        <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
+                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-2 mb-md-2">
                             <label for="" class="form-label">State</label>
                             <select className="form-select" id="statesr" ref={myElementRefState} aria-label="Default select example"  name="state" value={state} onChange={(e)=>{setState(e.target.value);filter();}}>
                                     <option value="">Select State</option>
@@ -427,8 +417,8 @@ const AssignTable = () =>{
                                 )};
                             </select>
                         </div>
-                        <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
-                        <label for="cat" class="form-label">Branch *</label>
+                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-2 mb-md-2">
+                        <label for="cat" class="form-label">Branch </label>
                             <select className="form-select" ref={myElementRefBranch} aria-label="Default select example" id="branch" name="branch" onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                                 <option value="">Select Branch</option>
                                 {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
@@ -436,19 +426,19 @@ const AssignTable = () =>{
                                 )};
                             </select>
                         </div>
-                        <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
+                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-2 mb-md-2">
                             <label for="" class="form-label">Executive</label>
                             <select className="form-select" aria-label="Default select example" id="executives" name="executive" ref={myElementRefUser} value={executive} onChange={(e) => {setUser(e.target.value);filter();}} >
                                     <option value="">Select Executive</option>
-                                {usersInfo != 'undefind' && usersInfo?.length > 0 && usersInfo.map(item => 
+                                {executiveInfo != 'undefind' && executiveInfo?.length > 0 && executiveInfo.map(item => 
                                     <option value={item._id}>{item.userName}</option>
                                 )};
                             </select>
                         </div>
-                        <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
-                            <label for="" class="form-label">Rejected Date</label>
-                            <input type="date" id="rejected" ref={myElementRefDate} className="form-control" name="someName1" placeholder="Select a date" value={datereject} onChange={(e) => {setDateReject(e.target.value);filter();}}/>
-                        </div>
+                        {/* <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
+                            <label for="" class="form-label">Date</label>
+                            <input type="date" id="date" ref={myElementRefDate} className="form-control" name="date" placeholder="Select a date" value={date} onChange={(e) => {setDate(e.target.value);filter();}}/>
+                        </div> */}
                     </div>    
                     <div className="col-12 col-lg-12">
                       <div className="card p-3 ">

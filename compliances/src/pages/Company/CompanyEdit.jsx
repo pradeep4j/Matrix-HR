@@ -6,7 +6,7 @@ import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { categoryGet, stateGets, companytab1create, companytab2create, companytab3create, companytab4create,companytab5create,companytab6create,companytab7create,companyTableGet,licenseGetonCreate,companySaveandApprove,companyGettingById } from "../../store/actions/otherActions";
+import { categoryGet, stateGets, companytab1create, companytab2create, companytab3create, companytab4create,companytab5create,companytab6create,companytab7create,companyTableGet,licenseGetonCreate,SaveandApproveCompany,companyGettingById } from "../../store/actions/otherActions";
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -1190,7 +1190,7 @@ const CompanyEdit = (editId) => {
             approvedate: defaultDate,
             status:1
         }
-        dispatch(companySaveandApprove(postBody));//relodreport
+        dispatch(SaveandApproveCompany(postBody));//relodreport
         // relodreport();
     }
     return (
