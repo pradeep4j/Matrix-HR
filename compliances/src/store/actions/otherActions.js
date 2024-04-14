@@ -316,7 +316,13 @@ import {
     COMPANY_ASSIGN_FAIL_UPDATE_BYID,
     COMPANY_ASSIGN_ON_CREATE_GET_REQUEST,
     COMPANY_ASSIGN_ON_CREATE_GET_SUCCESS,
-    COMPANY_ASSIGN_ON_CREATE_CREATE_FAIL
+    COMPANY_ASSIGN_ON_CREATE_CREATE_FAIL,
+    COMPANY_ASSIGN_REQUEST_GET_FILTER,
+    COMPANY_ASSIGN_SUCCESS_GET_FILTER,
+    COMPANY_ASSIGN_GET_FAIL_FILTER,
+    COMPANY_ASSIGNA_REQUEST_GET_FILTER,
+    COMPANY_ASSIGNA_SUCCESS_GET_FILTER,
+    COMPANY_ASSIGNA_GET_FAIL_FILTER
 } from "../actiontypes/otherConstants";
 export const categoryCreate = (postbody) => async (dispatch) => {
         dispatch({ type: CATEGORY_REQUEST });
@@ -4928,4 +4934,80 @@ export const assignGetOnCreate = () => async (dispatch) => {
                         });                                         
                 });  
      
+}
+export const viewAllAssignedCompanyFilter = (postBody) => async (dispatch) => {
+        dispatch({ type: COMPANY_ASSIGN_REQUEST_GET_FILTER });
+                await viewAllAssignedCompanyFilter(postBody).then(response=>{
+                dispatch({ type: COMPANY_ASSIGN_SUCCESS_GET_FILTER, payload: response.data });    
+                if(response.status===200)
+                {
+                        // toast.success('Category is Added Successfully!', {
+                        //         position: "bottom-right",
+                        //         hideProgressBar: false,
+                        //         progress: undefined,
+                        // });
+                }
+                else
+                {
+                        dispatch({
+                                type: COMPANY_ASSIGN_GET_FAIL_FILTER,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: COMPANY_ASSIGN_GET_FAIL_FILTER,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                   
+                });  
+}
+export const assignedCompanyFilter = (postBody) => async (dispatch) => {
+        dispatch({ type: COMPANY_ASSIGNA_REQUEST_GET_FILTER });
+                await assignedCompanyFilter(postBody).then(response=>{
+                dispatch({ type: COMPANY_ASSIGNA_SUCCESS_GET_FILTER, payload: response.data });    
+                if(response.status===200)
+                {
+                        // toast.success('Category is Added Successfully!', {
+                        //         position: "bottom-right",
+                        //         hideProgressBar: false,
+                        //         progress: undefined,
+                        // });
+                }
+                else
+                {
+                        dispatch({
+                                type: COMPANY_ASSIGNA_GET_FAIL_FILTER,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: COMPANY_ASSIGNA_GET_FAIL_FILTER,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                   
+                });  
 }

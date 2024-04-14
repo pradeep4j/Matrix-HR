@@ -6778,7 +6778,7 @@ export const companyProfileFilter = async (request, response, next) => {
     try {
         const data = request.body
         const { company } = data
-        console.log(company);
+        // console.log(company);
         const matchStage = {};
         if(company !== undefined && company !== ""){
             matchStage['company'] = new mongoose.Types.ObjectId(company.toString())
@@ -7039,7 +7039,7 @@ export const companyLicenseIntractFilter = async (request, response, next) => {
                 }
             }
         ]);
-        console.log(filteredData);
+        // console.log(filteredData);
         response.status(200).json(filteredData)
     } catch (error) {
         next(error);
@@ -7301,5 +7301,167 @@ export const getAssignOnCreate = async (request, response, next) => {
         response.status(200).json(assigncompanyarr);
     } catch (error) {
         next(error);
+    }
+}
+export const viewAllAssignedCompanyFilter = async (request, response, next) => {
+    try {
+        const data = request.body
+        const { company, state, branch, executive } = data
+        const filters = { company, state, branch, executive }
+        let matchStage = {}
+        const filterKeys = Object.keys(filters).filter(key => filters[key] !== undefined && filters[key] !== "");
+
+        // Build match stage based on filters
+        console.log(filterKeys);
+        if (filterKeys.length > 0) {
+            for (const key of filterKeys) {
+                if (key === "company" || key === "state" || key === "executive") {
+                    matchStage[key] = new mongoose.Types.ObjectId(filters[key]);
+                }
+                else if (key === "branch") {
+                    matchStage[key] = branch
+                }
+            }
+        }
+
+        const filteredData = await Assigncompany.aggregate([
+            { $match: matchStage },
+            {
+                $lookup: {
+                    from: "states",
+                    localField: "state",
+                    foreignField: "_id",
+                    as: "stateData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "companydatas",
+                    localField: "company",
+                    foreignField: "_id",
+                    as: "companyData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "executive",
+                    foreignField: "_id",
+                    as: "executiveData"
+                }
+            },
+            {
+                // Project stage corrected with object wrapper
+                $project: {
+                    companyname: 1,
+                    created_at: 1,
+                    branchname: 1,
+                    companystate: { $arrayElemAt: ["$stateData.name", 0] },
+                    executive: {
+                        $concat: [
+                            { $arrayElemAt: ["$executiveData.firstName", 0] },
+                            " ",
+                            { $arrayElemAt: ["$executiveData.lastName", 0] }
+                        ]
+                    }
+                }
+            },
+        ])
+        if (filteredData.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    filteredData.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branch) {
+                            filteredItem.branchname = branch.name
+                        }
+                    })
+                })
+            })
+        }
+        response.status(200).json(filteredData)
+    } catch (error) {
+        next(error)
+    }
+}
+export const assignedCompanyFilter = async (request, response, next) => {
+    try {
+        const data = request.body
+        const { company, state, branch, executive } = data
+        const filters = { company, state, branch, executive }
+        let matchStage = {}
+        const filterKeys = Object.keys(filters).filter(key => filters[key] !== undefined && filters[key] !== "");
+
+        // Build match stage based on filters
+        console.log(filterKeys);
+        if (filterKeys.length > 0) {
+            for (const key of filterKeys) {
+                if (key === "company" || key === "state" || key === "executive") {
+                    matchStage[key] = new mongoose.Types.ObjectId(filters[key]);
+                }
+                else if (key === "branch") {
+                    matchStage[key] = branch
+                }
+            }
+        }
+
+        const filteredData = await Assigncompany.aggregate([
+            { $match: matchStage },
+            {
+                $lookup: {
+                    from: "states",
+                    localField: "state",
+                    foreignField: "_id",
+                    as: "stateData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "companydatas",
+                    localField: "company",
+                    foreignField: "_id",
+                    as: "companyData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "executive",
+                    foreignField: "_id",
+                    as: "executiveData"
+                }
+            },
+            {
+                // Project stage corrected with object wrapper
+                $project: {
+                    companyname: 1,
+                    created_at: 1,
+                    branchname: 1,
+                    companystate: { $arrayElemAt: ["$stateData.name", 0] },
+                    executive: {
+                        $concat: [
+                            { $arrayElemAt: ["$executiveData.firstName", 0] },
+                            " ",
+                            { $arrayElemAt: ["$executiveData.lastName", 0] }
+                        ]
+                    }
+                }
+            },
+        ])
+        if (filteredData.length > 0) {
+            const gettingCompany = await Companydata.find({})
+            gettingCompany.forEach(companyItem => {
+                companyItem.F1branch.forEach(branch => {
+                    filteredData.forEach(filteredItem => {
+                        if (branch.id === filteredItem.branch) {
+                            filteredItem.branchname = branch.name
+                        }
+                    })
+                })
+            })
+        }
+        response.status(200).json(filteredData)
+    } catch (error) {
+        next(error)
     }
 }

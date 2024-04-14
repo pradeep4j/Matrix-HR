@@ -9,7 +9,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import { Button, Input, Space, Table ,Modal,Form,message, Checkbox} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {stateGets,branchGet,executiveGet,companyTableGet,assignGetTable,assignGetOnCreate} from "../../store/actions/otherActions";
+import {stateGets,branchGet,executiveGet,companyTableGet,assignGetTable,assignGetOnCreate,assignedCompanyFilter} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 // import ChecklistPopup from './ChecklistPopup';
 import Loading from '../../components/layout/Loading';
@@ -95,8 +95,8 @@ const Assigncompanies = () => {
     const {loadingcagoc,companyAssignGetOnCreateInfo } = companyGetAssignOnCreate;
     const getAuditor = useSelector((state) => state.getAuditor);
     const { auditorInfo } = getAuditor; 
-    const onCreateChecklistAudit = useSelector((state) => state.onCreateChecklistAudit);
-    const { loadingoncreate,auditorChecklistInfoOncreate } = onCreateChecklistAudit; 
+    const companyAssignF = useSelector((state) => state.companyAssignF);
+    const { loadingcompanyaf,companyFilterAAInfo } = companyAssignF;
     const getCompanyTable = useSelector(state => state.getCompanyTable)
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     useEffect(()=>{
@@ -137,6 +137,24 @@ const Assigncompanies = () => {
     }
       setDataSource(companyAssignGetOnCreateArr);
     },[companyAssignGetOnCreateInfo])
+    useEffect(()=>{
+      let companyAssignArr = [];
+      if(companyFilterAAInfo!==undefined && companyFilterAAInfo.length>0)
+      {
+        companyFilterAAInfo.map((item, index) => {
+          companyAssignArr.push({
+          key:index+1,
+          id: item._id,
+          company:item.company,
+          state:item.state,
+          branchname: item.branchname,
+          executive:item.executive,
+          assigndate:formatDate(item.assigndate),
+        })
+      })
+    }
+      setDataSource(companyAssignArr);
+    },[companyFilterAAInfo])
     const formatDate = (currentDate) => {
       const dates = new Date(currentDate);
       const year = dates.getFullYear();
@@ -173,7 +191,7 @@ const Assigncompanies = () => {
             company:elementcompany.value,
             branch:elementbranch.value
         }
-        // dispatch(checklistCreateFilters(postBody));
+        dispatch(assignedCompanyFilter(postBody));
     }  
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();

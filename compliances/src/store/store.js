@@ -109,7 +109,9 @@ import {
         companyAssignTableReducer,
         companyAssignUpdateByIdReducer,
         companyAssignGetOnCreateReducer,
-        companyLFilterReducer
+        companyLFilterReducer,
+        companyViewAllAssignFilterReducer,
+        companyAssignFilterReducer
 } from './reducers/otherReducers';  // imporeting auth user reducers
 
 const reducer = combineReducers({
@@ -216,7 +218,9 @@ const reducer = combineReducers({
         companyGetByIdeAssign:companyAssignGetByIdReducer,
         companyAssignTable:companyAssignTableReducer,
         companyaissiguById:companyAssignUpdateByIdReducer,
-        companyGetAssignOnCreate:companyAssignGetOnCreateReducer
+        companyGetAssignOnCreate:companyAssignGetOnCreateReducer,
+        compamyVAAFilter:companyViewAllAssignFilterReducer,
+        companyAssignF:companyAssignFilterReducer
         
 });
 

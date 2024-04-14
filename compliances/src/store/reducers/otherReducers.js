@@ -313,7 +313,13 @@ import {
     COMPANY_ASSIGN_FAIL_UPDATE_BYID,
     COMPANY_ASSIGN_ON_CREATE_GET_REQUEST,
     COMPANY_ASSIGN_ON_CREATE_GET_SUCCESS,
-    COMPANY_ASSIGN_ON_CREATE_CREATE_FAIL
+    COMPANY_ASSIGN_ON_CREATE_CREATE_FAIL,
+    COMPANY_ASSIGN_REQUEST_GET_FILTER,
+    COMPANY_ASSIGN_SUCCESS_GET_FILTER,
+    COMPANY_ASSIGN_GET_FAIL_FILTER,
+    COMPANY_ASSIGNA_REQUEST_GET_FILTER,
+    COMPANY_ASSIGNA_SUCCESS_GET_FILTER,
+    COMPANY_ASSIGNA_GET_FAIL_FILTER
     } from "../actiontypes/otherConstants";
 export const auditorReducer = (state= {}, action) => {
         switch(action.type) {
@@ -1155,6 +1161,24 @@ export const companyAssignGetOnCreateReducer = (state= {}, action) => {
                 case COMPANY_ASSIGN_ON_CREATE_GET_REQUEST: return { loadingcagoc:true };
                 case COMPANY_ASSIGN_ON_CREATE_GET_SUCCESS: return { loadingcagoc:false, companyAssignGetOnCreateInfo: action.payload };
                 case COMPANY_ASSIGN_ON_CREATE_CREATE_FAIL: return { loadingcagoc:false, error: action.payload };
+                default: return state;
+        }
+}
+export const companyViewAllAssignFilterReducer = (state= {}, action) => {
+        switch(action.type) {
+                case COMPANY_ASSIGN_REQUEST_GET_FILTER: return { loadingcompanyava:true };
+                case COMPANY_ASSIGN_SUCCESS_GET_FILTER
+                : return { loadingcompanyava:false, companyFilterVAAInfo: action.payload };
+                case COMPANY_ASSIGN_GET_FAIL_FILTER: return { loadingcompanyava:false, error: action.payload };
+                default: return state;
+        }
+}
+export const companyAssignFilterReducer = (state= {}, action) => {
+        switch(action.type) {
+                case COMPANY_ASSIGNA_REQUEST_GET_FILTER: return { loadingcompanyaf:true };
+                case COMPANY_ASSIGNA_SUCCESS_GET_FILTER
+                : return { loadingcompanyaf:false, companyFilterAAInfo: action.payload };
+                case COMPANY_ASSIGNA_GET_FAIL_FILTER: return { loadingcompanyaf:false, error: action.payload };
                 default: return state;
         }
 }

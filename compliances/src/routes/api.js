@@ -1044,4 +1044,25 @@ export const getAssignOnCreate = async() => {
     }
     return await axios.get(`${URL}/getAssignOnCreate`,config);
 }
+
+export const viewAllAssignedCompanyFilter = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    return await axios.post(`${URL}/viewAllAssignedCompanyFilter`,data,config);
+}
+export const assignedCompanyFilter = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    return await axios.post(`${URL}/assignedCompanyFilter`,data,config);
+}
 ///api of users endcomplianceReject
