@@ -6530,12 +6530,14 @@ export const companyLicenseFilter = async (request, response, next) => {
     try {
         const data = request.body;
         const { company } = data;
-
+        const matchStage = {};
+        if(company !== undefined && company !== ""){
+            matchStage['company'] = new mongoose.Types.ObjectId(company.toString())
+        }
+        // console.log(matchStage);return;
         const filteredData = await License.aggregate([
             {
-                $match: {
-                    "_id": new mongoose.Types.ObjectId(company)
-                }
+                $match: matchStage
             },
             {
                 $project: {
@@ -6777,11 +6779,13 @@ export const companyProfileFilter = async (request, response, next) => {
         const data = request.body
         const { company } = data
         console.log(company);
+        const matchStage = {};
+        if(company !== undefined && company !== ""){
+            matchStage['company'] = new mongoose.Types.ObjectId(company.toString())
+        }
         const filteredData = await Companyprofile.aggregate([
             {
-                $match: {
-                    "_id": new mongoose.Types.ObjectId(company.toString())
-                }
+                $match: matchStage
             },
             {
                 $project: {
@@ -6795,7 +6799,7 @@ export const companyProfileFilter = async (request, response, next) => {
         console.log(filteredData);
         response.status(200).json(filteredData)
     } catch (error) {
-
+        next(error);
     }
 }
 
@@ -7016,13 +7020,13 @@ export const companyLicenseIntractFilter = async (request, response, next) => {
     try {
         const data = request.body;
         const { company } = data;
-
-        // Perform aggregation
+        const matchStage = {};
+        if(company !== undefined && company !== ""){
+            matchStage['company'] = new mongoose.Types.ObjectId(company.toString())
+        }
         const filteredData = await Companylicenses.aggregate([
             {
-                $match: {
-                    "_id": new mongoose.Types.ObjectId(company)
-                }
+                $match: matchStage
             },
             {
                 $project: {

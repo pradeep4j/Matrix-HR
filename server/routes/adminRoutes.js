@@ -101,7 +101,7 @@ router.post('/createCompany',upload.any(),protectRoute, createCompany);
 router.get('/gettingCompany',protectRoute, gettingCompany);
 router.get('/gettingCompanyTable',protectRoute, gettingCompanyTable);
 router.get('/gettingCompanyById/:id',protectRoute, gettingCompanyById);
-router.patch('/companySaveandApprove',protectRoute, companySaveandApprove);//remem
+// router.patch('/companySaveandApprove',protectRoute, companySaveandApprove);//remem
 router.post('/companyLcreate',upload.any(),protectRoute, companyLcreate);
 router.get('/companyLById/:id',protectRoute, companyLById);
 router.put('/companyLUpdateById/:id',upload.any(),protectRoute, companyLUpdateById);

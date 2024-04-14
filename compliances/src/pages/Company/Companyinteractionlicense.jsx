@@ -370,7 +370,7 @@ const Companyinteractionlicense = () => {
             // branch:elementbranch.value
         }
         dispatch(licenseCompanyIntractFilter(postBody));
-        relodreport();
+        // relodreport();
     }  
     return (
     <React.Fragment>

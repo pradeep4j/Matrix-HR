@@ -30,10 +30,6 @@ const CompanyinteractionForm = () => {
     // const { branchInfo } = getBranch; 
     const getCompanyTable = useSelector(state => state.getCompanyTable)
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
-    // const checklistGet = useSelector((state) => state.checklistGet);
-    // const { checklistGetInfo } = checklistGet;
-    // const checklist = useSelector((state) => state.checklist);
-    // const { loadingChecklist,checklistInfo } = checklist; 
     const companyinteractTableGet = useSelector((state) => state.companyinteractTableGet);
     const { loadingcit,companyinteractionTableGetInfo } = companyinteractTableGet; 
      console.log(companyinteractionTableGetInfo);
@@ -274,18 +270,6 @@ const CompanyinteractionForm = () => {
           }
           setDataSource(companyProfilterArr);
       },[companyFilterInteractProfileInfo])
-      const formatDate = (currentDate) => {
-        const dates = new Date(currentDate);
-        const year = dates.getFullYear();
-        const month = String(dates.getMonth() + 1).padStart(2, '0');
-        const date = String(dates.getDate()).padStart(2, '0');
-        const hours = String(dates.getHours()).padStart(2, '0');
-        const minutes = String(dates.getMinutes()).padStart(2, '0');
-        const seconds = String(dates.getSeconds()).padStart(2, '0');
-  
-        const formattedDateTime = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
-        return (formattedDateTime);
-    }
     const columns = [
         {
           title: 'Sr. No.',
@@ -363,10 +347,10 @@ const CompanyinteractionForm = () => {
         relodreport();
     }
     const filter = () => {
-        const elementstate = myElementRefState.current;
+        // const elementstate = myElementRefState.current;
         const elementcompany = myElementRefCompany.current;
-        const elementbranch = myElementRefBranch.current;
-        const elementdate = myElementRefDate.current;
+        // const elementbranch = myElementRefBranch.current;
+        // const elementdate = myElementRefDate.current;
         const postBody = {
             // created_at:elementdate.value,
             // state:elementstate.value,
@@ -374,16 +358,16 @@ const CompanyinteractionForm = () => {
             // branch:elementbranch.value
         }
         dispatch(profileCompanyFilter(postBody));
-        relodreport();
+        // relodreport();
     }  
     return (
     <React.Fragment>
         <div className="col-lg-12">
             <div className="row">
                 <div className="col-md-12  mb-2 col-lg-12 col-lg-12">
-                  <select className="form-select" aria-label="Default select example" id="companies" name="company" ref={myElementRefCompany} value={company} onChange={(e)=>{setCompany(e.target.value);filter();getBbranch(e.target.value)}} required>
+                  <select className="form-select" aria-label="Default select example" id="companies" name="company" ref={myElementRefCompany} value={company} onChange={(e)=>{setCompany(e.target.value);filter();/*getBbranch(e.target.value)*/}} required>
                           <option value="">Select Company</option>
-                          {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                          {companyGetTableInfo != undefined && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
                             <option value={item._id}>{item.companyname}</option>
                           )};
                   </select>
@@ -411,7 +395,7 @@ const CompanyinteractionForm = () => {
                 
                 <div className="col-12 col-lg-12">
                     <div className="card p-3 position-relative h-100">
-                    {loadingcit && <Loading />}    
+                    {(loadingcit || loadingcompanyintract) && <Loading />}    
                     <Table columns={columns} dataSource={dataSource} style={{ overflow:'-moz-hidden-unscrollable' }} pagination={{ pageSize: 4, /*total: 50,*/ showSizeChanger: false ,position: ["bottomCenter"],}} scroll={{ x: 1100 }} sticky={true}/>
                         <button className='btn btn-light border mb-2 text-decoration-none  bottom-10 start-30 ' style={{ width:'150px' }} onClick={() => openInPopupForAdd()}>  <AddCircleOutlineIcon /> Add More </button>
                         <Popup openPopup={openPopup} pageTitle={pageTitle} setOpenPopup={setOpenPopup} modalWidth={modalWidth}>
