@@ -6,18 +6,19 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Highlighter from 'react-highlight-words';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
+import { Button, Input, Space, Table ,Modal,Form,message, Checkbox} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 import CompliancePopupEdit from './CompliancePopupEdit';
 import Popup from "../../components/Popup";
-import {compliancesGet,compliancesReject,usersGet,stateGets,compliancesApproveFilter,compliancesSaveandApprove} from "../../store/actions/otherActions";
+import {compliancesGet,compliancesReject,usersGet,stateGets,compliancesApproveFilter,compliancesSaveandApprove,companyTableGet} from "../../store/actions/otherActions";
 import Loading from '../../components/layout/Loading';
 
 const ComplianceApprove = () =>{
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const searchInput = useRef(null);
+    const [selectedRows, setSelectedRows] = useState([]);
     const [openPopup, setOpenPopup] = useState(false);
     const [pageTitle, setPageTitle] = useState('');
     const [modalWidth, setModalWidth] = useState();
@@ -29,8 +30,10 @@ const ComplianceApprove = () =>{
     const [showTable1, setShowTable1] = useState(true);
     const [state, setState] = useState('');
     const [executive, setUser] = useState('');
+    const [name, setName] = useState(false);
     //const [loading, setLoading] = useState(false);
     let defaultDate = new Date()
+    let selectedRowIds = [];
     // defaultDate.setDate(defaultDate.getDate() )
     //alert(clickvalue)
     //const [date, setDate] = useState(defaultDate)
@@ -71,13 +74,27 @@ const ComplianceApprove = () =>{
         
     }  
     useEffect(() => {
-        setShowTable1(showTable1);
+      const saved = localStorage.getItem("userInfo");
+      if(saved){
+          const initialValue = JSON.parse(saved);
+          if(initialValue)
+          {
+          setName(initialValue.name);
+          }
+      }
+    },[usersInfo]);
+    useEffect(() => {
+        // setShowTable1(showTable1);
         dispatch(compliancesGet());
         dispatch(stateGets());
         dispatch(usersGet());
+        dispatch(companyTableGet());
     },[dispatch])
     useEffect(() => {
       setShowTable1(showTable1);
+      if(showTable1===false){
+        toggleTables();
+      }
       let complianceArrAll = [];
         if (typeof (complianceInfo) !== 'undefined' && complianceInfo?.length > 0 ) {
             //alert(categoryInfo?.length);
@@ -95,15 +112,17 @@ const ComplianceApprove = () =>{
                 docattachment:<a href={item.docattachment} target="_blank">Document</a>,
                 compliancetype:item.compliancetype,
                 recurrence:item.frequency,
-                risk:item.risk,
+                risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 duedate:item.duedate !=null ? formatDate(item.duedate):item.duedate,
+                updated_at:item.updated_at !=null ? formatDate(item.updated_at):item.updated_at,
+                executive:name?'admin':item.executive,
               })
           });
         }
         setDataSource(complianceArrAll);
     },[complianceInfo])
     const resetForm = () => {
-        // alert(state)
+      setSelectedRows([]);
          setState('');
          setDate('');
          setUser('');
@@ -112,7 +131,10 @@ const ComplianceApprove = () =>{
         resetForm();
     },[complianceInfo])
     useEffect(() => {
-        setShowTable1(showTable1);
+      setShowTable1(showTable1);
+      if(showTable1===false){
+        toggleTables();
+      }
         let complianceApproveFilterArr = [];
           if (typeof (complianceApproveFilterInfo) !== 'undefined' && complianceApproveFilterInfo?.length > 0 ) {
               //alert(categoryInfo?.length);
@@ -130,8 +152,10 @@ const ComplianceApprove = () =>{
                   docattachment:<a href={item.docattachment} target="_blank">Document</a>,
                   compliancetype:item.compliancetype,
                   recurrence:item.frequency,
-                  risk:item.risk,
+                  risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'red' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   duedate:item.duedate !=null ? formatDate(item.duedate):item.duedate,
+                  updated_at:item.updated_at !=null ? formatDate(item.updated_at):item.updated_at,
+                  executive:name?'admin':item.executive,
                 })
             });
           }
@@ -257,27 +281,95 @@ const ComplianceApprove = () =>{
             text
           ),
       });
+    selectedRowIds = selectedRows.map((row) => row.id);
+    console.log(selectedRowIds);  
     const callingapprove = () => {
         // alert('asas')
         setTimeout(() => {
             dispatch(compliancesGet());
         }, 2000);
     } 
+    ////Reject modal handling functions start
+    const [visible, setVisible] = useState(false);
+    const [formData, setFormData] = useState({
+      username: '',
+    });
+    const [errors, setErrors] = useState({});
+  
+    const showModal = () => {
+      if (selectedRows.length === 0) {
+        Modal.error({
+          title: 'Error',
+          content: 'Please select at least one checklist from list.',
+        });
+        // <Alert
+        //   message="Error"
+        //   description="Please select at least one item from list."
+        //   type="error"
+        //   showIcon
+        // />
+        return;
+      }
+      setVisible(true);
+    };
+  
+    const handleCancel = () => {
+      setVisible(false);
+    };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      };
+    
+      const handleSubmitModal = (e) => {
+        e.preventDefault();
+        
+        const postBody = {
+          rejected_at: defaultDate,
+          status:2,
+          reason:reason,
+          id:selectedRowIds
+      }
+      dispatch(compliancesReject(postBody));//relodreport
+      relodreport();
+        console.log('Form submitted:', formData);
+        setVisible(false);
+      };
+    
+    ////Reject modal handling functions ends
     const reject = () => {
         const postBody = {
             rejected_at: defaultDate,
             status:2,
-            reason:reason
+            reason:reason,
+            id:selectedRowIds
         }
-        dispatch(compliancesReject(postBody));//relodreport
-        relodreport();
+        // dispatch(compliancesReject(postBody));//relodreport
+        // relodreport();
     }     
     const saveandapprove = () => {
+      if (selectedRows.length === 0) {
+        Modal.error({
+          title: 'Error',
+          content: 'Please select at least one checklist from list.',
+        });
+        // <Alert
+        //   message="Error"
+        //   description="Please select at least one item from list."
+        //   type="error"
+        //   showIcon
+        // />
+        return;
+      }
       const postBody = {
           duedate: defaultDate,
-          status:1
+          status:1,
+          id:selectedRowIds
       }
-      //dispatch(compliancesSaveandApprove(postBody));//relodreport
+      dispatch(compliancesSaveandApprove(postBody));//relodreport
       relodreport();
 }
     const filter = () => {
@@ -289,12 +381,58 @@ const ComplianceApprove = () =>{
       }
       dispatch(compliancesApproveFilter(postBody));
     }
+    const handleSelectAllRows = (checked) => {
+      if (checked) {
+        setSelectedRows(dataSource);
+      } else {
+        setSelectedRows([]);
+      }
+    };
+  
+    const handleDeselectAllRows = () => {
+      setSelectedRows([]);
+    };
+  
+    const handleCheckboxChange = (e, record) => {
+      const { checked } = e.target;
+      setSelectedRows((prevSelectedRows) => {
+        if (checked) {
+          return [...prevSelectedRows, record];
+        } else {
+          return prevSelectedRows.filter((row) => row.id !== record.id);
+        }
+      });
+    };
+  
+    const isSelected = (record) => {
+      return selectedRows && selectedRows.some((row) => row.id === record.id);
+    };
     const columns = [
+      {
+        title: (
+            <Checkbox
+                onChange={(e) =>
+                    e.target.checked
+                    ? handleSelectAllRows(e.target.checked)
+                    : handleDeselectAllRows()
+                }
+                />
+          ),
+          dataIndex: 'checkbox',
+          key: 'checkbox',
+          width: 20,
+          render: (text, record) => (
+            <Checkbox
+              onChange={(e) => handleCheckboxChange(e, record)}
+              checked={isSelected(record)}
+            />
+          ),
+        },
         {
           title: 'Sr. No.',
           dataIndex: 'key',
           key: 'key',
-          width: 70,
+          width: 40,
          // ...getColumnSearchProps('key'),
          // sorter: (a, b) => a.key.length - b.key.length,
          // sortDirections: ['descend', 'ascend']
@@ -309,61 +447,7 @@ const ComplianceApprove = () =>{
             // sortDirections: ['descend', 'ascend']
         },
         {
-            title: 'Act',
-            dataIndex: 'act',
-            key: 'act',
-            width: 100,
-            // ...getColumnSearchProps('act'),
-            // sorter: (a, b) => a.act.length - b.act.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Rule',
-            dataIndex: 'rule',
-            key: 'rule',
-            width: 200,
-            // ...getColumnSearchProps('rule'),
-            // sorter: (a, b) => a.rule.length - b.rule.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Category',
-            dataIndex: 'category',
-            key: 'category',
-            width: 100,
-            // ...getColumnSearchProps('category'),
-            // sorter: (a, b) => a.category.length - b.category.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Question',
-            dataIndex: 'question',
-            key: 'question',
-            width: 300,
-            // ...getColumnSearchProps('question'),
-            // sorter: (a, b) => a.question.length - b.question.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Description',
-            dataIndex: 'description',
-            key: 'description',
-            width: 300,
-            // ...getColumnSearchProps('question'),
-            // sorter: (a, b) => a.question.length - b.question.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Form',
-            dataIndex: 'form',
-            key: 'form',
-            width: 100,
-        //    ...getColumnSearchProps('image'),
-         //   sorter: (a, b) => a.image.length - b.image.length,
-         //   sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Document',
+            title: 'URL/Link',
             dataIndex: 'docattachment',
             key: 'docattachment',
             width: 100,
@@ -372,50 +456,33 @@ const ComplianceApprove = () =>{
            // sortDirections: ['descend', 'ascend']
         },
         {
-            title: 'Compliance Type',
-            dataIndex: 'compliancetype',
-            key: 'compliancetype',
-            width: 70,
-           // ...getColumnSearchProps('documents'),
-           // sorter: (a, b) => a.image.length - b.image.length,
-           // sortDirections: ['descend', 'ascend']
-        },      
-        {
-            title: 'Recurrence',
-            dataIndex: 'recurrence',
-            key: 'recurrence',
-            width: 70,
-           // ...getColumnSearchProps('documents'),
-           // sorter: (a, b) => a.image.length - b.image.length,
-           // sortDirections: ['descend', 'ascend']
-        },     
-        {
-            title: 'Risk',
-            dataIndex: 'risk',
-            key: 'risk',
-            width: 70,
-           ...getColumnSearchProps('risk'),
-           sorter: (a, b) => a.risk.length - b.risk.length,
-           sortDirections: ['descend', 'ascend']
-        },   
-        {
-            title: 'Due Date',
-            dataIndex: 'duedate',
-            key: 'duedate',
+          title: 'Last Updated Date',
+          dataIndex: 'updated_at',
+          key: 'updated_at',
+          width: 100,
+          // ...getColumnSearchProps('createdAt'),
+          // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
+          // sortDirections: ['descend', 'ascend']
+      }, 
+      {
+          title: 'Executive',
+          dataIndex: 'executive',
+          key: 'executive',
+          width: 100,
+          // ...getColumnSearchProps('executive'),
+          // sorter: (a, b) => a.executive.length - b.executive.length,
+          // sortDirections: ['descend', 'ascend']
+      }, 
+        { 
+            key: "action", 
+            title: "Actions", 
             width: 100,
-            // ...getColumnSearchProps('createdAt'),
-            // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        // { 
-        //     key: "action", 
-        //     title: "Actions", 
-        //     width: 100,
-        //     render: (record) => { 
-        //         //console.log(JSON.stringify(record))
-        //       return (
-        //         <>
-        //           <Link id="editlink" className='text-white btn btn-primary text-decoration-none mx-2' onClick={() => openInPopupForUpdate(record)}> Edit <EditIcon fontSize='mediam' /> </Link>
+            render: (record) => { 
+                //console.log(JSON.stringify(record))
+              return (
+                <>
+                <Link className='text-white btn btn-dark text-decoration-none' onClick={toggleTables}> View <VisibilityOffIcon fontSize='mediam' /></Link>
+                  <Link id="editlink" className='text-white btn btn-primary text-decoration-none mx-2' onClick={() => openInPopupForUpdate(record)}> Edit <EditIcon fontSize='mediam' /> </Link></>
         //           {/* <DeleteOutlined
         //             onClick={(e) => {
         //             //   onDeleteUer(record);
@@ -423,11 +490,31 @@ const ComplianceApprove = () =>{
         //             style={{ color: "red", marginLeft: 12 }}
         //           /> */}
         //         </>
-        //       );
-        //     }, 
-        // }, 
+              );
+            }, 
+        }, 
     ]; 
     const columns1 = [
+      {
+        title: (
+            <Checkbox
+                onChange={(e) =>
+                    e.target.checked
+                    ? handleSelectAllRows(e.target.checked)
+                    : handleDeselectAllRows()
+                }
+                />
+          ),
+          dataIndex: 'checkbox',
+          key: 'checkbox',
+          width: 20,
+          render: (text, record) => (
+            <Checkbox
+              onChange={(e) => handleCheckboxChange(e, record)}
+              checked={isSelected(record)}
+            />
+          ),
+        },
         {
           title: 'Sr. No.',
           dataIndex: 'key',
@@ -565,8 +652,10 @@ const ComplianceApprove = () =>{
             }, 
         }, 
     ]; 
+    
     return (
         <React.Fragment>
+          <>
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
@@ -595,10 +684,10 @@ const ComplianceApprove = () =>{
                         <input type="date" ref={myElementRefDate} className="form-control" id="dates" placeholder='Date' value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                     </div>
                     <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                        <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={complianceInfo != undefined && complianceInfo?.length==0 } onClick={saveandapprove}>Save And Apporove</button>
+                        <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={complianceInfo != undefined && complianceInfo?.length==0 } onClick={saveandapprove}>Save And Approve</button>
                     </div>
                     <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                        <button type="submit" className="w-100 btn btn-danger" onClick={reject} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Reject</button>
+                        <button type="submit" className="w-100 btn btn-danger" /*onClick={reject}*/ onClick={showModal} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Reject</button>
                     </div>
                     <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                         <button type="submit" className="w-100 btn btn-primary" onClick={toggleTables} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Edit</button>
@@ -607,11 +696,11 @@ const ComplianceApprove = () =>{
                         <div className="card p-3 ">
                             <div className="table-responsive">
                             {loadingg && <Loading />}
-                            {/* {showTable1 ? (
-                                    <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false,position: ["bottomCenter"], }}  scroll={{ x: 3500 }} sticky={true}/>
-                                ) : ( */}
+                                {showTable1 ? (
+                                    <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false,position: ["bottomCenter"], }}  scroll={{ x: 1300 }} sticky={true}/>
+                                ) : (
                                     <Table dataSource={dataSource} columns={columns1} pagination={{ pageSize: 4, showSizeChanger: false,position: ["bottomCenter"], }}  scroll={{ x: 3500 }} sticky={true}/>
-                                {/* )} */}
+                                )}
                                  <Popup openPopup={openPopup} pageTitle={pageTitle} setOpenPopup={setOpenPopup} modalWidth={modalWidth}>
                                                     {(openPopup) && <CompliancePopupEdit addOrEdit={(e) => addOrEdit(e)} recordForEdit={recordForEdit} />}
                                       </Popup>
@@ -623,6 +712,39 @@ const ComplianceApprove = () =>{
             </div>
             </div>
             </div>
+            <div>
+      <Modal
+        title={<span style={{ color: 'red', fontWeight: 'bold' }}>Reason</span>}
+        visible={visible}
+        onCancel={handleCancel}
+        footer={null}
+        width="30%"
+      >
+        <form onSubmit={handleSubmitModal}>
+          <div>
+            <label htmlFor="reason">Reason:</label>
+            <textarea
+              type="text"
+              id="reason"
+              name="reason"
+              class="form-control"
+              row="4"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              required
+            />
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <button key="cancel" onClick={handleCancel} style={{ width: '170px', backgroundColor: '#050505', color: 'white', borderRadius: '5%', border: 'none', marginRight: '10px' }}>
+                Cancel
+              </button>
+              <button key="submit" type="primary" style={{ width: '170px', backgroundColor: '#293094', color: 'white', borderRadius: '5%', border: 'none' }}>
+                Submit
+              </button>
+            </div>
+          </div>
+        </form>
+      </Modal>
+    </div></>
 
         </React.Fragment>    
     )

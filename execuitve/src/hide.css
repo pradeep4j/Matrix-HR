@@ -13,6 +13,27 @@
     background-color: rgb(41, 133, 212);
     width: 400px;
   }
+  .fontselibrary {
+    color: white;
+    background-color: rgb(41, 133, 212);
+    width: 900px;
+  }
+  .modal__close {
+    position: absolute;
+    top: 2%;
+    right:2%;
+    font-size: 24px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .modal__close_elibrary {
+    position: absolute;
+    top: 2%;
+    right:2%;
+    font-size: 24px;
+    font-weight: 500;
+    cursor: pointer;
+  }
   .bag-quantity {
     display: flex;
     align-items: center;
@@ -191,13 +212,6 @@
    margin-top: 0.2rem;
    font-weight: 600;
  }
- .modal__close {
-  position: absolute;
-  top: 2%;
-  right:2%;
-  font-size: 24px;
-  font-weight: 500;
-  cursor: pointer;
-}
+ 
 
   

@@ -1,4 +1,4 @@
-import { auditoreGet,getExecutive,catCreate,catGet,catEdit,catDelete,gettingState,gettingUser,NotificationCreate,gettingNotification,userCreate,editUser,userDelete,createChecklist,gettingChecklist,gettingCompany,gettingCompanyTable,gettingBranch,createBranch,createCompany,createCompliances,gettingCompliances,gettingCompliancesById,gettingCompliancesOnCreate,complianceApporve,gettingCompliancesReject,complianceReject,updateCompliancesById,gettingCompliancesAll,gettingCompliancesFilter,gettingCompliancesAllFilter,gettingCompliancesRejetFilter,updateChecklistsById,checklistOnCreateegetting,gettingchecklistById,checklistAllgetting,checklistApporve,gettingchecklistAllFilter,gettingchecklistOnCreateFilter,checklistApprovegetting,gettingchecklistOnApproveFilter,checklistOnRejectegetting,rejectChecklist,gettingchecklistOnrejectFilter,gettingchecklistAllCompliance,gettingcomplianceOnApproveFilter,gettingChecklistOnCreate,createLiseReg,gettingAuditDetail,getttingReg,regsApporve,liseRegGettingByIds,liseregsFilters,liseRegUpdateByIds,regsReject,auditCreate,auditoreFilterChecklist,auditchecklistGetonCreate,auditAllFilter,gettingOnGoingAuditDetail,gettingOverviewAuditDetail,ElibraryCreate,ElibraryGet,companytab1,companytab2,companytab3,companytab4,companytab5,companytab6,companytab7,companyL,gettingCompanyById,companyLcreate,companyLById,companyLUpdateById,apporveCompanyL,companyLicenseFilter,gettingCompliaceCSById,companySaveandApprove,createcompanyinteraction,gettingComppanyInterationById,updatecompanyinteractionById,gettingCompanyInractionTable,apporveCompanyInteraction,companyProfileFilter,licenseCompanyInteractcreate,licenseCompanyInteractGetOnCreate,companyinteractLicGetByid,companyinteractLicUpdateById,apporveCompanyInteractionLicense,companyLicenseIntractFilter,createAssign,getAssignid,assignsUpdateById,assignTableGet,getAssignOnCreate} from "../../routes/api";
+import { auditoreGet,getExecutive,catCreate,catGet,catEdit,catDelete,gettingState,gettingUser,NotificationCreate,gettingNotification,userCreate,editUser,userDelete,createChecklist,gettingChecklist,gettingCompany,gettingCompanyTable,gettingBranch,createBranch,createCompany,createCompliances,gettingCompliances,gettingCompliancesById,gettingCompliancesOnCreate,complianceApporve,gettingCompliancesReject,complianceReject,updateCompliancesById,gettingCompliancesAll,gettingCompliancesFilter,gettingCompliancesAllFilter,gettingCompliancesRejetFilter,updateChecklistsById,checklistOnCreateegetting,gettingchecklistById,checklistAllgetting,checklistApporve,gettingchecklistAllFilter,gettingchecklistOnCreateFilter,checklistApprovegetting,gettingchecklistOnApproveFilter,checklistOnRejectegetting,rejectChecklist,gettingchecklistOnrejectFilter,gettingchecklistAllCompliance,gettingcomplianceOnApproveFilter,gettingChecklistOnCreate,createLiseReg,gettingAuditDetail,getttingReg,regsApporve,liseRegGettingByIds,liseregsFilters,liseRegUpdateByIds,regsReject,auditCreate,auditoreFilterChecklist,auditchecklistGetonCreate,auditAllFilter,gettingOnGoingAuditDetail,gettingOverviewAuditDetail,ElibraryCreate,ElibraryGet,elibraryGetById,elibraryUpdateById,elibraryReject,elibrarySaveandApprove,companytab1,companytab2,companytab3,companytab4,companytab5,companytab6,companytab7,companyL,gettingCompanyById,companyLcreate,companyLById,companyLUpdateById,apporveCompanyL,companyLicenseFilter,gettingCompliaceCSById,companySaveandApprove,createcompanyinteraction,gettingComppanyInterationById,updatecompanyinteractionById,gettingCompanyInractionTable,apporveCompanyInteraction,companyProfileFilter,licenseCompanyInteractcreate,licenseCompanyInteractGetOnCreate,companyinteractLicGetByid,companyinteractLicUpdateById,apporveCompanyInteractionLicense,companyLicenseIntractFilter,createAssign,getAssignid,assignsUpdateById,assignTableGet,getAssignOnCreate,viewAllAssignedCompanyFilter,assignedCompanyFilter} from "../../routes/api";
 
 import { toast } from 'react-toastify';
 import {
@@ -215,6 +215,18 @@ import {
     ELIBRARY_GET_REQUEST,
     ELIBRARY_GET_SUCCESS,
     ELIBRARY_GET_FAIL,
+    ELIBRARY_REQUEST_GET_BYID,
+    ELIBRARY_SUCCESS_GET_BYID,
+    ELIBRARY_REQUEST_GET_BYID_FAIL,
+    ELIBRARY_GET_REQUEST_UPDATE_BY_ID,
+    ELIBRARY_GET_SUCCESS_UPDATE_BY_ID,
+    ELIBRARY_GET_FAIL_UPDATE_BY_ID,
+    ELIBRARY_REQUEST_GET_REJECT,
+    ELIBRARY_SUCCESS_GET_REJECT,
+    ELIBRARY_REQUEST_GET_REJECT_FAIL,
+    ELIBRARY_REQUEST_SAVE_APPROVE,
+    ELIBRARY_SUCCESS_SAVE_APPROVE,
+    ELIBRARY_REQUEST_SAVE_APPROVE_FAIL,
     AUDIT_REQUEST_OVERDUE_DETAIL_DASHBOARD,
     AUDIT_SUCCESS_OVERDUE_DETAIL_DASHBOARD,
     AUDIT_FAIL_OVERDUE_DETAIL_DASHBOARD,
@@ -3559,6 +3571,161 @@ export const getElibrary = (postbody) => async (dispatch) => {
                         });                                         
                 });  
 }     
+export const eLibraryGettingById = (id) => async (dispatch) => {
+        dispatch({ type: ELIBRARY_REQUEST_GET_BYID });
+
+                await elibraryGetById(id).then(response=>{
+                dispatch({ type: ELIBRARY_SUCCESS_GET_BYID, payload: response.data });    
+                if(response.status===200)
+                {
+                        // toast.success('License/Registration is Approved Successfully!', {
+                        //         position: "bottom-right",
+                        //         hideProgressBar: false,
+                        //         progress: undefined,
+                        // });
+                }
+                else
+                {
+                        dispatch({
+                                type: ELIBRARY_REQUEST_GET_BYID_FAIL,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });                                  
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: ELIBRARY_REQUEST_GET_BYID_FAIL,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                        
+                });  
+}
+export const updateElibraryById = (postbody,id) => async (dispatch) => {
+        dispatch({ type: ELIBRARY_GET_REQUEST_UPDATE_BY_ID });
+
+                await elibraryUpdateById(postbody,id).then(response=>{
+                dispatch({ type: ELIBRARY_GET_SUCCESS_UPDATE_BY_ID, payload: response.data });    
+                if(response.status===201)
+                {
+                        toast.success('Elibrary is Updated Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+                else
+                {
+                        dispatch({
+                                type: ELIBRARY_GET_FAIL_UPDATE_BY_ID,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });                                         
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: ELIBRARY_GET_FAIL_UPDATE_BY_ID,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });                                         
+                });  
+}
+export const elibrarySaveandApproved = (postBody) => async (dispatch) => {
+        dispatch({ type: ELIBRARY_REQUEST_SAVE_APPROVE });
+
+                await elibrarySaveandApprove(postBody).then(response=>{
+                dispatch({ type: ELIBRARY_SUCCESS_SAVE_APPROVE, payload: response.data });    
+                if(response.status===201)
+                {
+                        toast.success('Elibrary is Approved Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+                else
+                {
+                        dispatch({
+                                type: ELIBRARY_REQUEST_SAVE_APPROVE_FAIL,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });                                  
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: ELIBRARY_REQUEST_SAVE_APPROVE_FAIL,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                        
+                });  
+}
+export const rejectsElibrary = (data) => async (dispatch) => {
+        dispatch({ type: ELIBRARY_REQUEST_GET_REJECT });
+
+                await elibraryReject(data).then(response=>{
+                dispatch({ type: ELIBRARY_SUCCESS_GET_REJECT, payload: response.data });    
+                if(response.status===201)
+                {
+                        toast.success('Elibrary is Rejected Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+                else
+                {
+                        dispatch({
+                                type: ELIBRARY_REQUEST_GET_REJECT_FAIL,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });                                  
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: ELIBRARY_REQUEST_GET_REJECT_FAIL,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                                        
+                });  
+}
 export const companytab1create = (postbody) => async (dispatch) => {
         dispatch({ type: COMPANYTAB1_CREATE_REQUEST });
 
@@ -4935,17 +5102,13 @@ export const assignGetOnCreate = () => async (dispatch) => {
                 });  
      
 }
-export const viewAllAssignedCompanyFilter = (postBody) => async (dispatch) => {
+export const companyViewAllAssignedFilter = (postBody) => async (dispatch) => {
         dispatch({ type: COMPANY_ASSIGN_REQUEST_GET_FILTER });
                 await viewAllAssignedCompanyFilter(postBody).then(response=>{
                 dispatch({ type: COMPANY_ASSIGN_SUCCESS_GET_FILTER, payload: response.data });    
                 if(response.status===200)
                 {
-                        // toast.success('Category is Added Successfully!', {
-                        //         position: "bottom-right",
-                        //         hideProgressBar: false,
-                        //         progress: undefined,
-                        // });
+                     
                 }
                 else
                 {
@@ -4973,7 +5136,7 @@ export const viewAllAssignedCompanyFilter = (postBody) => async (dispatch) => {
                                    
                 });  
 }
-export const assignedCompanyFilter = (postBody) => async (dispatch) => {
+export const companyAssignedFilter = (postBody) => async (dispatch) => {
         dispatch({ type: COMPANY_ASSIGNA_REQUEST_GET_FILTER });
                 await assignedCompanyFilter(postBody).then(response=>{
                 dispatch({ type: COMPANY_ASSIGNA_SUCCESS_GET_FILTER, payload: response.data });    

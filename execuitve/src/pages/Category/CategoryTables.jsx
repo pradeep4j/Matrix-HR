@@ -8,7 +8,7 @@ import { EditOutlined,DeleteOutlined } from "@ant-design/icons";
 import {categoryGet,categoryEdit,deleteCategory} from "../../store/actions/otherActions";
 import {useDispatch,useSelector} from 'react-redux';
 import {Link,useNavigate} from 'react-router-dom';
-import moment from 'moment';
+
 const CategoryTables = () => {
 const navigate = useNavigate();
 const dispatch = useDispatch();
@@ -32,14 +32,25 @@ const { loading, categoryInfo,error } = catGet;
             key: index+1,
             id: item._id,
             name: item.name,
-            dates : moment(item.dates).format('YYYY-MM-DD') /////'YYYY-MM-DD H-m-s'
+            dates : formatDate(item.dates)
           })
       });
     }
     setDataSource(categoryArr);
   },[categoryInfo])
-  //console.log(dataSource)
-const onDeleteCategory = (record) => {
+  const formatDate = (currentDate) => {
+    const dates = new Date(currentDate);
+    const year = dates.getFullYear();
+    const month = String(dates.getMonth() + 1).padStart(2, '0');
+    const date = String(dates.getDate()).padStart(2, '0');
+    const hours = String(dates.getHours()).padStart(2, '0');
+    const minutes = String(dates.getMinutes()).padStart(2, '0');
+    const seconds = String(dates.getSeconds()).padStart(2, '0');
+
+    const formattedDateTime = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+    return (formattedDateTime);
+  }
+  const onDeleteCategory = (record) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this category record?",
       okText: "Yes",
@@ -168,7 +179,7 @@ const onEditCategory = (record) => {
       title: 'Sr. Number',
       dataIndex: 'key',
       key: 'key',
-      width: '15%',
+      width: 40,
      // ...getColumnSearchProps('key'),
      // sorter: (a, b) => a.key.length - b.key.length,
      // sortDirections: ['descend', 'ascend']
@@ -194,7 +205,7 @@ const onEditCategory = (record) => {
     { 
         key: "action", 
         title: "Actions", 
-        width: '40%',
+        width: 150,
         render: (record) => { 
           return (
             <>

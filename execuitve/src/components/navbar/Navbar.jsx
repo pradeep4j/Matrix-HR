@@ -36,6 +36,8 @@ import '../../hide.css';
 import { useDispatch,useSelector } from 'react-redux';
 import {logoutUser} from '../../store/actions/authActions';
 import logo from '../../../src/logo.svg'
+import Checklist from '../../../src/Checklist.png'
+import Lisereg from '../../../src/Lisereg.png'
 import { Modal } from 'antd';
 const drawerWidth = 200;
 const openedMixin = (theme) => ({
@@ -145,7 +147,8 @@ const itemsListNotLoggedIn = [
     },
     {
         text: "Checklist",
-        icon: <CollectionsBookmarkIcon onClick={(e) => onChecklist(e)}/>,
+        icon: <img src={Checklist} alt="My Image" onClick={(e) => onChecklist(e)} style={{paddingTop:'2px'}}/>,
+        // <CollectionsBookmarkIcon onClick={(e) => onChecklist(e)}/>,
         onClick: (e) => onChecklist(e)
     },
     {
@@ -158,16 +161,16 @@ const itemsListNotLoggedIn = [
         icon: <BusinessIcon onClick={(e) => onCompany(e)}/>,
         onClick: (e) => onCompany(e)
     },
-    {
-        text: "Users",
-        icon: <PeopleAltIcon onClick={(e) => onUserRegister(e)}/>,
-        onClick: (e) => onUserRegister(e)
-    },
-    {
-        text: "Category",
-        icon: <CategoryIcon onClick={(e) => onCategory(e)}/>,
-        onClick: (e) => onCategory(e)
-    },
+    // {
+    //     text: "Users",
+    //     icon: <PeopleAltIcon onClick={(e) => onUserRegister(e)}/>,
+    //     onClick: (e) => onUserRegister(e)
+    // },
+    // {
+    //     text: "Category",
+    //     icon: <CategoryIcon onClick={(e) => onCategory(e)}/>,
+    //     onClick: (e) => onCategory(e)
+    // },
     {
         text: "E-Library",
         icon: <LocalLibraryIcon onClick={(e) => onElibrary(e)}/>,
@@ -181,7 +184,7 @@ const itemsListNotLoggedIn = [
     ,
     {
         text: "Lise/Regs",
-        icon: <NotificationsNoneIcon onClick={(e) => onLisereg(e)} />,
+        icon: <img src={Lisereg} alt="My Image" onClick={(e) => onLisereg(e)} />,
         onClick: (e) => onLisereg(e)
     }
 ];

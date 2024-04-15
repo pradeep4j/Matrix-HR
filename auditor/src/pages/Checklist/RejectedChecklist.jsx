@@ -6,7 +6,7 @@ import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
 import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {checklistGetOnreject,stateGets,usersGet,companyGet,branchGet,checklistRejectFilter} from "../../store/actions/otherActions";
+import {checklistGetOnreject,stateGets,usersGet,companyGet,branchGet,checklistRejectFilter,companyTableGet} from "../../store/actions/otherActions";
 import Loading from '../../components/layout/Loading';
 const RejectedChecklist = () =>{
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ const RejectedChecklist = () =>{
     const [executive, setUser] = useState('');
     const [company, setCompany] = useState('');
     const [date, setDate] = useState('');
-    const [branch, setBranch] = useState('');
+    const [branch, setBranch] = useState([]);
     const [datereject, setDateReject] = useState('');
     const myElementRefState = useRef(null);
     const myElementRefDate = useRef(null);
@@ -46,8 +46,10 @@ const RejectedChecklist = () =>{
     const { branchInfo } = getBranch; 
     const getCompney = useSelector((state) => state.getCompney);
     const { companyInfo } = getCompney; 
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const rejectFilterChecklist = useSelector((state) => state.rejectFilterChecklist);
-    const { checklistRejectinfo } = rejectFilterChecklist;
+    const { loadingreject,checklistRejectinfo } = rejectFilterChecklist;
     console.log(checklistRejectinfo)
     const openInPopupForUpdate = (item) => {
         setRecordForEdit(item);
@@ -90,10 +92,25 @@ const RejectedChecklist = () =>{
       toggleTables();
       dispatch(stateGets());
       dispatch(usersGet());
-      dispatch(branchGet());
-      dispatch(companyGet());
+      const elementcompanybranch = myElementRefCompany.current;
+      const postBody = {
+        id : elementcompanybranch.value
+      }
+      if (elementcompanybranch) {
+        dispatch(branchGet(postBody));
+      }
+      // dispatch(branchGet());
+      // dispatch(companyGet());
       dispatch(checklistGetOnreject());
+      dispatch(companyTableGet());
     },[dispatch])
+    const getBbranch = (company) => {
+      const elementcompanybranch = myElementRefCompany.current;
+      const postBody = {
+        id : elementcompanybranch.value
+     }
+      dispatch(branchGet(postBody));
+    }
     useEffect(() => {
       setShowTable1(showTable1);
       if(showTable1===false){
@@ -117,7 +134,7 @@ const RejectedChecklist = () =>{
                 recurrence:item.frequency,
                 branchname:item.branchname,
                 company:item.company,
-                risk:item.risk,
+                risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'red' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 reason:item.reason,
                 executive:name?'admin':item.executive,
                 updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
@@ -161,7 +178,7 @@ const RejectedChecklist = () =>{
                   recurrence:item.frequency,
                   branchname:item.branchname,
                   company:item.company,
-                  risk:item.risk,
+                  risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   reason:item.reason,
                   executive:name?'admin':item.executive,
                   updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
@@ -482,7 +499,16 @@ const RejectedChecklist = () =>{
            ...getColumnSearchProps('risk'),
            sorter: (a, b) => a.risk.length - b.risk.length,
            sortDirections: ['descend', 'ascend']
-        },   
+        },  
+        {
+          title: 'Branch Name',
+          dataIndex: 'branchname',
+          key: 'branchname',
+          width: 100,
+          // ...getColumnSearchProps('branchname'),
+          sorter: (a, b) => a.branchname.length - b.branchname.length,
+          sortDirections: ['descend', 'ascend']
+        }, 
         {
             title: 'Due Date',
             dataIndex: 'duedate',
@@ -519,11 +545,11 @@ const RejectedChecklist = () =>{
                     <div className="row">
                         <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
                             <label for="" class="form-label">Company</label>
-                            <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter()}} required>
+                            <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter();getBbranch(e.target.value)}} required>
                                 <option value="">Select Company</option>
-                            {companyInfo != 'undefind' && companyInfo?.length > 0 && companyInfo.map(item => 
-                                <option value={item._id}>{item.companyname}</option>
-                            )};
+                                {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                                  <option value={item._id}>{item.companyname}</option>
+                                )};
                         </select>
                         </div>
                         <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
@@ -540,7 +566,7 @@ const RejectedChecklist = () =>{
                             <select className="form-select" ref={myElementRefBranch} aria-label="Default select example" id="branch" name="branch" onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                                 <option value="">Select Branch</option>
                                 {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                                    <option value={item._id}>{item.name}</option>
+                                    <option value={item.id}>{item.name}</option>
                                 )};
                             </select>
                         </div>
@@ -558,12 +584,18 @@ const RejectedChecklist = () =>{
                             <input type="date" id="rejected" ref={myElementRefDate} className="form-control" name="someName1" placeholder="Select a date" value={datereject} onChange={(e) => {setDateReject(e.target.value);filter();}}/>
                         </div>
                     </div>    
-                    {loadingu && <Loading />}
-                    {showTable1 ? (
-                        <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1000 }} sticky={true}/>
-                    ) : (
-                        <Table dataSource={dataSource} columns={columns1} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 3500 }} sticky={true}/>
-                    )} 
+                    <div className="col-12 col-lg-12">
+                      <div className="card p-3 ">
+                        <div className="table-responsive">
+                        {(loadingu || loadingreject) && <Loading />}
+                        {showTable1 ? (
+                            <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1000 }} sticky={true}/>
+                        ) : (
+                            <Table dataSource={dataSource} columns={columns1} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 3500 }} sticky={true}/>
+                        )} 
+                        </div>
+                      </div>
+                    </div>
                 </div>
             </div>
         </div>

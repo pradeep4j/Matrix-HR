@@ -5,8 +5,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 import {checklistCreate,stateGets,usersGet,categoryGet,branchGet,compliancesAllForChecklist,companyGet,checklistUpdateById,checklistGetByid} from "../../store/actions/otherActions";
 
-import * as Yup from 'yup'; // Yup is a JavaScript object schema validator.
-import { useFormik } from 'formik'; //formik is third party React form library. It provides basic form programming and validation
 //import { updatestatuswithremark } from '../../routes/api';
 import { useForm, Form } from '../../components/useForm';
 const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
@@ -134,7 +132,7 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
       }; 
     const handleProductImageUpload = (e) => {
         const file = e.target.files[0];
-       // alert(JSON.stringify(file))
+    //    alert(JSON.stringify(file))
         setFile(file);
         setFileName(e.target.files[0].name);
         TransformFileData(file);
@@ -174,7 +172,7 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-          let rules = '';
+        let rules = '';
         inputList.map((item,index)=>(rules= rules+"\n"+item.value))
         rules.slice(1);
         let questions = '';
@@ -434,11 +432,11 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
             (<><div class="col-12 col-lg-12 col-md-12 mb-2" >
                 <label for="inputAddress" class="form-label">Form </label>
                 <div>
-                <div class="form-group files">
-                    <input type="file" name="image" class="form-control" multiple="" accept="image/*,application/pdf" id="input-file-now-custom-2" className="file-upload"
-                    dataHeight="500" onChange={(e) => {handleProductImageUpload(e)}}
-                    />
-                </div>    
+                    <div class="form-group files">
+                        <input type="file" name="image" class="form-control" multiple="" accept="image/*,application/pdf" id="input-file-now-custom-2" className="file-upload"
+                        dataHeight="500" onChange={(e) => {handleProductImageUpload(e)}}
+                        />
+                    </div>    
                 </div>
             </div><div class="col-12 col-lg-12 col-md-12 mb-2" >
                 <ImageList>
@@ -538,7 +536,7 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
                 <button type="submit" class="w-100 btn btn-dark" id="cancel" onClick={tocategorypage}>Cancel</button>
             </div>
             <div class="col-md-6">
-                <button type="submit" variant="contained" class="w-100 btn btn-primary" >Save</button>
+                <button type="button" variant="contained" class="w-100 btn btn-primary" >Save</button>
             </div>
             </form>
             </div>

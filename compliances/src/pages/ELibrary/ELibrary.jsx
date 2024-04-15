@@ -4,18 +4,20 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import {categoryGet,createElibrary,stateGets} from '../../store/actions/otherActions';
+import {categoryGet,createElibrary,stateGets,getElibrary} from '../../store/actions/otherActions';
 import * as Yup from 'yup'; // Yup is a JavaScript object schema validator.
 import { useFormik } from 'formik'; //for
 import {useDispatch,useSelector} from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import ElibraryAllTable from './ElibraryAllTable';
+import ElibraryEdit from './ElibraryEdit';
 const Elibrary = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const tonotificationpage = () => {
-        navigate('/dashboard')
-    }
+    const [activeTab, setActiveTab] = useState('viewall');
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+      }
     const [document,setDocument] = useState('');
     const [fileto,setFile] = useState('');
     const [notifications,setNotification] = useState('');
@@ -23,6 +25,7 @@ const Elibrary = () => {
     const myElementRefTab2 = useRef(null);
     const catGet = useSelector((state) => state.catGet);
     const { loading, categoryInfo,error } = catGet;
+    console.log(categoryInfo);
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
     let defaultDate = new Date()
@@ -39,15 +42,15 @@ const Elibrary = () => {
     },[dispatch])
     var initialValues = {
         category: '',
-        state: '',
+        placeholdername: '',
         label:'',
         description: ''
     }
     const schema = Yup.object({
         category: Yup.string('')
             .required('Category Label is required!'),
-        state: Yup.string('')
-            .required('State is required!'), 
+        placeholdername: Yup.string('')
+            .required('Placeholdername is required!'), 
         label: Yup.string('')
             .required('Label is required!'),     
         description: Yup.string('')
@@ -75,9 +78,10 @@ const Elibrary = () => {
         }}
     );
     const onElibrary = async (val,action) => {
+        // console.log(fileto);return;
         const formData = new FormData();
         formData.append("category", val.category);
-        formData.append("state", val.state);
+        formData.append("placeholdername", val.placeholdername);
         formData.append("dates", date);
         formData.append("label", val.label);
         formData.append("executive", '659d4f2609c9923c9e7b8f72');
@@ -87,13 +91,14 @@ const Elibrary = () => {
         dispatch(createElibrary(formData)); 
         action.resetForm();
         setFile('')
-        const elementTab1 = myElementRefTab1.current;
-        if(elementTab1){
-            elementTab1.click();
-        }
+        // const elementTab1 = myElementRefTab1.current;
+        // if(elementTab1){
+        //     elementTab1.click();
+        // }
     }
     const handleProductImageUpload= (e) => {
         const file = e.target.files[0];
+        // alert(file);return;
         setFile(e.target.files[0]);
         TransformFileDataDoc(file);
     };
@@ -128,7 +133,7 @@ const Elibrary = () => {
     };
     const viewall = () => {
         setTimeout(() => {
-            // dispatch(checklistGetOnreject());
+            dispatch(getElibrary());
         }, 2000);
     }
     return (
@@ -139,35 +144,36 @@ const Elibrary = () => {
                         <div className="col-lg-12">
                             <ul className="nav nav-pills mb-3 bg-light rounded overflow-hidden" id="pills-tab" role="tablist">
                                 <li className="nav-item col-md-6 col-lg-3 col-12 border-end border-md-bottom" role="presentation">
-                                    <button className="nav-link w-100 rounded-0 text-dark active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true" ref={myElementRefTab1} onClick={viewall}> View All </button>
+                                    <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'viewall' ? 'active' : ''}`} id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true" ref={myElementRefTab1} onClick={(e)=>{viewall();handleTabChange('viewall')}}> View All </button>
                                 </li>
+                                {/* <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
+                                    <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'approve' ? 'active' : ''}`} id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" ref={myElementRefTab2} onClick={(e)=>{/*viewall();handleTabChange('viewall')}}>Approve</button>
+                                </li> */}
                                 <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
-                                    <button className="nav-link w-100 rounded-0 text-dark" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" ref={myElementRefTab2}>Approve</button>
-                                </li>
-                                <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
-                                    <button className="nav-link w-100 rounded-0 text-dark" id="creative-tab" data-bs-toggle="pill" data-bs-target="#creative-pill" type="button" role="tab" aria-controls="creative-pill" aria-selected="false">Reject</button>
+                                    <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'reject' ? 'active' : ''}`} id="creative-tab" data-bs-toggle="pill" data-bs-target="#creative-pill" type="button" role="tab" aria-controls="creative-pill" aria-selected="false" onClick={(e)=>{/*viewall();*/handleTabChange('viewall')}}>Reject</button>
                                 </li>
                                 <li className="nav-item col-md-6 col-lg-3 col-12" role="presentation">
-                                    <button className="nav-link w-100 rounded-0 text-dark" id="reject-pill" data-bs-toggle="pill" data-bs-target="#reject-tab" type="button" role="tab" aria-controls="reject-tab" aria-selected="false">Create New </button>
+                                    <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'Create New' ? 'active' : ''}`} id="reject-pill" data-bs-toggle="pill" data-bs-target="#reject-tab" type="button" role="tab" aria-controls="reject-tab" aria-selected="false" onClick={(e)=>{/*viewall();*/handleTabChange('viewall')}}>Create New </button>
                                 </li>
                             </ul>
                             <div className="tab-content" id="pills-tabContent">
-                                <div className="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                <div className={`tab-pane fade ${activeTab === 'viewall' ? 'show active' : ''}`} id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                                     <div className="row">
                                         <div className="col-12 col-lg-12">
                                             <div className="card p-3 ">
                                                 <div className="table-responsive">
-                                                    <ElibraryAllTable linktab={myElementRefTab2}/>
+                                                    <ElibraryAllTable /*linktab={myElementRefTab2}*//>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                {/* <div className={`tab-pane fade ${activeTab === 'approve' ? 'show active' : ''}`} id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                                     <div className="row">
                                         <div className="col-12 col-lg-12">
                                             <div className="card p-3 ">
-                                                <div className="table-responsive">
+                                                <ElibraryEdit />
+                                                {/* <div className="table-responsive">
                                                     <table className="table table-striped all_tbl">
                                                         <thead>
                                                             <tr className='align-middle'>
@@ -190,84 +196,14 @@ const Elibrary = () => {
                                                                     <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
                                                                 </td>
                                                             </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td>Rajesh</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td>Rajesh</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td>Rajesh</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td>Rajesh</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td>Rajesh</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td>Rajesh</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td>Rajesh</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
                                                         </tbody>
                                                     </table>
-                                                </div>
+                                                </div> 
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="tab-pane fade" id="creative-pill" role="tabpanel" aria-labelledby="creative-tab">
+                                </div> */}
+                                <div className={`tab-pane fade ${activeTab === 'reject' ? 'show active' : ''}`} id="creative-pill" role="tabpanel" aria-labelledby="creative-tab">
                                     <div className="row">
                                         <div className="col-12 col-lg-12">
                                             <div className="card p-3 ">
@@ -308,66 +244,6 @@ const Elibrary = () => {
                                                                 <td>Reason</td>
                                                                 <td>
                                                                     <Link className='text-white btn btn-dark text-decoration-none' data-bs-toggle="modal" data-bs-target="#exampleModal"> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td><span className='text-danger'>Reject</span></td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>Reason</td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none' data-bs-toggle="modal" data-bs-target="#exampleModal"> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td><span className='text-danger'>Reject</span></td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>Reason</td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none' data-bs-toggle="modal" data-bs-target="#exampleModal"> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td><span className='text-danger'>Reject</span></td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>Reason</td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none' data-bs-toggle="modal" data-bs-target="#exampleModal"> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td><span className='text-danger'>Reject</span></td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>Reason</td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none' data-bs-toggle="modal" data-bs-target="#exampleModal"> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td><span className='text-danger'>Reject</span></td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>Reason</td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none'> View <VisibilityOffIcon fontSize='mediam' /></Link>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -423,106 +299,11 @@ const Elibrary = () => {
                                                                                     <td><span className='text-success'>09/01/2024</span></td>
                                                                                     <td>Reason</td>
                                                                                 </tr>
-                                                                                <tr className='align-middle'>
-                                                                                    <td>01</td>
-                                                                                    <td>Act</td>
-                                                                                    <td>ABC</td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td><span className='text-danger'>Reject</span></td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td>Reason</td>
-                                                                                </tr>
-                                                                                <tr className='align-middle'>
-                                                                                    <td>01</td>
-                                                                                    <td>Act</td>
-                                                                                    <td>ABC</td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td><span className='text-danger'>Reject</span></td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td>Reason</td>
-                                                                                </tr>
-                                                                                <tr className='align-middle'>
-                                                                                    <td>01</td>
-                                                                                    <td>Act</td>
-                                                                                    <td>ABC</td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td><span className='text-danger'>Reject</span></td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td>Reason</td>
-                                                                                </tr>
-                                                                                <tr className='align-middle'>
-                                                                                    <td>01</td>
-                                                                                    <td>Act</td>
-                                                                                    <td>ABC</td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td><span className='text-danger'>Reject</span></td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td>Reason</td>
-                                                                                </tr>
+                                                                                
                                                                             </tbody>
                                                                         </table>
                                                                     </div>
-                                                                    <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                        <div className="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
-                                                                            <div className="modal-content">
-                                                                                {/* <div className="modal-header">
-                                                                <h1 className="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                                                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div> */}
-                                                                                <div className="modal-body">
-                                                                                    <form class="row g-3">
-                                                                                        <div class="col-md-6 col-6 col-lg-6">
-                                                                                            <button className='btn btn-light border'> Sr. No :01</button>
-                                                                                        </div>
-                                                                                        <div class="col-md-6 col-6 col-lg-6 text-end">
-                                                                                            <button className='btn btn-light border'> 17/02/2024</button>
-                                                                                        </div>
-                                                                                        <div class="col-md-6 col-lg-6">
-                                                                                            <label for="" class="form-label">State</label>
-                                                                                            <input type="email" class="form-control" id="" placeholder='Hyderabad' />
-                                                                                        </div>
-                                                                                        <div class="col-md-6 col-lg-6">
-                                                                                            <label for="" class="form-label">Category</label>
-                                                                                            <select className="form-select" aria-label="Default select example">
-                                                                                                <option selected>Seclect State</option>
-                                                                                                <option value="1">One</option>
-                                                                                                <option value="2">Two</option>
-                                                                                                <option value="3">Three</option>
-                                                                                            </select>
-                                                                                        </div>
-                                                                                        <div class="col-12 col-lg-12 col-md-12">
-                                                                                            <label for="inputAddress" class="form-label">Act</label>
-                                                                                            <input type="text" class="form-control" id="inputAddress" placeholder="Type act name" />
-                                                                                        </div>
-                                                                                        <div class="col-12 col-lg-12 col-md-12">
-                                                                                            <label for="inputAddress2" class="form-label">Rule *</label>
-                                                                                            <div class="input-group">
-                                                                                                <input type="text" class="form-control" placeholder="Type Rule Name" aria-label="Type Rule Name" aria-describedby="button-addon2" />
-                                                                                                <button class="btn btn-outline-primary" type="button" id="button-addon2">Add  <AddCircleOutlineIcon /></button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-12 col-lg-12 col-md-12">
-                                                                                            <label for="inputAddress" class="form-label">Quotation *</label>
-                                                                                            <input type="text" class="form-control" id="inputAddress" placeholder="type quotation" />
-                                                                                        </div>
-                                                                                        <div class="col-12 col-lg-12 col-md-12">
-                                                                                            <label for="inputAddress" class="form-label">Description *</label>
-                                                                                            <input type="text" class="form-control" id="inputAddress" placeholder="type description" />
-                                                                                        </div>
-                                                                                        <div class="col-12 col-lg-12 col-md-12">
-                                                                                            <label for="inputAddress" class="form-label">Form *</label>
-                                                                                            
-                                                                                        </div>
-                                                                                    </form>
-                                                                                </div>
-                                                                                <div className="modal-footer justify-content-center">
-                                                                                    <button type="button" className="btn btn-secondary">Cancel</button>
-                                                                                    <button type="button" className="btn btn-success">Edit</button>
-                                                                                    <button type="button" className="btn btn-primary">Save</button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                    
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -532,13 +313,13 @@ const Elibrary = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="tab-pane fade" id="reject-tab" role="tabpanel" aria-labelledby="reject-pill">
+                                <div className={`tab-pane fade ${activeTab === 'Create New' ? 'show active' : ''}`} id="reject-tab" role="tabpanel" aria-labelledby="reject-pill">
                                     <form className="row g-3"  method="post" enctype="multipart/form-data" onSubmit={formik.handleSubmit}>
                                         <div className="col-md-12 col-lg-12">
                                             <label for="" className="form-label">Category</label>
                                             <select className="form-select" aria-label="Default select example" id="category" name="category" onChange={formik.handleChange} value={formik.values.category} >
                                                 <option value="">Select category</option>
-                                                {categoryInfo != 'undefind' && categoryInfo?.length > 0 && categoryInfo.map(item => 
+                                                {categoryInfo !== undefined && categoryInfo?.length > 0 && categoryInfo.map(item => 
                                                     <option value={item._id}>{item.name}</option>
                                                 )};
                                                 
@@ -547,7 +328,7 @@ const Elibrary = () => {
                                                 <div className="error">{formik.errors.category}</div>
                                             )}
                                         </div>
-                                        <div className="col-md-4 col-lg-4">
+                                        {/* <div className="col-md-4 col-lg-4">
                                             <label for="" className="form-label">Palaceholder Name</label>
                                             <select className="form-select" aria-label="Default select example" id="state" name="state" value={formik.values.state} onChange={formik.handleChange} >
                                                     <option value="">Select State</option>
@@ -557,6 +338,14 @@ const Elibrary = () => {
                                             </select>
                                             {formik.touched.state && formik.errors.state && (
                                             <div className="error">{formik.errors.state}</div>)}
+                                        </div> */}
+                                        <div className="col-md-4 col-lg-4">
+                                            <label for="" className="form-label">Placeholder Name</label>
+                                            <input className="form-control" placeholder='Placeholder Name' id="placeholdername" name="placeholdername" value={formik.values.placeholdername} onChange={formik.handleChange} 
+                                            />
+                                             {formik.touched.placeholdername && formik.errors.placeholdername && (
+                                                <div className="error">{formik.errors.placeholdername}</div>
+                                            )}
                                         </div>
                                         <div className="col-md-4 col-lg-4">
                                             <label for="" className="form-label">Label</label>
@@ -567,7 +356,7 @@ const Elibrary = () => {
                                                 onChange={formik.handleChange}/>
                                                 {formik.touched.label && formik.errors.label && (
                                                 <div className="error">{formik.errors.label}</div>
-                                            )}
+                                                )}
                                         </div>
                                         <div className="col-md-4 col-lg-4">
                                             <label for="" className="form-label">Date</label>

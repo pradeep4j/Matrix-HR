@@ -215,6 +215,18 @@ import {
     ELIBRARY_GET_REQUEST,
     ELIBRARY_GET_SUCCESS,
     ELIBRARY_GET_FAIL,
+    ELIBRARY_REQUEST_GET_BYID,
+    ELIBRARY_SUCCESS_GET_BYID,
+    ELIBRARY_REQUEST_GET_BYID_FAIL,
+    ELIBRARY_GET_REQUEST_UPDATE_BY_ID,
+    ELIBRARY_GET_SUCCESS_UPDATE_BY_ID,
+    ELIBRARY_GET_FAIL_UPDATE_BY_ID,
+    ELIBRARY_REQUEST_GET_REJECT,
+    ELIBRARY_SUCCESS_GET_REJECT,
+    ELIBRARY_REQUEST_GET_REJECT_FAIL,
+    ELIBRARY_REQUEST_SAVE_APPROVE,
+    ELIBRARY_SUCCESS_SAVE_APPROVE,
+    ELIBRARY_REQUEST_SAVE_APPROVE_FAIL,
     COMPANYTAB1_CREATE_REQUEST,
     COMPANYTAB1_CREATE_SUCCESS,
     COMPANYTAB1_CREATE_FAIL,
@@ -892,9 +904,41 @@ export const elibraryCreateReducer = (state= {}, action) => {
 }
 export const elibraryGetReducer = (state= {}, action) => {
         switch(action.type) {
-                case ELIBRARY_GET_REQUEST: return { loading:true };
+                case ELIBRARY_GET_REQUEST: return { loadingget:true };
                 case ELIBRARY_GET_SUCCESS: return { loadingget:false, elibraryGetInfo: action.payload };
-                case ELIBRARY_GET_FAIL: return { loading:false, error: action.payload };
+                case ELIBRARY_GET_FAIL: return { loadingebid:false, error: action.payload };
+                default: return state;
+        }
+}    
+export const elibraryGetByIDReducer = (state= {}, action) => {
+        switch(action.type) {
+                case ELIBRARY_REQUEST_GET_BYID: return { loadingebid:true };
+                case ELIBRARY_SUCCESS_GET_BYID: return { loadingebid:false, elibraryGetByIDInfo: action.payload };
+                case ELIBRARY_REQUEST_GET_BYID_FAIL: return { loadingebid:false, error: action.payload };
+                default: return state;
+        }
+}
+export const elibraryUpdateByIdReducer = (state= {}, action) => {
+        switch(action.type) {
+                case ELIBRARY_GET_REQUEST_UPDATE_BY_ID: return { loadingu:true };
+                case ELIBRARY_GET_SUCCESS_UPDATE_BY_ID: return { loadingu:false, elibraryInfoUpdateId: action.payload };
+                case ELIBRARY_GET_FAIL_UPDATE_BY_ID: return { loadingu:false, error: action.payload };
+                default: return state;
+        }
+}
+export const elibrarysaveandapproveIDReducer = (state= {}, action) => {
+        switch(action.type) {
+                case ELIBRARY_REQUEST_SAVE_APPROVE: return { loadingesa:true };
+                case ELIBRARY_SUCCESS_SAVE_APPROVE: return { loadingesa:false, elibrarySAInfo: action.payload };
+                case ELIBRARY_REQUEST_SAVE_APPROVE_FAIL: return { loadingesa:false, error: action.payload };
+                default: return state;
+        }
+}
+export const elibraryRejectReducer = (state= {}, action) => {
+        switch(action.type) {
+                case ELIBRARY_REQUEST_GET_REJECT: return { loadinger:true };
+                case ELIBRARY_SUCCESS_GET_REJECT: return { loadinger:false, elibraryReject: action.payload };
+                case ELIBRARY_REQUEST_GET_REJECT_FAIL: return { loadinger:false, error: action.payload };
                 default: return state;
         }
 }

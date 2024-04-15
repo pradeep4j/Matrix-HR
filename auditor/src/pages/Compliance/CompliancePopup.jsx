@@ -157,6 +157,7 @@ const CompliancePopup = ({ addOrEdit,recordForEdit }) => {
         resetForm
     } = useForm(true);
     const handleSubmit = async (e) => {
+        alert('sa')
         e.preventDefault();
         let rules = '';
         inputList.map((item,index)=>(rules= rules+"\n"+item.value))

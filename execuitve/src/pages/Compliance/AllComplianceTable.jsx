@@ -122,7 +122,7 @@ const AllComplianceTable = () =>{
                 docattachment:<a href={item.docattachment} target="_blank">Document</a>,
                 compliancetype:item.compliancetype,
                 recurrence:item.frequency,
-                risk:item.risk,
+                risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'red' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 executive:name?'admin':item.executive,
                 updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
                 duedate:formatDate(item.duedate),
@@ -154,8 +154,7 @@ const AllComplianceTable = () =>{
                 docattachment:<a href={item.docattachment} target="_blank">Document</a>,
                 compliancetype:item.compliancetype,
                 recurrence:item.frequency,
-                risk:item.risk,
-                executive:name?'admin':item.executive,
+                risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
                 duedate:formatDate(item.duedate),
               })

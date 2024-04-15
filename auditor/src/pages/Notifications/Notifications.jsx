@@ -141,6 +141,17 @@ function Notification() {
     const tocategorypage = () => {
         navigate('/dashboard')
     };
+    const formatDate = (currentDate) => {
+        const dates = new Date(currentDate);
+        const year = dates.getFullYear();
+        const month = String(dates.getMonth() + 1).padStart(2, '0');
+        const date = String(dates.getDate()).padStart(2, '0');
+        const hours = String(dates.getHours()).padStart(2, '0');
+        const minutes = String(dates.getMinutes()).padStart(2, '0');
+        const seconds = String(dates.getSeconds()).padStart(2, '0');
+        const formattedDateTime = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+        return (formattedDateTime);
+      }
     return (
         <React.Fragment>
             <div className='dashboard_wrapper'>
@@ -163,7 +174,7 @@ function Notification() {
                                             (<><div className='card shadow p-3 position-relative'>
                                                 <div className='d-flex justify-content-between'>
                                                     <h5>{item.label}</h5>
-                                                    <span className='text-muted'>{item.dated}</span>
+                                                    <span className='text-muted'>{formatDate(item.dated)}</span>
                                                 </div>
                                     
                                                  <p>   <ReadMore text={item.description} /></p>

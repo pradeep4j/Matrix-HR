@@ -29,6 +29,7 @@ const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
     const createCompliance = useSelector((state) => state.createCompliance);
     const { loadingCompliance,complianceCreateInfo } = createCompliance; 
     const [category, setCategory] = useState();
+    const [duedate, setduedate] = useState('');
     const [state, setState] = useState('');
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
@@ -332,9 +333,23 @@ const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
                 setCompliancetype(complianceInfoId?.compliancetype);
                 setFrequency(complianceInfoId?.frequency);
                 setRisk(complianceInfoId?.risk);
+                setduedate(formatDate(complianceInfoId?.duedate));
             }
         }    
     },[complianceInfoId])
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        
+        if (month.length < 2) 
+          month = '0' + month;
+        if (day.length < 2) 
+          day = '0' + day;
+        
+        return [year, month, day].join('-');
+    }
     const tocategorypage = () => {
         navigate('/dashboard')
     };
@@ -473,7 +488,26 @@ const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
                         <option value="Very High">Very High</option>
                     </select>
             </div> 
-
+            {recordForEdit?.id !== undefined && recordForEdit?.id !== null ? 
+            (<div class="col-12 col-lg-12 col-md-12 mb-2">
+                <label for="" className="form-label">Due Date *</label>
+                <input type="date" className="form-control" 
+                    id="duedate"
+                    name="duedate" 
+                    value={duedate} 
+                    onChange={(e)=>setduedate(e.target.value)}
+                    required
+                />
+            </div>):(<div class="col-12 col-lg-12 col-md-12 mb-2">
+                <label for="" className="form-label">Due Date *</label>
+                <input type="date" className="form-control" 
+                    id="duedate"
+                    name="duedate" 
+                    value={duedate} 
+                    onChange={(e)=>setduedate(e.target.value)}
+                    required
+                />
+            </div>)}   
         {recordForEdit?.id !== undefined && recordForEdit?.id !== null ? 
             (<div class="col-12 col-lg-12 col-md-12 mb-2">
                 <label for="" className="form-label">Updated Date *</label>

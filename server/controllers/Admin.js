@@ -5286,17 +5286,18 @@ export const elibraryCreate = async (request, response, next) => {
         });
         if (imageFile) {
             formattedImageFileName = Date.now() + imageFile.originalname.split(' ').join('-');
-            await sharp(request.file.buffer).resize({ width: 600 }).toFile('./data/uploads/' + formattedImageFileName);
-            imageUrl = url + '/' + formattedImageFileName;
+            await sharp(request.file.buffer).resize({ width: 600 }).toFile('./data/uploads/' + imageDirectory + formattedImageFileName);
+            imageUrl = url + '/' + imageDirectory + formattedImageFileName;
         }
 
         const elibrary = {
+            category: request.body.category,
             label: request.body.label,
             role: request.body.role,
             description: request.body.description,
             image: imageUrl,
             dates: request.body.dates,
-            state: request.body.state
+            placeholdername: request.body.placeholdername
         }
         // console.log(notification);
         const newelibrary = new Elibrary(elibrary);
@@ -5304,6 +5305,224 @@ export const elibraryCreate = async (request, response, next) => {
         response.status(201).json(newelibrary);
     } catch (error) {
         // response.status(404).json({ message: 'error.message' })
+        next(error);
+    }
+}
+export const elibraryGet = async (request, response, next) => {
+    try {
+        let aggregation
+        const elibrary = await Elibrary.find({})
+        // if (elibrary.length != 0) {
+        //     response.status(404).json("No data exists")
+        // }
+        // else {
+            aggregation = [
+                {
+                    $match: {}
+                },
+                {
+                    $lookup: {
+                        from: "companydatas",
+                        localField: "company",
+                        foreignField: "_id",
+                        as: "companyData"
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "executive",
+                        foreignField: "_id",
+                        as: "executiveData"
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "states",
+                        localField: "state",
+                        foreignField: "_id",
+                        as: "stateData"
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "category",
+                        foreignField: "_id",
+                        as: "categoryData"
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        image:1,
+                        placeholdername:1,
+                        label:1,
+                        executive: {
+                            $concat: [
+                                { $arrayElemAt: ["$executiveData.firstName", 0] },
+                                " ",
+                                { $arrayElemAt: ["$executiveData.lastName", 0] }
+                            ]
+                        },
+                        state: { $arrayElemAt: ["$stateData.name", 0] },
+                        category: { $arrayElemAt: ["$categoryData.name", 0] },
+                        company: { $arrayElemAt: ["$companyData.companyname", 0] },
+                    }
+                }
+            ]
+        // }
+
+        const elibraryData = await Elibrary.aggregate(aggregation)
+        response.status(200).json(elibraryData)
+    } catch (error) {
+        next(error)
+    }
+}
+export const elibraryGetById = async (request, response, next) => {
+    try {
+        const elibraryId = request.params.id
+        const checkingElibraryId = await Elibrary.findById({ _id: elibraryId })
+        
+        response.status(200).json(checkingElibraryId)
+    } catch (error) {
+        next(error)
+    }
+}
+export const elibraryUpdateById = async (request, response, next) => {
+    try {
+        const elibraryId = request.params.id
+        const checkElibrary = await Elibrary.findOne({ _id: elibraryId })
+
+        let elibrary
+        const uploadImage = async (imageFile) => {
+            let imageUrl
+            if (!imageFile) {
+                return null; // Return null if image is not provided
+            }
+            const url = request.protocol + '://' + request.get('host');
+            const uploadsDirectory = './data/uploads/';
+            const imageDirectory = 'images/';
+            const documentDirectory = 'documents/';
+            fs.access(uploadsDirectory, (err) => {
+                if (err) {
+                    fs.mkdirSync(uploadsDirectory, { recursive: true });
+                }
+            });
+            // Ensure that the images directory exists
+            fs.access(uploadsDirectory + imageDirectory, (err) => {
+                if (err) {
+                    fs.mkdirSync(uploadsDirectory + imageDirectory, { recursive: true });
+                }
+            });
+            // Ensure that the documents directory exists
+            fs.access(uploadsDirectory + documentDirectory, (err) => {
+                if (err) {
+                    fs.mkdirSync(uploadsDirectory + documentDirectory, { recursive: true });
+                }
+            });
+            if (imageFile.mimetype === 'image/jpeg' || imageFile.mimetype === 'image/jpg' || imageFile.mimetype === 'image/png') {
+                const formattedImageFileName = Date.now() + '-' + imageFile.originalname.split(' ').join('-');
+                imageUrl = url + '/' + imageDirectory + formattedImageFileName;
+                const imagePath = uploadsDirectory + imageDirectory + formattedImageFileName;
+                await sharp(imageFile.buffer).resize({ width: 600 }).toFile(imagePath);
+            }
+
+            // if (imageFile.mimetype === 'application/pdf') {
+            //     const formattedDocumentFileName = Date.now() + imageFile.originalname.split(' ').join('-');
+            //     imageUrl = url + '/' + documentDirectory + formattedDocumentFileName;
+            //     fs.writeFileSync(uploadsDirectory + documentDirectory + formattedDocumentFileName, imageFile.buffer);
+            // }
+            return imageUrl;
+        };
+        const data = request.body
+        const { category,  placeholdername, label, dates, description, approvedate, updated_at } = data
+        if (request.files.includes("image")) {
+            elibrary = {
+                category, placeholdername, label, dates, description, approvedate, updated_at, image: await uploadImage(request.files.find(img => img.fieldname === "image"))
+            }
+        }
+        else {
+            elibrary = {
+                category, placeholdername, label, dates, description, approvedate, updated_at
+            }
+        }
+        const updateElibrary = await Elibrary.findByIdAndUpdate({ _id: elibraryId }, elibrary, { new: true })
+        response.status(201).json(updateElibrary)
+    } catch (error) {
+        next(error)
+    }
+}
+export const elibraryRejectedDocs = async (request, response, next) => {
+    try {
+        let aggregation = [
+            {
+                $match: {
+                    status : {$eq : 2}
+                }
+            },
+            {
+                $lookup: {
+                    from: "companydatas",
+                    localField: "company",
+                    foreignField: "_id",
+                    as: "companyData"
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "executive",
+                    foreignField: "_id",
+                    as: "executiveData"
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    executive: {
+                        $concat: [
+                            { $arrayElemAt: ["$executiveData.firstName", 0] },
+                            " ",
+                            { $arrayElemAt: ["$executiveData.lastName", 0] }
+                        ]
+                    },
+                    company: { $arrayElemAt: ["$companyData.companyname", 0] },
+                    created_at : 1,
+                    status : 1, 
+                    rejected_at :1,
+                    reason : 1,
+                }
+            }
+        ]
+        const elibraryData = await Elibrary.aggregate(aggregation)
+        response.status(200).json(elibraryData)
+    } catch (error) {
+        next(error)
+    }
+}
+export const elibrarySaveandApprove = async (request, response, next) => { 
+    try {
+        //console.log(request.body);return;
+        const idsToUpdate = request.body.id;
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
+        const elibraryApprove = await Elibrary.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+        response.status(201).json(elibraryApprove);
+    } catch (error) {
+        next(error);
+    }
+}
+export const elibraryReject = async (request, response, next) => {
+    try {
+        const updateValues = { status: request.body.status, reason: request.body.reason, rejected_at: request.body.rejected_at };
+        const idsToUpdate = request.body.id;  
+        const elibraries = await Elibrary.updateMany(
+            { _id: { $in: idsToUpdate } }, // Match documents with IDs in the array
+            { $set: updateValues }, // Set the update values
+            { multi: true } // Update multiple documents
+          );
+        response.status(201).json(elibraries);
+    } catch (error) {
         next(error);
     }
 }
@@ -7353,10 +7572,11 @@ export const viewAllAssignedCompanyFilter = async (request, response, next) => {
             {
                 // Project stage corrected with object wrapper
                 $project: {
-                    companyname: 1,
+                    company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     created_at: 1,
                     branchname: 1,
-                    companystate: { $arrayElemAt: ["$stateData.name", 0] },
+                    assigndate:1,
+                    state: { $arrayElemAt: ["$stateData.name", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -7372,7 +7592,7 @@ export const viewAllAssignedCompanyFilter = async (request, response, next) => {
             gettingCompany.forEach(companyItem => {
                 companyItem.F1branch.forEach(branch => {
                     filteredData.forEach(filteredItem => {
-                        if (branch.id === filteredItem.branch) {
+                        if (branch.id === filteredItem.branchname) {
                             filteredItem.branchname = branch.name
                         }
                     })
@@ -7384,11 +7604,93 @@ export const viewAllAssignedCompanyFilter = async (request, response, next) => {
         next(error)
     }
 }
+// export const assignedCompanyFilter = async (request, response, next) => {
+//     try {
+//         const data = request.body
+//         const { company, state, branch, executive } = data
+//         const filters = { company, state, branch, executive }
+//         let matchStage = {}
+//         const filterKeys = Object.keys(filters).filter(key => filters[key] !== undefined && filters[key] !== "");
+
+//         // Build match stage based on filters
+//         console.log(filterKeys);
+//         if (filterKeys.length > 0) {
+//             for (const key of filterKeys) {
+//                 if (key === "company" || key === "state" || key === "executive") {
+//                     matchStage[key] = new mongoose.Types.ObjectId(filters[key]);
+//                 }
+//                 else if (key === "branch") {
+//                     matchStage[key] = branch
+//                 }
+//             }
+//         }
+
+//         const filteredData = await Assigncompany.aggregate([
+//             { $match: matchStage },
+//             {
+//                 $lookup: {
+//                     from: "states",
+//                     localField: "state",
+//                     foreignField: "_id",
+//                     as: "stateData"
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: "companydatas",
+//                     localField: "company",
+//                     foreignField: "_id",
+//                     as: "companyData"
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: "users",
+//                     localField: "executive",
+//                     foreignField: "_id",
+//                     as: "executiveData"
+//                 }
+//             },
+//             {
+//                 // Project stage corrected with object wrapper
+//                 $project: {
+//                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
+//                     created_at: 1,
+//                     branchname: 1,
+//                     assigndate:1,
+//                     state: { $arrayElemAt: ["$stateData.name", 0] },
+//                     executive: {
+//                         $concat: [
+//                             { $arrayElemAt: ["$executiveData.firstName", 0] },
+//                             " ",
+//                             { $arrayElemAt: ["$executiveData.lastName", 0] }
+//                         ]
+//                     }
+//                 }
+//             },
+//         ])
+//         if (filteredData.length > 0) {
+//             const gettingCompany = await Companydata.find({})
+//             gettingCompany.forEach(companyItem => {
+//                 companyItem.F1branch.forEach(branch => {
+//                     filteredData.forEach(filteredItem => {
+//                         if (branch.id === filteredItem.branchname) {
+//                             filteredItem.branchname = branch.name
+//                         }
+//                     })
+//                 })
+//             })
+//         }
+//         response.status(200).json(filteredData)
+//     } catch (error) {
+//         next(error)
+//     }
+// }
 export const assignedCompanyFilter = async (request, response, next) => {
     try {
         const data = request.body
-        const { company, state, branch, executive } = data
-        const filters = { company, state, branch, executive }
+        const { company, state, branchname, executive } = data
+        const filters = { company, state, branchname, executive }
         let matchStage = {}
         const filterKeys = Object.keys(filters).filter(key => filters[key] !== undefined && filters[key] !== "");
 
@@ -7399,8 +7701,8 @@ export const assignedCompanyFilter = async (request, response, next) => {
                 if (key === "company" || key === "state" || key === "executive") {
                     matchStage[key] = new mongoose.Types.ObjectId(filters[key]);
                 }
-                else if (key === "branch") {
-                    matchStage[key] = branch
+                else if (key === "branchname") {
+                    matchStage[key] = filters[key]
                 }
             }
         }
@@ -7434,10 +7736,11 @@ export const assignedCompanyFilter = async (request, response, next) => {
             {
                 // Project stage corrected with object wrapper
                 $project: {
-                    companyname: 1,
+                    company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     created_at: 1,
                     branchname: 1,
-                    companystate: { $arrayElemAt: ["$stateData.name", 0] },
+                    assigndate:1,
+                    state: { $arrayElemAt: ["$stateData.name", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -7453,7 +7756,7 @@ export const assignedCompanyFilter = async (request, response, next) => {
             gettingCompany.forEach(companyItem => {
                 companyItem.F1branch.forEach(branch => {
                     filteredData.forEach(filteredItem => {
-                        if (branch.id === filteredItem.branch) {
+                        if (branch.id === filteredItem.branchname) {
                             filteredItem.branchname = branch.name
                         }
                     })

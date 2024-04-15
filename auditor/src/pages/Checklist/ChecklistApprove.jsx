@@ -6,18 +6,19 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Highlighter from 'react-highlight-words';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
+import { Button, Input, Space, Table ,Modal,Form,message, Checkbox} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 import ChecklistPopup from './ChecklistPopup';
 import Popup from "../../components/Popup";
-import {checklistGetApprove,checklistsReject,usersGet,stateGets,branchGet,companyGet,checklistsApproveFilter,checklistSaveandApprove} from "../../store/actions/otherActions";
+import {checklistGetApprove,checklistsReject,usersGet,stateGets,branchGet,companyGet,checklistsApproveFilter,checklistSaveandApprove,companyTableGet} from "../../store/actions/otherActions";
 import Loading from '../../components/layout/Loading';
 
 const ChecklistApprove = () =>{
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const searchInput = useRef(null);
+    const [selectedRows1, setSelectedRows1] = useState([]);
     const [openPopup, setOpenPopup] = useState(false);
     const [pageTitle, setPageTitle] = useState('');
     const [modalWidth, setModalWidth] = useState();
@@ -30,7 +31,7 @@ const ChecklistApprove = () =>{
     const [state, setState] = useState('');
     const [executive, setUser] = useState('');
     const [company, setCompany] = useState('');
-    const [branch,setBranch] = useState('');
+    const [branch,setBranch] = useState([]);
     const [approveIds,setApproveIds] = useState('');
     const myElementRefState = useRef(null);
     const myElementRefDate = useRef(null);
@@ -39,6 +40,7 @@ const ChecklistApprove = () =>{
     const myElementRefUser = useRef(null);
     //const [loading, setLoading] = useState(false);
     let defaultDate = new Date()
+    let selectedRowIds1 = [];
     // defaultDate.setDate(defaultDate.getDate() )
     //alert(clickvalue)
     //const [date, setDate] = useState(defaultDate)
@@ -51,11 +53,14 @@ const ChecklistApprove = () =>{
     const { loadingu,complianceInfoUpdateId } = complianceByIdUpdate; 
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
-    
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
+    // console.log(companyGetTableInfo[0]._id);
     const userGet = useSelector((state) => state.userGet);
     const { usersInfo } = userGet;  
     const getBranch = useSelector((state) => state.getBranch);
     const { branchInfo } = getBranch; 
+    console.log(branchInfo);
     const getCompney = useSelector((state) => state.getCompney);
     const { companyInfo } = getCompney; 
    // console.log(checklistInfoApprove)
@@ -92,11 +97,28 @@ const ChecklistApprove = () =>{
         dispatch(checklistGetApprove());
         dispatch(stateGets());
         dispatch(usersGet());
-        dispatch(branchGet());
-        dispatch(companyGet());
+        // dispatch(companyGet());
+        const elementcompanybranch = myElementRefCompany.current;
+        const postBody = {
+          id : elementcompanybranch.value
+        }
+        if (elementcompanybranch) {
+          dispatch(branchGet(postBody));
+        }
+        dispatch(companyTableGet());
     },[dispatch])
+    const getBbranch = (company) => {
+       const elementcompanybranch = myElementRefCompany.current;
+       const postBody = {
+        id : elementcompanybranch.value
+      }
+       dispatch(branchGet(postBody));
+    }
     useEffect(() => {
-      
+      setShowTable1(showTable1);
+      if(showTable1===false){
+        toggleTables();
+      }
       let complianceArrApprove = [];
       let complianceArrForApprovePageIds = [];
         if (typeof (checklistInfoApprove) !== 'undefined' && checklistInfoApprove?.length > 0 ) {
@@ -116,7 +138,7 @@ const ChecklistApprove = () =>{
                 documents:<a href={item.documents} target="_blank">Document</a>,
                 frequency:item.frequency,
                 branchname:item.branchname,
-                risk:item.risk,
+                risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 created_at:formatDate(item.created_at),
                 approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
                 executive:'Admin',
@@ -126,9 +148,9 @@ const ChecklistApprove = () =>{
         setApproveIds(complianceArrForApprovePageIds)
         setDataSource(complianceArrApprove);
     },[checklistInfoApprove])
-    console.log(approveIds);///important to discuss with shivam
+    // console.log(approveIds);///important to discuss with shivam
     const resetForm = () => {
-        // alert(state)
+         setSelectedRows1([]);
          setState('');
          setDate('');
          setUser('');
@@ -137,7 +159,10 @@ const ChecklistApprove = () =>{
         resetForm();
     },[checklistInfoApprove])
     useEffect(() => {
-        //  alert('2')
+      setShowTable1(showTable1);
+      if(showTable1===false){
+        toggleTables();
+      }
         let checklistApproveFilterArr = [];
           if (typeof (checklistApproveFilter) !== 'undefined' && checklistApproveFilter?.length > 0 ) {
               //alert(categoryInfo?.length);
@@ -155,7 +180,7 @@ const ChecklistApprove = () =>{
                   documents:<a href={item.documents} target="_blank">Document</a>,
                   frequency:item.frequency,
                   branchname:item.branchname,
-                  risk:item.risk,
+                  risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
                   executive:'Admin',
@@ -290,21 +315,88 @@ const ChecklistApprove = () =>{
     //         dispatch(checklistsGet());
     //     }, 2000);
     // } 
+    ////Reject modal handling functions start
+    const [visible, setVisible] = useState(false);
+    const [formData, setFormData] = useState({
+      username: '',
+    });
+    const [errors, setErrors] = useState({});
+  
+    const showModal = () => {
+      if (selectedRows1.length === 0) {
+        Modal.error({
+          title: 'Error',
+          content: 'Please select at least one checklist from list.',
+        });
+        // <Alert
+        //   message="Error"
+        //   description="Please select at least one item from list."
+        //   type="error"
+        //   showIcon
+        // />
+        return;
+      }
+      setVisible(true);
+    };
+  
+    const handleCancel = () => {
+      setVisible(false);
+    };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      };
+    
+      const handleSubmitModal = (e) => {
+        e.preventDefault();
+        // alert(''); return;
+
+        const postBody = {
+          rejected_at: defaultDate,
+          status:2,
+          reason:reason,
+          id:selectedRowIds1
+      }
+      dispatch(checklistsReject(postBody));//relodreport
+      relodreport();
+        console.log('Form submitted:', formData);
+        setVisible(false);
+      };
+    
+    ////Reject modal handling functions ends
     const reject = () => {
         const postBody = {
             rejected_at: defaultDate,
             status:2,
-            reason:reason
+            reason:reason,
+            id:selectedRowIds1
         }
         dispatch(checklistsReject(postBody));//relodreport
         relodreport();
     }     
     const saveandapprove = () => {
+      if (selectedRows1.length === 0) {
+        Modal.error({
+          title: 'Error',
+          content: 'Please select at least one checklist from list.',
+        });
+        // <Alert
+        //   message="Error"
+        //   description="Please select at least one item from list."
+        //   type="error"
+        //   showIcon
+        // />
+        return;
+      }
       const postBody = {
           approvedate: defaultDate,
-          status:1
+          status:1,
+          id:selectedRowIds1
       }
-     // dispatch(checklistSaveandApprove(postBody));//relodreport
+      dispatch(checklistSaveandApprove(postBody));//relodreport
       relodreport();
   }
     const filter = () => {
@@ -322,12 +414,58 @@ const ChecklistApprove = () =>{
         }
          dispatch(checklistsApproveFilter(postBody));
     }
+    const handleSelectAllRows = (checked) => {
+      if (checked) {
+        setSelectedRows1(dataSource);
+      } else {
+        setSelectedRows1([]);
+      }
+    };
+  
+    const handleDeselectAllRows = () => {
+      setSelectedRows1([]);
+    };
+  
+    const handleCheckboxChange = (e, record) => {
+      const { checked } = e.target;
+      setSelectedRows1((prevSelectedRows) => {
+        if (checked) {
+          return [...prevSelectedRows, record];
+        } else {
+          return prevSelectedRows.filter((row) => row.id !== record.id);
+        }
+      });
+    };
+  
+    const isSelected = (record) => {
+      return selectedRows1 && selectedRows1.some((row) => row.id === record.id);
+    };
     const columns = [
+      {
+        title: (
+            <Checkbox
+                onChange={(e) =>
+                    e.target.checked
+                    ? handleSelectAllRows()
+                    : handleDeselectAllRows()
+                }
+                />
+          ),
+          dataIndex: 'checkbox',
+          key: 'checkbox',
+          width: 20,
+          render: (text, record) => (
+            <Checkbox
+              onChange={(e) => handleCheckboxChange(e, record)}
+              checked={isSelected(record)}
+            />
+          ),
+        },
         {
           title: 'Sr. No.',
           dataIndex: 'key',
           key: 'key',
-          width: 70,
+          width: 40,
          // ...getColumnSearchProps('key'),
          // sorter: (a, b) => a.key.length - b.key.length,
          // sortDirections: ['descend', 'ascend']
@@ -336,92 +474,20 @@ const ChecklistApprove = () =>{
             title: 'State',
             dataIndex: 'state',
             key: 'state',
-            width: 150,
+            width: 100,
             ...getColumnSearchProps('state'),
             sorter: (a, b) => a.state.length - b.state.length,
             sortDirections: ['descend', 'ascend']
-          },
-        // {
-        //   title: 'Category',
-        //   dataIndex: 'category',
-        //   key: 'category',
-        //   width: '40%',
-        //   ...getColumnSearchProps('category'),
-        //   sorter: (a, b) => a.category.length - b.category.length,
-        //   sortDirections: ['descend', 'ascend']
-        // },
-        // {
-        //   title: 'Act',
-        //   dataIndex: 'compliance',
-        //   key: 'compliance',
-        //   width: 100,
-        //   ...getColumnSearchProps('act'),
-        //   sorter: (a, b) => a.act.length - b.act.length,
-        //   sortDirections: ['descend', 'ascend']
-        // },
-        // {
-        //     title: 'Rule',
-        //     dataIndex: 'rule',
-        //     key: 'rule',
-        //     width: 200,
-        //     ...getColumnSearchProps('rule'),
-        //     sorter: (a, b) => a.rule.length - b.rule.length,
-        //     sortDirections: ['descend', 'ascend']
-        // },
-        // {
-        //     title: 'Category',
-        //     dataIndex: 'category',
-        //     key: 'category',
-        //     width: 100,
-        //     ...getColumnSearchProps('category'),
-        //     sorter: (a, b) => a.category.length - b.category.length,
-        //     sortDirections: ['descend', 'ascend']
-        // },
-        // {
-        //     title: 'Question',
-        //     dataIndex: 'question',
-        //     key: 'question',
-        //     width: 300,
-        //     // ...getColumnSearchProps('question'),
-        //     // sorter: (a, b) => a.question.length - b.question.length,
-        //     // sortDirections: ['descend', 'ascend']
-        // },
-        // {
-        //     title: 'Description',
-        //     dataIndex: 'description',
-        //     key: 'description',
-        //     width: 300,
-        //     // ...getColumnSearchProps('question'),
-        //     // sorter: (a, b) => a.question.length - b.question.length,
-        //     // sortDirections: ['descend', 'ascend']
-        // },
-        // {
-        //     title: 'Form',
-        //     dataIndex: 'image',
-        //     key: 'image',
-        //     width: 100,
-        // //    ...getColumnSearchProps('image'),
-        //  //   sorter: (a, b) => a.image.length - b.image.length,
-        //  //   sortDirections: ['descend', 'ascend']
-        // },
+        },
         {
             title: 'URL/Link',
             dataIndex: 'documents',
             key: 'documents',
-            width: 100,
+            width: 60,
            // ...getColumnSearchProps('documents'),
            // sorter: (a, b) => a.image.length - b.image.length,
            // sortDirections: ['descend', 'ascend']
         },
-        // {
-        //     title: 'Branch Name',
-        //     dataIndex: 'branchname',
-        //     key: 'branchname',
-        //     width: 70,
-        //     // ...getColumnSearchProps('branchname'),
-        //     // sorter: (a, b) => a.branchname.length - b.branchname.length,
-        //     // sortDirections: ['descend', 'ascend']
-        // },
         {
             title: 'Last Updated Date',
             dataIndex: 'updated_at',
@@ -431,24 +497,6 @@ const ChecklistApprove = () =>{
             // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
             // sortDirections: ['descend', 'ascend']
         }, 
-        // {
-        //     title: 'Recurrence',
-        //     dataIndex: 'frequency',
-        //     key: 'frequency',
-        //     width: 70,
-        //    // ...getColumnSearchProps('frequency'),
-        //    // sorter: (a, b) => a.frequency.length - b.frequency.length,
-        //    // sortDirections: ['descend', 'ascend']
-        // },    
-        // {
-        //     title: 'Approve Date',
-        //     dataIndex: 'approvedate',
-        //     key: 'approvedate',
-        //     width: 100,
-        //     // ...getColumnSearchProps('approvedate'),
-        //     // sorter: (a, b) => a.approvedate.length - b.approvedate.length,
-        //     // sortDirections: ['descend', 'ascend']
-        // }, 
         {
             title: 'Executive',
             dataIndex: 'executive',
@@ -458,36 +506,41 @@ const ChecklistApprove = () =>{
             // sorter: (a, b) => a.executive.length - b.executive.length,
             // sortDirections: ['descend', 'ascend']
         },            
-        // {
-        //     title: 'Risk',
-        //     dataIndex: 'risk',
-        //     key: 'risk',
-        //     width: 100,
-        //     // ...getColumnSearchProps('executive'),
-        //     sorter: (a, b) => a.risk.length - b.risk.length,
-        //     sortDirections: ['descend', 'ascend']
-        // }, 
         { 
             key: "action", 
             title: "Actions", 
             width: 100,
             render: (record) => { 
-                //console.log(JSON.stringify(record))
               return (
                 <>
+                <Link className='text-white btn btn-dark text-decoration-none' onClick={toggleTables}> View <VisibilityOffIcon fontSize='mediam' /></Link>
                   <Link className='text-white btn btn-primary text-decoration-none mx-2' onClick={() => openInPopupForUpdate(record)}> Edit <EditIcon fontSize='mediam' /> </Link>
-                  {/* <DeleteOutlined
-                    onClick={(e) => {
-                      onDeleteUer(record);
-                    }}
-                    style={{ color: "red", marginLeft: 12 }}
-                  /> */}
                 </>
               );
             }, 
         }, 
     ];
     const columns1 = [
+      {
+        title: (
+            <Checkbox
+                onChange={(e) =>
+                    e.target.checked
+                    ? handleSelectAllRows()
+                    : handleDeselectAllRows()
+                }
+                />
+          ),
+          dataIndex: 'checkbox',
+          key: 'checkbox',
+          width: 20,
+          render: (text, record) => (
+            <Checkbox
+              onChange={(e) => handleCheckboxChange(e, record)}
+              checked={isSelected(record)}
+            />
+          ),
+        },
         {
           title: 'Sr. No.',
           dataIndex: 'key',
@@ -652,18 +705,21 @@ const ChecklistApprove = () =>{
             }, 
         }, 
     ];
+    selectedRowIds1 = selectedRows1.map((row) => row.id);
+    console.log(selectedRowIds1);
     return (
         <React.Fragment>
+          <>
           <div className="container">
               <div className="row">
                   <div className="col-lg-12">
                     <div className="row">
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                            <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter();}} required>
+                            <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter();getBbranch(e.target.value)}} required>
                                 <option value="">Select Company</option>
-                            {companyInfo != 'undefind' && companyInfo?.length > 0 && companyInfo.map(item => 
-                                <option value={item._id}>{item.companyname}</option>
-                            )};
+                                {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                                  <option value={item._id}>{item.companyname}</option>
+                                )};
                             </select>
                         </div>   
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
@@ -678,7 +734,7 @@ const ChecklistApprove = () =>{
                             <select className="form-select" ref={myElementRefBranch} aria-label="Default select example" id="branch" name="branch"   onChange= {(e)=>{setBranch(e.target.value);filter();}} value={branch} required>
                             <option value="">Select Branch</option>
                             {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                            <option value={item._id}>{item.name}</option>
+                            <option value={item.id}>{item.name}</option>
                             )};
                             </select>
                         </div>   
@@ -694,10 +750,10 @@ const ChecklistApprove = () =>{
                             <input type="date" className="form-control" id="dates" ref={myElementRefDate} placeholder='Date' value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                         </div>
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                            <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={saveandapprove}>Save And Apporove</button>
+                            <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={saveandapprove}>Save And Approve</button>
                         </div>
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                            <button type="submit" className="w-100 btn btn-danger" disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={reject}>Reject</button>
+                            <button type="submit" className="w-100 btn btn-danger" disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } /*onClick={reject}*/ onClick={showModal}>Reject</button>
                         </div>
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                             <button type="submit" className="w-100 btn btn-primary" disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={toggleTables}>Edit</button>
@@ -705,12 +761,12 @@ const ChecklistApprove = () =>{
                         <div className="col-12 col-lg-12">
                             <div className="card p-3 ">
                                 <div className="table-responsive">
-                                {loadingApprove && <Loading />}    
-                                {/* {showTable1 ? (
-                                        <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 3500 }} sticky={true}/>
-                                    ) : ( */}
+                                {(loadingApprove || loadingu) && <Loading />}    
+                                {showTable1 ? (
+                                        <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1150 }} sticky={true}/>
+                                    ) : (
                                         <Table dataSource={dataSource} columns={columns1} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 3500 }} sticky={true}/>
-                                    {/* )} */}
+                                    )} 
                                       <Popup openPopup={openPopup} pageTitle={pageTitle} setOpenPopup={setOpenPopup} modalWidth={modalWidth}>
                                                     {(openPopup) && <ChecklistPopup addOrEdit={(e) => addOrEdit(e)} recordForEdit={recordForEdit} />}
                                       </Popup>
@@ -721,6 +777,40 @@ const ChecklistApprove = () =>{
                 </div>
             </div>
       </div>
+      <div>
+      <Modal
+        title={<span style={{ color: 'red', fontWeight: 'bold' }}>Reason</span>}
+        visible={visible}
+        onCancel={handleCancel}
+        footer={null}
+        width="30%"
+      >
+        <form onSubmit={handleSubmitModal}>
+          <div>
+            <label htmlFor="reason">Reason:</label>
+            <textarea
+              type="text"
+              id="reason"
+              name="reason"
+              class="form-control"
+              row="4"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              required
+            />
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <button key="cancel" onClick={handleCancel} style={{ width: '170px', backgroundColor: '#050505', color: 'white', borderRadius: '5%', border: 'none', marginRight: '10px' }}>
+                Cancel
+              </button>
+              <button key="submit" type="primary" style={{ width: '170px', backgroundColor: '#293094', color: 'white', borderRadius: '5%', border: 'none' }}>
+                Submit
+              </button>
+            </div>
+          </div>
+        </form>
+      </Modal>
+    </div>
+      </>
     </React.Fragment>    
     )
 }

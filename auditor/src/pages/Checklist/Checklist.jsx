@@ -6,10 +6,10 @@ import Highlighter from 'react-highlight-words';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
+import { Button, Input, Space, Table ,Modal,Form,Alert, Checkbox} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {checklistGetAll,checklistGetonCreate,stateGets,branchGet,companyGet,checklistSaveandApprove,checklistCreateFilters,checklistGetApprove,checklistGetOnreject} from "../../store/actions/otherActions";
+import {checklistGetAll,checklistGetonCreate,stateGets,branchGet,companyGet,checklistSaveandApprove,checklistCreateFilters,checklistGetApprove,checklistGetOnreject,companyTableGet,getComplianceBycandsId} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 import ChecklistPopup from './ChecklistPopup';
 import Loading from '../../components/layout/Loading';
@@ -27,6 +27,7 @@ const Checklist = () => {
     const { loadingu,usersInfo } = userGet;  
     const getBranch = useSelector((state) => state.getBranch);
     const { branchInfo } = getBranch; 
+    console.log(branchInfo);
     const getCompney = useSelector((state) => state.getCompney);
     const { companyInfo } = getCompney; 
     const checklistGet = useSelector((state) => state.checklistGet);
@@ -35,37 +36,53 @@ const Checklist = () => {
     const { loadingChecklist,checklistInfo } = checklist; 
     const getCheckOnCreate = useSelector((state) => state.getCheckOnCreate);
     const { loadingoncreate,checklistInfoOnCreate } = getCheckOnCreate; 
-     console.log(checklistInfoOnCreate);
-    //console.log(checklistInfoOnCreate);
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
+    
+    // const getCompbyCS = useSelector(state => state.getCompbyCS)
+    // const {loadingcs, complianceGetttingByCSIDInfo } = getCompbyCS;
+    // console.log(complianceGetttingByCSIDInfo);
     //console.log(usersInfo);
     const filterCreateChecklist = useSelector((state) => state.filterCreateChecklist);
     const { loadingcreatefilter,checklistInfoFilter } = filterCreateChecklist; 
+    console.log(checklistInfoFilter)
+    const [compliancedata, setcompliancedata] = useState([]);
     const searchInput = useRef(null);
-    const [open, setOpen] = useState(false);
+    const [selectedRows, setSelectedRows] = useState([]);  //for checkbox
+    const [selectAll, setSelectAll] = useState(false); //for checkbox all
+    const [name, setName] = useState(false);
     const [openPopup, setOpenPopup] = useState(false); 
     const [pageTitle, setPageTitle] = useState('');
     const [modalWidth, setModalWidth] = useState();
+    const [showTable1, setShowTable1] = useState(true);
     const [recordForEdit, setRecordForEdit] = useState(null);
     const [dataSource, setDataSource] = useState();
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [state, setState] = useState('');
     const [company, setCompany] = useState('');
-    const [branch,setBranch] = useState('');
-    const [dateupdate, setDateUpdate] = useState('');
+    const [branch,setBranch] = useState([]);
+    const [assigneddate, setAssigneddate] = useState('');
     const myElementRefState = useRef(null);
     const myElementRefDate = useRef(null);
     const myElementRefCompany = useRef(null);
     const myElementRefBranch = useRef(null);
-    //const [loading, setLoading] = useState(false); 
+    console.log(compliancedata)
     let defaultDate = new Date()
     defaultDate.setDate(defaultDate.getDate() )
-
+    let selectedRowIds = [];
     //const [date, setDate] = useState(defaultDate)
     const [date, setDate] = useState('');
-    // const onSetDate = (event) => {
-    //     setDate(new Date(event.target.value))
-    // }
+    useEffect(() => {
+      const saved = localStorage.getItem("userInfo");
+      if(saved){
+          const initialValue = JSON.parse(saved);
+          if(initialValue)
+          {
+          setName(initialValue.name);
+          }
+      }
+    },[usersInfo]);
     const openInPopupForUpdate = (item) => {
         setRecordForEdit(item);
         setOpenPopup(true);
@@ -84,6 +101,9 @@ const Checklist = () => {
         setRecordForEdit(null);
       //  setPageTitle('Add Checklist');
         setOpenPopup(false);
+    }
+    const toggleTables = () =>{
+      setShowTable1(!showTable1)
     }
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -195,77 +215,126 @@ const Checklist = () => {
         }, 5000);
         
     }   
+    
     useEffect(() => {
         dispatch(stateGets());
-        dispatch(branchGet());
-        dispatch(companyGet());
+        const elementcompanybranch = myElementRefCompany.current;
+        const postBody = {
+          id : elementcompanybranch.value
+        }
+        if (elementcompanybranch) {
+          dispatch(branchGet(postBody));
+        }
+        // dispatch(companyGet());
         dispatch(checklistGetonCreate());
-        dispatch(checklistGetAll());
-        dispatch(checklistGetApprove());
-        dispatch(checklistGetOnreject());
-        
+        dispatch(companyTableGet());
     },[dispatch])
+    const getBbranch = (company) => {
+      const elementcompanybranch = myElementRefCompany.current;
+      const postBody = {
+       id : elementcompanybranch.value
+     }
+      dispatch(branchGet(postBody));
+    }
     useEffect(() => {
-        //  alert('2')
+      setShowTable1(showTable1);
+      if(showTable1===false){
+        toggleTables();
+      }
         let checklistOnCreateArr = [];
           if (typeof (checklistInfoOnCreate) !== 'undefined' && checklistInfoOnCreate?.length > 0 ) {
-              //alert(categoryInfo?.length);
+            // alert('checklist')
+            // alert('checklist')
               checklistInfoOnCreate.map((item, index) => {
+                // if(item.category._id && item.state._id)
+                // {
+                //   dispatch(getComplianceBycandsId(item.category._id,item.state._id))
+                // }
                 checklistOnCreateArr.push({
                   key:index+1,
                   id: item._id,
-                  state:item.state,
+                  company:item.company,
+                  state:item.state.name,
                   compliance: item.compliance,
                   rule:<div className='new-line'>{item.rule}</div>,
-                  category:item.category,
+                  category:item.category.name,
                   question:<div className='new-line'>{item.question}</div>,
                   description:<div className='new-line'>{item.description}</div>,
                   image:<a href={item.image} target="_blank">Form</a>,
                   documents:<a href={item.documents} target="_blank">Document</a>,
                   frequency:item.frequency,
                   branchname:item.branchname,
-                  risk:item.risk,
+                  risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                  executive:'Admin',
+                  executive:name?'admin':item.executive,
                 })
             });
           }
           setDataSource(checklistOnCreateArr);
       },[checklistInfoOnCreate])
       const resetForm = () => {
-        // alert(state)
+         setSelectedRows([]);
          setState('');
          setCompany('');
-         setDateUpdate('');
+         setAssigneddate('');
          setBranch('');
     }
     useEffect(() => {
          resetForm();
     },[checklistInfoOnCreate])
       useEffect(() => {
-        //  alert('2')
+        setShowTable1(showTable1);
+        if(showTable1===false){
+          toggleTables();
+        }
         let checklistOnCreateFilterArr = [];
+        let acts;
+        let images;
+        let document;
           if (typeof (checklistInfoFilter) !== 'undefined' && checklistInfoFilter?.length > 0 ) {
-              //alert(categoryInfo?.length);
+              // alert('compliances')
+              setcompliancedata('compliances')
               checklistInfoFilter.map((item, index) => {
+                if(item.compliance){
+                  acts = item.compliance
+                }
+                else{
+                  acts = item.act
+                }
+                if(item.image){
+                  images = <a href={item.image} target="_blank">Form</a>
+                }
+                else{
+                  images = <a href={item.form} target="_blank">Form</a>
+                }
+                if(item.documents){
+                  document = <a href={item.documents} target="_blank">Document</a>
+                }
+                else{
+                  document = <a href={item.docattachment} target="_blank">Document</a>
+                }
                 checklistOnCreateFilterArr.push({
                   key:index+1,
                   id: item._id,
-                  state:item.state,
-                  compliance: item.compliance,
+                  company:item.company,
+                  state:item.state.name,
+                  compliance: acts,
                   rule:<div className='new-line'>{item.rule}</div>,
-                  category:item.category,
+                  category:item.category.name,
                   question:<div className='new-line'>{item.question}</div>,
                   description:<div className='new-line'>{item.description}</div>,
-                  image:<a href={item.image} target="_blank">Form</a>,
-                  documents:<a href={item.documents} target="_blank">Document</a>,
+                  // image:<a href={item.image} target="_blank">Form</a>,
+                  // documents:<a href={item.documents} target="_blank">Document</a>,
+                  image:images,
+                  documents:document,
                   frequency:item.frequency,
                   branchname:item.branchname,
-                  risk:item.risk,
+                  risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   created_at:formatDate(item.created_at),
-                  approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                  executive:'Admin',
+                  approvedate:(item.approvedate)!==undefined?formatDate(item.approvedate):(item.approvedate),
+                  duedate:(item.duedate)!==undefined?formatDate(item.duedate):(item.duedate),
+                  executive:name?'admin':item.executive,
                 })
             });
           }
@@ -282,8 +351,168 @@ const Checklist = () => {
   
         const formattedDateTime = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
         return (formattedDateTime);
+    }
+  ///new logic for checklist and copliance both togather
+   const handleSelectAllRows = (checked) => {
+    if (checked) {
+      setSelectedRows(dataSource);
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
+  const handleDeselectAllRows = () => {
+    setSelectedRows([]);
+  };
+
+  const handleCheckboxChange = (e, record) => {
+    const { checked } = e.target;
+    setSelectedRows((prevSelectedRows) => {
+      if (checked) {
+        return [...prevSelectedRows, record];
+      } else {
+        return prevSelectedRows.filter((row) => row.id !== record.id);
       }
+    });
+  };
+
+  const isSelected = (record) => {
+    return selectedRows && selectedRows.some((row) => row.id === record.id);
+  };
     const columns = [
+      {
+        title: (
+            <Checkbox
+                onChange={(e) =>
+                    e.target.checked
+                    ? handleSelectAllRows(e.target.checked)
+                    : handleDeselectAllRows()
+                }
+                />
+          ),
+          dataIndex: 'checkbox',
+          key: 'checkbox',
+          width: 20,
+          render: (text, record) => (
+            <Checkbox
+              onChange={(e) => handleCheckboxChange(e, record)}
+              checked={isSelected(record)}
+            />
+          ),
+        },
+        {
+          title: 'Sr. No.',
+          dataIndex: 'key',
+          key: 'key',
+          width: 50,
+         // ...getColumnSearchProps('key'),
+         // sorter: (a, b) => a.key.length - b.key.length,
+         // sortDirections: ['descend', 'ascend']
+        },
+        {
+          title: 'Company',
+          dataIndex: 'company',
+          key: 'company',
+          width: 100,
+          // ...getColumnSearchProps('company'),
+          sorter: (a, b) => a.company.length - b.company.length,
+          sortDirections: ['descend', 'ascend']
+        },
+        {
+            title: 'State',
+            dataIndex: 'state',
+            key: 'state',
+            width: 100,
+            ...getColumnSearchProps('state'),
+            sorter: (a, b) => a.state.length - b.state.length,
+            sortDirections: ['descend', 'ascend']
+          },
+        {
+            title: 'Branch Name',
+            dataIndex: 'branchname',
+            key: 'branchname',
+            width: 70,
+            // ...getColumnSearchProps('branchname'),
+            // sorter: (a, b) => a.branchname.length - b.branchname.length,
+            // sortDirections: ['descend', 'ascend']
+        },
+        {
+            title: 'Created Date',
+            dataIndex: 'created_at',
+            key: 'createdAt',
+            width: 130,
+            // ...getColumnSearchProps('createdAt'),
+            // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
+            // sortDirections: ['descend', 'ascend']
+        },   
+        {
+            title: 'Approve Date',
+            dataIndex: 'approvedate',
+            key: 'approvedate',
+            width: 130,
+            // ...getColumnSearchProps('approvedate'),
+            // sorter: (a, b) => a.approvedate.length - b.approvedate.length,
+            // sortDirections: ['descend', 'ascend']
+        }, 
+        {
+          title: 'Due Date',
+          dataIndex: 'duedate',
+          key: 'duedate',
+          width: 130,
+          // ...getColumnSearchProps('approvedate'),
+          // sorter: (a, b) => a.approvedate.length - b.approvedate.length,
+          // sortDirections: ['descend', 'ascend']
+        }, 
+        {
+            title: 'Executive',
+            dataIndex: 'executive',
+            key: 'executive',
+            width: 100,
+            // ...getColumnSearchProps('executive'),
+            // sorter: (a, b) => a.executive.length - b.executive.length,
+            // sortDirections: ['descend', 'ascend']
+        },            
+        { 
+            key: "action", 
+            title: "Actions", 
+            width: 150,
+            render: (record) => { 
+                //console.log(JSON.stringify(record))
+              return (
+                <><Link className='text-white btn btn-dark text-decoration-none' onClick={toggleTables}> View           <VisibilityOffIcon fontSize='mediam' /></Link>
+                  <Link className='text-white btn btn-primary text-decoration-none mx-2' onClick={() => openInPopupForUpdate(record)}> Edit <EditIcon fontSize='mediam' /> </Link>
+                  {/* <DeleteOutlined
+                    onClick={(e) => {
+                      onDeleteUer(record);
+                    }}
+                    style={{ color: "red", marginLeft: 12 }}
+                  /> */}
+                </>
+              );
+            }, 
+        }, 
+    ];
+    const columns1 = [
+      {
+        title: (
+            <Checkbox
+                onChange={(e) =>
+                    e.target.checked
+                    ? handleSelectAllRows(e.target.checked)
+                    : handleDeselectAllRows()
+                }
+                />
+          ),
+          dataIndex: 'checkbox',
+          key: 'checkbox',
+          width: 20,
+          render: (text, record) => (
+            <Checkbox
+              onChange={(e) => handleCheckboxChange(e, record)}
+              checked={isSelected(record)}
+            />
+          ),
+        },
         {
           title: 'Sr. No.',
           dataIndex: 'key',
@@ -294,23 +523,23 @@ const Checklist = () => {
          // sortDirections: ['descend', 'ascend']
         },
         {
+          title: 'Company',
+          dataIndex: 'company',
+          key: 'company',
+          width: 100,
+          // ...getColumnSearchProps('company'),
+          sorter: (a, b) => a.company.length - b.company.length,
+          sortDirections: ['descend', 'ascend']
+        },
+        {
             title: 'State',
             dataIndex: 'state',
             key: 'state',
-            width: 150,
+            width: 100,
             ...getColumnSearchProps('state'),
             sorter: (a, b) => a.state.length - b.state.length,
             sortDirections: ['descend', 'ascend']
           },
-        // {
-        //   title: 'Category',
-        //   dataIndex: 'category',
-        //   key: 'category',
-        //   width: '40%',
-        //   ...getColumnSearchProps('category'),
-        //   sorter: (a, b) => a.category.length - b.category.length,
-        //   sortDirections: ['descend', 'ascend']
-        // },
         {
           title: 'Act',
           dataIndex: 'compliance',
@@ -342,7 +571,7 @@ const Checklist = () => {
             title: <div style={{ textAlign: 'center' }}>Question</div>,
             dataIndex: 'question',
             key: 'question',
-            width: 300,
+            width: 200,
             // ...getColumnSearchProps('question'),
             // sorter: (a, b) => a.question.length - b.question.length,
             // sortDirections: ['descend', 'ascend']
@@ -351,7 +580,7 @@ const Checklist = () => {
           title: <div style={{ textAlign: 'center' }}>Description</div>,
             dataIndex: 'description',
             key: 'description',
-            width: 300,
+            width: 200,
             // ...getColumnSearchProps('question'),
             // sorter: (a, b) => a.question.length - b.question.length,
             // sortDirections: ['descend', 'ascend']
@@ -384,7 +613,7 @@ const Checklist = () => {
             // sortDirections: ['descend', 'ascend']
         },
         {
-            title: 'Create Date',
+            title: 'Created Date',
             dataIndex: 'created_at',
             key: 'createdAt',
             width: 100,
@@ -410,6 +639,15 @@ const Checklist = () => {
             // sorter: (a, b) => a.approvedate.length - b.approvedate.length,
             // sortDirections: ['descend', 'ascend']
         }, 
+        {
+          title: 'Due Date',
+          dataIndex: 'duedate',
+          key: 'duedate',
+          width: 100,
+          // ...getColumnSearchProps('createdAt'),
+          // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
+          // sortDirections: ['descend', 'ascend']
+        },
         {
             title: 'Executive',
             dataIndex: 'executive',
@@ -448,6 +686,19 @@ const Checklist = () => {
             }, 
         }, 
     ];
+    // if(compliances)
+    selectedRowIds = selectedRows.map((row,index) => {
+      if(row.company === undefined || row.company === null || row.company === '' ){
+        // eslint-disable-next-line no-unused-expressions
+        return row.id+'-c'//+(index);
+      }
+      else{
+        // eslint-disable-next-line no-unused-expressions
+        return row.id
+      }
+    });
+    // else
+    console.log(selectedRowIds);
     const calling = () =>{
         setTimeout(() => {
             dispatch(checklistGetAll());
@@ -469,10 +720,25 @@ const Checklist = () => {
             dispatch(checklistGetOnreject());
         }, 2000);
     }
-    const saveandapprove = () => {
+    const saveandapprove = (e) => {
+        e.preventDefault();
+        if (selectedRows.length === 0) {
+          Modal.error({
+            title: 'Error',
+            content: 'Please select at least one checklist from list.',
+          });
+          // <Alert
+          //   message="Error"
+          //   description="Please select at least one item from list."
+          //   type="error"
+          //   showIcon
+          // />
+          return;
+        }
         const postBody = {
             approvedate: defaultDate,
-            status:1
+            status:1,
+            id:selectedRowIds
         }
         dispatch(checklistSaveandApprove(postBody));//relodreport
         relodreport();
@@ -523,11 +789,11 @@ const Checklist = () => {
                                 <div className="tab-pane fade" id="creative-pill" role="tabpanel" aria-labelledby="creative-tab">
                                     <div className="row">
                                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                                            <select className="form-select" aria-label="Default select example"         id="companies" name="company" ref={myElementRefCompany} value={company} onChange={(e)=>{setCompany(e.target.value);filter()}} required>
+                                            <select className="form-select" aria-label="Default select example"     id="companies" name="company" ref={myElementRefCompany} value={company} onChange={(e)=>{setCompany(e.target.value);filter();getBbranch(e.target.value)}} required>
                                                     <option value="">Select Company</option>
-                                                {companyInfo != 'undefind' && companyInfo?.length > 0 && companyInfo.map(item => 
-                                                    <option value={item._id}>{item.companyname}</option>
-                                                )};
+                                                    {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                                                      <option value={item._id}>{item.companyname}</option>
+                                                    )};
                                             </select>
                                         </div>   
                                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
@@ -542,13 +808,13 @@ const Checklist = () => {
                                             <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);filter()}} value={branch} required>
                                             <option value="">Select Branch</option>
                                             {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                                                <option value={item._id}>{item.name}</option>
+                                                <option value={item.id}>{item.name}</option>
                                             )};
                                             
                                             </select>
                                         </div>
                                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                                            <input type="date" id="dating" ref={myElementRefDate} className="form-control" value={dateupdate} onChange={(e) => {setDateUpdate(e.target.value);filter();}} />
+                                            <input type="date" id="dating" ref={myElementRefDate} className="form-control" value={assigneddate} onChange={(e) => {setAssigneddate(e.target.value);filter();}} />
                                         </div>
                                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                                             <button type="submit" className="w-100 btn btn-primary" onClick={saveandapprove}>Save And Approve</button>
@@ -561,8 +827,12 @@ const Checklist = () => {
                                         </div> */}
                                         <div className="col-12 col-lg-12">
                                             <div className="card p-3 position-relative h-100">
-                                            {loadingoncreate && <Loading />}    
-                                            <Table columns={columns} dataSource={dataSource} style={{ overflow:'-moz-hidden-unscrollable' }} pagination={{ pageSize: 4, /*total: 50,*/ showSizeChanger: false ,position: ["bottomCenter"],}} scroll={{ x: 3500 }} sticky={true}/>
+                                            {(loadingoncreate || loadingcreatefilter) && <Loading />}    
+                                            {showTable1 ? (
+                                                  <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1400 }} sticky={true}/>
+                                              ) : (
+                                                  <Table dataSource={dataSource} columns={columns1} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 3500 }} sticky={true}/>
+                                              )} 
                                                 <button className='btn btn-light border mb-2 text-decoration-none  bottom-10 start-30 ' style={{ width:'150px' }} onClick={() => openInPopupForAdd()}>  <AddCircleOutlineIcon /> Add More </button>
                                                 <Popup openPopup={openPopup} pageTitle={pageTitle} setOpenPopup={setOpenPopup} modalWidth={modalWidth}>
                                                     {(openPopup) && <ChecklistPopup addOrEdit={(e) => addOrEdit(e)} recordForEdit={recordForEdit} />}

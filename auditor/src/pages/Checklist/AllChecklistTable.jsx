@@ -9,7 +9,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {checklistGetAll,companyGet,usersGet,stateGets,checklistsAllFilter} from "../../store/actions/otherActions";
+import {checklistGetAll,branchGet,usersGet,stateGets,checklistsAllFilter,companyTableGet} from "../../store/actions/otherActions";
 import Popup from "../../components/Popup";
 import ChecklistPopup from './ChecklistPopup';
 import Loading from '../../components/layout/Loading';
@@ -36,23 +36,27 @@ const AllChecklistTable = () =>{
     const [date, setDate] = useState('');
     const [state, setState] = useState('');
     const [company, setCompany] = useState('');
+    const [branch,setBranch] = useState([]);
     const [user,setUser] = useState('');
     const myElementRefState = useRef(null);
     const myElementRefDate = useRef(null);
     const myElementRefCompany = useRef(null);
     const myElementRefUser = useRef(null);
+    const myElementRefBranch = useRef(null);
     const [name, setName] = useState('');
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
     const userGet = useSelector((state) => state.userGet);
     const { usersInfo } = userGet;  
-    const getCompney = useSelector((state) => state.getCompney);
-    const { companyInfo } = getCompney; 
+    const getBranch = useSelector((state) => state.getBranch);
+    const { branchInfo } = getBranch; 
     const getChecklistall = useSelector((state) => state.getChecklistall);
     const { loadingall,checklistInfoAll } = getChecklistall; 
     const filterAllChecklist = useSelector((state) => state.filterAllChecklist);
     const { loadingu,checklistAllFilter } = filterAllChecklist;  
     console.log(checklistAllFilter);
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     
     const openInPopupForUpdate = (item) => {
         setRecordForEdit(item);
@@ -92,9 +96,23 @@ const AllChecklistTable = () =>{
     useEffect(() => {
         dispatch(stateGets());
         dispatch(usersGet());
-        dispatch(companyGet());
+        const elementcompanybranch = myElementRefCompany.current;
+        const postBody = {
+          id : elementcompanybranch.value
+        }
+        if (elementcompanybranch) {
+          dispatch(branchGet(postBody));
+        }
         dispatch(checklistGetAll());
+        dispatch(companyTableGet());
     },[dispatch])
+    const getBbranch = (company) => {
+      const elementcompanybranch = myElementRefCompany.current;
+      const postBody = {
+       id : elementcompanybranch.value
+     }
+      dispatch(branchGet(postBody));
+   }
     useEffect(() => {
       setShowTable1(showTable1);
       if(showTable1===false){
@@ -118,7 +136,7 @@ const AllChecklistTable = () =>{
                     frequency:item.frequency,
                     branchname:item.branchname,
                     company:item.company,
-                    risk:item.risk,
+                    risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                     created_at:formatDate(item.created_at),
                     updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
                     approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
@@ -161,7 +179,7 @@ const AllChecklistTable = () =>{
                       documents:<a href={item.documents} target="_blank">Document</a>,
                       frequency:item.frequency,
                       branchname:item.branchname,
-                      risk:item.risk,
+                      risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                       company:item.company,
                       created_at:formatDate(item.created_at),
                       updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
@@ -306,7 +324,7 @@ const AllChecklistTable = () =>{
           key: 'company',
           width: 50,
           // ...getColumnSearchProps('company'),
-          sorter: (a, b) => a.state.length - b.state.length,
+          sorter: (a, b) => a.company.length - b.company.length,
           sortDirections: ['descend', 'ascend']
         },
         {
@@ -385,6 +403,15 @@ const AllChecklistTable = () =>{
          // ...getColumnSearchProps('key'),
          // sorter: (a, b) => a.key.length - b.key.length,
          // sortDirections: ['descend', 'ascend']
+        },
+        {
+          title: 'Company',
+          dataIndex: 'company',
+          key: 'company',
+          width: 50,
+          // ...getColumnSearchProps('company'),
+          sorter: (a, b) => a.company.length - b.company.length,
+          sortDirections: ['descend', 'ascend']
         },
         {
             title: 'State',
@@ -536,12 +563,14 @@ const AllChecklistTable = () =>{
         const elementstate = myElementRefState.current;
         const elementcompany = myElementRefCompany.current;
         const elementdate = myElementRefDate.current;
+        const elementbranch = myElementRefBranch.current;
         const elementuser = myElementRefUser.current;
         const postBody = {
             created_at: elementdate.value,
             state: elementstate.value,
             company: elementcompany.value,
-            executive: elementuser.value
+            executive: elementuser.value,
+            branch: elementbranch.value
         }
         dispatch(checklistsAllFilter(postBody));
     }  
@@ -549,11 +578,11 @@ const AllChecklistTable = () =>{
         <React.Fragment>
             <div className="row">
                 <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                    <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter();}} required>
+                    <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter();getBbranch(e.target.value)}} required>
                         <option value="">Select Company</option>
-                    {companyInfo != 'undefind' && companyInfo?.length > 0 && companyInfo.map(item => 
-                        <option value={item._id}>{item.companyname}</option>
-                    )};
+                        {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                          <option value={item._id}>{item.companyname}</option>
+                        )};
                     </select>
                 </div>   
                 <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
@@ -573,12 +602,20 @@ const AllChecklistTable = () =>{
                     </select>
                 </div>
                 <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
+                            <select className="form-select" ref={myElementRefBranch} aria-label="Default select example" id="branch" name="branch" onChange= {(e)=>{setBranch(e.target.value);filter();}} value={branch} required>
+                            <option value="">Select Branch</option>
+                            {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
+                            <option value={item.id}>{item.name}</option>
+                            )};
+                            </select>
+                </div> 
+                <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                     <input type="date" className="form-control" id="dates" ref={myElementRefDate} placeholder='Date' value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                 </div>
                 <div className="col-12 col-lg-12">
                     <div className="card p-3 ">
                         <div className="table-responsive">
-                        {loadingall && <Loading />}
+                        {(loadingall || loadingu) && <Loading />}
                         {showTable1 ? (
                               <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1250 }} sticky={true}/>
                           ) : (

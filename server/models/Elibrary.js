@@ -5,9 +5,10 @@ const elibrarySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'Category'
     },
-    state: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'State',
+    placeholdername: {
+        type: String,
+        required: true,
+        trim: true,
         index: true
     },
     executive: {

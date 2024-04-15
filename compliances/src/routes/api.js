@@ -660,6 +660,50 @@ export const ElibraryGet = async() => {
     }
     return await axios.get(`${URL}/elibraryGet`,config);
 }
+export const elibraryGetById = async(id) => {
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    //alert(JSON.stringify(postBody));return;
+   // alert(`${URL}/gettingCompliancesFilter?state=${state}&created_at=${created_at}`);return;
+    return await axios.get(`${URL}/elibraryGetById/${id}`,config);
+}
+export const elibraryUpdateById = async(data,id) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`,
+            'content-Type': 'multipart/form-data'
+        }
+    }
+    return await axios.put(`${URL}/elibraryUpdateById/${id}`,data,config);
+}
+export const elibraryReject = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    //alert('JSON.stringify(data)'); return;
+    return await axios.patch(`${URL}/elibraryReject`,data,config);
+}
+export const elibrarySaveandApprove = async(data) => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`,
+            'content-Type': 'multipart/form-data'
+        }
+    }
+    return await axios.post(`${URL}/elibrarySaveandApprove`,data,config);
+}
 export const createCompany = async(data) => {
 
     const config = {

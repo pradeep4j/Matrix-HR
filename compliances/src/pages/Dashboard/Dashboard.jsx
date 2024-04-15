@@ -4,7 +4,7 @@ import { FormLabel,styled} from '@mui/material';
 import Highlighter from 'react-highlight-words';
 import { Button, Input, Space, Table ,Modal,Form,message} from 'antd';
 import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import {usersGet,companyGet,auditorGet,checklistGetonCreateAudit,auditGetDataAll,ongoingAudits,gettingAuditorOverdueDashboard} from "../../store/actions/otherActions";//outgoingAudit, overDueAudit
+import {usersGet,companyTableGet,auditorGet,checklistGetonCreateAudit,auditGetDataAll,ongoingAudits,gettingAuditorOverdueDashboard} from "../../store/actions/otherActions";//outgoingAudit, overDueAudit
 import { useDispatch,useSelector } from 'react-redux';
 import DashboardTableAudit from "./DashboardTableAudit";
 import DashboardTableUser from "./DashboardTableUser";
@@ -13,8 +13,8 @@ const Dashboard = () => {
     const dispatch = useDispatch();
     const userGet = useSelector((state) => state.userGet);
     const { usersInfo } = userGet;  // All executives
-    const getCompney = useSelector((state) => state.getCompney);
-    const { companyInfo } = getCompney; // All company
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable; // All company
     const allAuditGet = useSelector((state) => state.allAuditGet);
     const { getAllAudit } = allAuditGet; /// All audit 
     const getAuditor = useSelector((state) => state.getAuditor);
@@ -27,7 +27,7 @@ const Dashboard = () => {
     const overDueAudit = useSelector((state) => state.overDueAudit);
     const { auditOverdueInfos } = overDueAudit; //on going audits
 
-    const companyCount = companyInfo?.length?companyInfo?.length:0;
+    const companyCount = companyGetTableInfo?.length?companyGetTableInfo?.length:0;
     const executiveCount = usersInfo?.length?usersInfo?.length:0;
     const auditorCount = auditorInfo?.length?auditorInfo?.length:0;
     const auditTotalCount = getAllAudit?.length?getAllAudit?.length:0;
@@ -38,7 +38,7 @@ const Dashboard = () => {
 
     useEffect(()=>{
         dispatch(usersGet());
-        dispatch(companyGet());
+        dispatch(companyTableGet());
         dispatch(auditGetDataAll())
         dispatch(auditorGet());
         dispatch(checklistGetonCreateAudit());
