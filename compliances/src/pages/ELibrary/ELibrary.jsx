@@ -4,13 +4,14 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import {categoryGet,createElibrary,stateGets,getElibrary} from '../../store/actions/otherActions';
+import {categoryGet,createElibrary,stateGets,getElibrary,rejectedElibraryDocs} from '../../store/actions/otherActions';
 import * as Yup from 'yup'; // Yup is a JavaScript object schema validator.
 import { useFormik } from 'formik'; //for
 import {useDispatch,useSelector} from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import ElibraryAllTable from './ElibraryAllTable';
 import ElibraryEdit from './ElibraryEdit';
+import ElibraryRejected from './ElibraryRejected';
 const Elibrary = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -136,6 +137,11 @@ const Elibrary = () => {
             dispatch(getElibrary());
         }, 2000);
     }
+    const rejected = () => {
+        setTimeout(() => {
+            dispatch(rejectedElibraryDocs());
+        }, 2000);
+    }
     return (
         <React.Fragment>
             <div className='dashboard_wrapper'>
@@ -143,17 +149,17 @@ const Elibrary = () => {
                     <div className="row">
                         <div className="col-lg-12">
                             <ul className="nav nav-pills mb-3 bg-light rounded overflow-hidden" id="pills-tab" role="tablist">
-                                <li className="nav-item col-md-6 col-lg-3 col-12 border-end border-md-bottom" role="presentation">
+                                <li className="nav-item col-md-6 col-lg-4 col-12 border-end border-md-bottom" role="presentation">
                                     <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'viewall' ? 'active' : ''}`} id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true" ref={myElementRefTab1} onClick={(e)=>{viewall();handleTabChange('viewall')}}> View All </button>
                                 </li>
                                 {/* <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
                                     <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'approve' ? 'active' : ''}`} id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" ref={myElementRefTab2} onClick={(e)=>{/*viewall();handleTabChange('viewall')}}>Approve</button>
                                 </li> */}
-                                <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
-                                    <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'reject' ? 'active' : ''}`} id="creative-tab" data-bs-toggle="pill" data-bs-target="#creative-pill" type="button" role="tab" aria-controls="creative-pill" aria-selected="false" onClick={(e)=>{/*viewall();*/handleTabChange('viewall')}}>Reject</button>
+                                <li className="nav-item col-md-6 col-lg-4 col-12 border-end" role="presentation">
+                                    <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'reject' ? 'active' : ''}`} id="creative-tab" data-bs-toggle="pill" data-bs-target="#creative-pill" type="button" role="tab" aria-controls="creative-pill" aria-selected="false" onClick={(e)=>{rejected();handleTabChange('reject')}}>Reject</button>
                                 </li>
-                                <li className="nav-item col-md-6 col-lg-3 col-12" role="presentation">
-                                    <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'Create New' ? 'active' : ''}`} id="reject-pill" data-bs-toggle="pill" data-bs-target="#reject-tab" type="button" role="tab" aria-controls="reject-tab" aria-selected="false" onClick={(e)=>{/*viewall();*/handleTabChange('viewall')}}>Create New </button>
+                                <li className="nav-item col-md-6 col-lg-4 col-12" role="presentation">
+                                    <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'Create New' ? 'active' : ''}`} id="reject-pill" data-bs-toggle="pill" data-bs-target="#reject-tab" type="button" role="tab" aria-controls="reject-tab" aria-selected="false" onClick={(e)=>{/*viewall();*/handleTabChange('Create New')}}>Create New </button>
                                 </li>
                             </ul>
                             <div className="tab-content" id="pills-tabContent">
@@ -208,106 +214,7 @@ const Elibrary = () => {
                                         <div className="col-12 col-lg-12">
                                             <div className="card p-3 ">
                                                 <div className="table-responsive">
-                                                    <table className="table table-striped all_tbl">
-                                                        <thead>
-                                                            <tr className='align-middle'>
-                                                                <th scope="col">Sr .No</th>
-                                                                <th scope="col">Category</th>
-                                                                <th scope="col">Palaceholder Name</th>
-                                                                <th scope="col">Create Date</th>
-                                                                <th scope="col">Status</th>
-                                                                <th scope="col">Reject Date</th>
-                                                                <th scope="col">Reason</th>
-                                                                <th scope="col">View</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td><span className='text-danger'>Reject</span></td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>Reason</td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none' data-bs-toggle="modal" data-bs-target="#exampleModal"> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                            <tr className='align-middle'>
-                                                                <td>01</td>
-                                                                <td>Act</td>
-                                                                <td>ABC</td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td><span className='text-danger'>Reject</span></td>
-                                                                <td><span className='text-success'>09/01/2024</span></td>
-                                                                <td>Reason</td>
-                                                                <td>
-                                                                    <Link className='text-white btn btn-dark text-decoration-none' data-bs-toggle="modal" data-bs-target="#exampleModal"> View <VisibilityOffIcon fontSize='mediam' /></Link>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div className="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
-                                                        <div className="modal-content">
-                                                            <div className="modal-header">
-                                                                <h1 className="modal-title fs-5" id="exampleModalLabel">Your Data List Here</h1>
-                                                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div className="modal-body">
-                                                                <div className="card p-3 ">
-                                                                    <div className="table-responsive">
-                                                                        <table className="table table-striped all_tbl">
-                                                                            <thead>
-                                                                                <tr className='align-middle'>
-                                                                                    <th scope="col">Sr .No</th>
-                                                                                    <th scope="col">Category</th>
-                                                                                    <th scope="col">Palaceholder Name</th>
-                                                                                    <th scope="col">Create Date</th>
-                                                                                    <th scope="col">Status</th>
-                                                                                    <th scope="col">Reject Date</th>
-                                                                                    <th scope="col">Reason</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <tr className='align-middle'>
-                                                                                    <td>01</td>
-                                                                                    <td>Act</td>
-                                                                                    <td>ABC</td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td><span className='text-danger'>Reject</span></td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td>Reason</td>
-                                                                                </tr>
-                                                                                <tr className='align-middle'>
-                                                                                    <td>01</td>
-                                                                                    <td>Act</td>
-                                                                                    <td>ABC</td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td><span className='text-danger'>Reject</span></td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td>Reason</td>
-                                                                                </tr>
-                                                                                <tr className='align-middle'>
-                                                                                    <td>01</td>
-                                                                                    <td>Act</td>
-                                                                                    <td>ABC</td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td><span className='text-danger'>Reject</span></td>
-                                                                                    <td><span className='text-success'>09/01/2024</span></td>
-                                                                                    <td>Reason</td>
-                                                                                </tr>
-                                                                                
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                    
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <ElibraryRejected />
                                                 </div>
                                             </div>
                                         </div>

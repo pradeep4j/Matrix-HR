@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import CloseIcon from '@mui/icons-material/Close';
+import { Dialog, DialogTitle, DialogContent, Button, ImageListItem,ImageList,styled  } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Modal, Form, TextArea, Button} from 'antd';
+import { Modal, Form, TextArea,} from 'antd';
 import {categoryGet,createElibrary,stateGets,eLibraryGettingById,updateElibraryById,rejectsElibrary,elibrarySaveandApproved} from '../../store/actions/otherActions';
 import * as Yup from 'yup'; // Yup is a JavaScript object schema validator.
 import { useFormik } from 'formik'; //for
@@ -160,9 +162,10 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
     const [errors, setErrors] = useState({});
   
     const showModal = () => {
+        // alert('showModal')
       setVisible(true);
     };
-  
+    console.log(visible)
     const handleCancel = () => {
       setVisible(false);
     };
@@ -276,9 +279,20 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
                             />
                         {(formik.touched.document && formik.errors.document)?<div className="error">{formik.errors.document}</div>:null}
                     </div> 
+                    <ImageList>
+                               
+                                    {savedValues.image ? (
+                                    <>
+                                        <img src={savedValues.image} width="70" alt="error!" />
+                                    </>)
+                                    :
+                                    (''
+                                    )}
+                               
+                    </ImageList>
                 </div>
-                <div className="col-md-4 col-lg-4">
-                    <button type="button" className="w-100 btn btn-danger" style={{width: '300px' }} /*onClick={reject}*/ onClick={showModal}>Reject</button>
+                <div className="col-md-4 col-lg-4" >
+                    <button type="button" className="w-100 btn btn-danger"  onClick={showModal}>Reject</button>
                 </div>
                 <div className="col-md-4 col-lg-4">
                     <button type="submit" className="w-100 btn btn btn-success" >Edit <EditIcon fontSize='mediam' /></button>
@@ -289,38 +303,53 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
             </form>
         </div>
         <div>
-        <Modal
-          title={<span style={{ color: 'red', fontWeight: 'bold' }}>Reason</span>}
-          visible={visible}
-          onCancel={handleCancel}
-          footer={null}
-          width="30%"
-        >
-          <form onSubmit={handleSubmitModal}>
-            <div>
-              <label htmlFor="reason">Reason:</label>
-              <textarea
-                type="text"
-                id="reason"
-                name="reason"
-                class="form-control"
-                row="4"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                required
-              />
-              <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                <button key="cancel" onClick={handleCancel} style={{ width: '170px', backgroundColor: '#050505', color: 'white', borderRadius: '5%', border: 'none', marginRight: '10px' }}>
-                  Cancel
-                </button>
-                <button key="submit" type="primary" style={{ width: '170px', backgroundColor: '#293094', color: 'white', borderRadius: '5%', border: 'none' }}>
-                  Submit
-                </button>
-              </div>
-            </div>
-          </form>
-        </Modal>
-      </div></>
+        <Dialog open={visible} onClose={handleCancel} style={{width:'50%', position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',}} BackdropProps={{ invisible: true }}>
+                <DialogTitle style={{ backgroundColor: 'red', color: 'white', fontWeight: 'bold',lineHeight:'1' }}>Reason <span className='modal__close' onClick={(e) => setVisible(false)}><CloseIcon /></span></DialogTitle>
+                <DialogContent>
+                    <form onSubmit={handleSubmitModal}>
+                        <textarea
+                            autoFocus
+                            margin="dense"
+                            id="reason"
+                            label="Reason"
+                            class="form-control"
+                            type="text"
+                            fullWidth
+                            placeholder="Reason"
+                            row="4"
+                            style={{marginTop:'10px'}}
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                            required
+                        />
+                        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                            <button onClick={handleClose} variant="contained" style={{  width: '170px',backgroundColor: '#050505', color: 'white', borderRadius: '5%', border: 'none', marginRight: '10px' }}>
+                                Cancel
+                            </button>
+                            <button type="submit" variant="contained" style={{  width: '170px',backgroundColor: '#293094', color: 'white', borderRadius: '5%', border: 'none' }}>
+                                Submit
+                            </button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </div></>
     )
 }
 export default ElibraryEdit;    
+const ImagePreview = styled(ImageListItem)`
+
+  border: 1px solid rgb(183, 183, 183);
+
+  width: 60%;
+  height:60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(78, 78, 78);
+
+  img {
+    width: 60%;
+    height: 60%;
+  }
+`;

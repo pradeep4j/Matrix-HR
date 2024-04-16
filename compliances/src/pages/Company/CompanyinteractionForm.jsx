@@ -235,6 +235,11 @@ const CompanyinteractionForm = () => {
                   details: item.details,
                   remark:item.remark,
                   companyUpload:<a href={item.companyUpload} target="_blank">Upload</a>,
+                  status: item.status === 1 ? (
+                    <Link className='text-white btn btn-success text-decoration-none'>Approved</Link>
+                  ) : (
+                      <Link className='text-white btn btn-danger text-decoration-none'>Pending</Link>
+                  ),
                 })
             });
           }
@@ -265,6 +270,11 @@ const CompanyinteractionForm = () => {
                   details: item.details,
                   remark:item.remark,
                   companyUpload:<a href={item.companyUpload} target="_blank">Upload</a>,
+                  status: item.status === 1 ? (
+                    <Link className='text-white btn btn-success text-decoration-none'>Approved</Link>
+                  ) : (
+                      <Link className='text-white btn btn-danger text-decoration-none'>Pending</Link>
+                  ),
                 })
             });
           }
@@ -315,6 +325,15 @@ const CompanyinteractionForm = () => {
       //    ...getColumnSearchProps('image'),
        //   sorter: (a, b) => a.image.length - b.image.length,
        //   sortDirections: ['descend', 'ascend']
+      }, 
+      {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        width: 50,
+      //    ...getColumnSearchProps('image'),
+      //   sorter: (a, b) => a.image.length - b.image.length,
+      //   sortDirections: ['descend', 'ascend']
       }, 
         { 
             key: "action", 

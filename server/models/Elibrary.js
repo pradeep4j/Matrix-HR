@@ -38,11 +38,22 @@ const elibrarySchema = new mongoose.Schema({
         type: Date,
         default: null
     },
+    reason: {           
+        type: String,
+        default: null,
+        trim: true,
+        index:true
+    },
     status: {
         type: Number,
         default:0,
         index: true
     },    
+    rejected_at : { 
+        type: Date, 
+        default: null,
+        index: true 
+    },
     created_at: {
         type: Date,
         default: Date.now

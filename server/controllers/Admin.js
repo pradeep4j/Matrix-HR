@@ -5478,8 +5478,17 @@ export const elibraryRejectedDocs = async (request, response, next) => {
                 },
             },
             {
+                $lookup: {
+                    from: "categories",
+                    localField: "category",
+                    foreignField: "_id",
+                    as: "categoryData"
+                }
+            },
+            {
                 $project: {
                     _id: 1,
+                    placeholdername:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -5488,9 +5497,16 @@ export const elibraryRejectedDocs = async (request, response, next) => {
                         ]
                     },
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
+                    category: {
+                        _id: { $arrayElemAt: ["$categoryData._id", 0] },
+                        name: { $arrayElemAt: ["$categoryData.name", 0] }
+                    },
+                    label:1,
+                    image:1,
                     created_at : 1,
                     status : 1, 
                     rejected_at :1,
+                    description:1,
                     reason : 1,
                 }
             }
@@ -6879,6 +6895,7 @@ export const gettingCompanyInractionTable = async (request, response, next) => {
                     companyUpload: 1,
                     remark: 1,
                     company: 1,
+                    status:1,
                     // state: 1,
                     // branch: 1,
                     // createdAt: 1,
@@ -7204,6 +7221,7 @@ export const licenseCompanyInteractGetOnCreate = async (request, response, next)
                     company: 1,
                     renewalDate: 1,
                     expiryDate: 1,
+                    status:1,
                     // createdAt: 1,
                     // company: { $arrayElemAt: ["$companyData", 0] },
                     // state: { $arrayElemAt: ["$stateData", 0] },

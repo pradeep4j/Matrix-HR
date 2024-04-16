@@ -6,8 +6,10 @@ import { Button, Input, Space, Table ,Modal,Form,message, Upload} from 'antd';
 import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {checklistGetOnreject,stateGets,usersGet,companyGet,branchGet,checklistRejectFilter} from "../../store/actions/otherActions";
+import {rejectedElibraryDocs,stateGets,usersGet,companyGet,branchGet,checklistRejectFilter} from "../../store/actions/otherActions";
+import Popup from "../../components/Popup";
 import Loading from '../../components/layout/Loading';
+import ElibraryRjectedPop from './ElibraryRjectedPop';
 const ElibraryRejected = () =>{
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -15,6 +17,7 @@ const ElibraryRejected = () =>{
     const [openPopup, setOpenPopup] = useState(false);
     const [pageTitle, setPageTitle] = useState('');
     const [modalWidth, setModalWidth] = useState();
+    const [modalHeight, setModalHeight] = useState();
     const [recordForEdit, setRecordForEdit] = useState(null);
     const [dataSource, setDataSource] = useState();
     const [searchText, setSearchText] = useState('');
@@ -35,25 +38,25 @@ const ElibraryRejected = () =>{
     const [showTable1, setShowTable1] = useState(true);
     const [name, setName] = useState('');
 
-    const rejectChecklist = useSelector((state) => state.rejectChecklist);
-    const { loadingu,checklistInfoOnReject } = rejectChecklist; 
+    const listElibraryRejected = useSelector((state) => state.listElibraryRejected);
+    const { loadingerl,elibraryRejectedLInfo } = listElibraryRejected; 
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
-    // console.log(stateInfo);
+    console.log(elibraryRejectedLInfo);
     const userGet = useSelector((state) => state.userGet);
     const { usersInfo } = userGet;  
     const getBranch = useSelector((state) => state.getBranch);
     const { branchInfo } = getBranch; 
     const getCompney = useSelector((state) => state.getCompney);
     const { companyInfo } = getCompney; 
-    const rejectFilterChecklist = useSelector((state) => state.rejectFilterChecklist);
-    const { checklistRejectinfo } = rejectFilterChecklist;
-    console.log(checklistRejectinfo)
+    // const rejectFilterChecklist = useSelector((state) => state.rejectFilterChecklist);
+    // const { checklistRejectinfo } = rejectFilterChecklist;
+
     const openInPopupForUpdate = (item) => {
         setRecordForEdit(item);
         setOpenPopup(true);
-        setPageTitle('Edit Compliance');
-        setModalWidth('400px');
+        setPageTitle('Relected Elibrary Information');
+        setModalWidth('900px');
     }
     const toggleTables = () =>{
       setShowTable1(!showTable1)
@@ -67,14 +70,11 @@ const ElibraryRejected = () =>{
     }
     const relodreport = async () => {
         setTimeout(() => {
-            dispatch(checklistGetOnreject());
+            dispatch(rejectedElibraryDocs());
         }, 3000);
         
     }  
     useEffect(() => {
-      toggleTables();
-      setShowTable1(showTable1);
-      toggleTables();
       const saved = localStorage.getItem("userInfo");
       if(saved){
           const initialValue = JSON.parse(saved);
@@ -85,50 +85,46 @@ const ElibraryRejected = () =>{
       }
     },[usersInfo]);
     useEffect(() => {
-      toggleTables();
-      setShowTable1(showTable1); 
-      toggleTables();
-      dispatch(stateGets());
-      dispatch(usersGet());
-      dispatch(branchGet());
-      dispatch(companyGet());
-      dispatch(checklistGetOnreject());
+      // toggleTables();
+      // setShowTable1(showTable1); 
+      // toggleTables();
+      // dispatch(stateGets());
+      // dispatch(usersGet());
+      // dispatch(branchGet());
+      // dispatch(companyGet());
+      dispatch(rejectedElibraryDocs());
     },[dispatch])
     useEffect(() => {
-      setShowTable1(showTable1);
-      if(showTable1===false){
-        toggleTables();
-      }
-      let checklistArrAllReject = [];
-        if (typeof (checklistInfoOnReject) !== 'undefined' && checklistInfoOnReject?.length > 0 ) {
+      // setShowTable1(showTable1);
+      // if(showTable1===false){
+      //   toggleTables();
+      // }
+      let elibraryArrAllReject = [];
+        if (typeof (elibraryRejectedLInfo) !== 'undefined' && elibraryRejectedLInfo?.length > 0 ) {
             //alert(categoryInfo?.length);
-            checklistInfoOnReject.map((item, index) => {
-                checklistArrAllReject.push({
-                key:index+1,
-                id: item._id,
-                state:item.state,
-                compliance: item.compliance,
-                rule:<div className='new-line'>{item.rule}</div>,
-                category:item.category,
-                question:<div className='new-line'>{item.question}</div>,
-                description:<div className='new-line'>{item.description}</div>,
-                image:<a href={item.image} target="_blank">Form</a>,
-                documents:<a href={item.documents} target="_blank">Document</a>,
-                recurrence:item.frequency,
-                branchname:item.branchname,
-                company:item.company,
-                risk:item.risk,
-                reason:item.reason,
-                executive:name?'admin':item.executive,
-                updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
-                revise: <Link className='text-white btn btn-danger text-decoration-none mx-2' disabled>Rejected</Link>,
-                rejected_at:item.rejected_at!==undefined?formatDate(item.rejected_at):item.rejected_at,
-                created_at:item.created_at!==null?formatDate(item.created_at):item.created_at,
+            elibraryRejectedLInfo.map((item, index) => {
+                elibraryArrAllReject.push({
+                  key:index+1,
+                  id: item._id,
+                  status: item.status === 2 ? (
+                    <Link className='text-white btn btn-danger text-decoration-none'>Rejected</Link>
+                ) : (
+                    ''
+                ),
+                  placeholdername:item.placeholdername,
+                  category:item.category.name,
+                  image:<a href={item.image} target="_blank">Form</a>,
+                  created_at:formatDate(item.created_at),
+                  rejected_at:(item.rejected_at !==null)?formatDate(item.rejected_at):(item.rejected_at),
+                  executive:name?'admin':item.executive,
+                  view:<Link className='text-white btn btn-dark text-decoration-none' onClick={(e)=>openInPopupForUpdate(item._id)} >
+                  View <VisibilityOffIcon fontSize='medium' />
+                </Link>
               })
           });
         }
-        setDataSource(checklistArrAllReject);
-    },[checklistInfoOnReject])
+        setDataSource(elibraryArrAllReject);
+    },[elibraryRejectedLInfo])
     const resetForm = () => {
         // alert(state)
          setState('');
@@ -136,43 +132,8 @@ const ElibraryRejected = () =>{
          setUser('');
     }
     useEffect(() => {
-         resetForm();
-    },[checklistInfoOnReject])
-    useEffect(() => {
-      setShowTable1(showTable1);
-      if(showTable1===false){
-        toggleTables();
-      }
-        let checklistFilterArr = [];
-          if (typeof (checklistRejectinfo) !== 'undefined' && checklistRejectinfo?.length > 0 ) {
-              //alert(categoryInfo?.length);
-              checklistRejectinfo.map((item, index) => {
-                checklistFilterArr.push({
-                  key:index+1,
-                  id: item._id,
-                  state:item.state,
-                  compliance: item.compliance,
-                  rule:<div className='new-line'>{item.rule}</div>,
-                  category:item.category,
-                  question:<div className='new-line'>{item.question}</div>,
-                  description:<div className='new-line'>{item.description}</div>,
-                  image:<a href={item.image} target="_blank">Form</a>,
-                  documents:<a href={item.documents} target="_blank">Document</a>,
-                  recurrence:item.frequency,
-                  branchname:item.branchname,
-                  company:item.company,
-                  risk:item.risk,
-                  reason:item.reason,
-                  executive:name?'admin':item.executive,
-                  updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
-                  revise: <Link className='text-white btn btn-danger text-decoration-none mx-2' disabled>Rejected</Link>,
-                  rejected_at:item.rejected_at!==undefined?formatDate(item.rejected_at):item.rejected_at,
-                  created_at:item.created_at!==null?formatDate(item.created_at):item.created_at,
-                })
-            });
-          }
-          setDataSource(checklistFilterArr);
-      },[checklistRejectinfo]);
+        //  resetForm();
+    },[elibraryRejectedLInfo])
       const formatDate = (currentDate) => {
         const dates = new Date(currentDate);
         const year = dates.getFullYear();
@@ -310,214 +271,97 @@ const ElibraryRejected = () =>{
         title: 'Sr. No.',
         dataIndex: 'key',
         key: 'key',
-        width: 70,
+        width: 30,
        // ...getColumnSearchProps('key'),
        // sorter: (a, b) => a.key.length - b.key.length,
        // sortDirections: ['descend', 'ascend']
       },
       {
-        title: 'Company',
-        dataIndex: 'company',
-        key: 'company',
+        title: 'Category',
+        dataIndex: 'category',
+        key: 'category',
         width: 50,
-        // ...getColumnSearchProps('company'),
-        sorter: (a, b) => a.company.length - b.company.length,
+        // ...getColumnSearchProps('category'),
+        sorter: (a, b) => a.category.length - b.category.length,
         sortDirections: ['descend', 'ascend']
       },
       {
-          title: 'State',
-          dataIndex: 'state',
-          key: 'state',
-          width: 150,
-          // ...getColumnSearchProps('state'),
-          sorter: (a, b) => a.state.length - b.state.length,
-          sortDirections: ['descend', 'ascend']
-      },
-      {
-        title: 'Branch Name',
-        dataIndex: 'branchname',
-        key: 'branchname',
-        width: 100,
-        // ...getColumnSearchProps('branchname'),
-        sorter: (a, b) => a.branchname.length - b.branchname.length,
-        sortDirections: ['descend', 'ascend']
-      },
-      {
-          title: 'Created At',
-          dataIndex: 'created_at',
-          key: 'created_at',
+          title: 'Placeholder Name',
+          dataIndex: 'placeholdername',
+          key: 'placeholdername',
           width: 70,
-         // ...getColumnSearchProps('documents'),
-         // sorter: (a, b) => a.image.length - b.image.length,
-         // sortDirections: ['descend', 'ascend']
-      },     
-      {
-        title: 'Rejected At',
-        dataIndex: 'rejected_at',
-        key: 'rejected_at',
-        width: 70,
-       // ...getColumnSearchProps('documents'),
-       // sorter: (a, b) => a.image.length - b.image.length,
-       // sortDirections: ['descend', 'ascend']
+          // ...getColumnSearchProps('state'),
+          sorter: (a, b) => a.placeholdername.length - b.placeholdername.length,
+          sortDirections: ['descend', 'ascend']
       },
       {
         title: 'Executive',
         dataIndex: 'executive',
         key: 'executive',
-        width: 70,
-        // ...getColumnSearchProps('executive'),
-        // sorter: (a, b) => a.executive.length - b.executive.length,
+        width: 50,
+        // ...getColumnSearchProps('branchname'),
+        // sorter: (a, b) => a.branchname.length - b.branchname.length,
         // sortDirections: ['descend', 'ascend']
-      },    
-      ,  
-        { 
-          key: "action", 
-          title: "Actions", 
-          width: 100,
-          render: (record) => { 
-              //console.log(JSON.stringify(record))
-            return (
-              <> <Link className='text-white btn btn-dark text-decoration-none' onClick={toggleTables}> View <VisibilityOffIcon fontSize='mediam' /></Link>
-              </>
-            );
-          }, 
-      },        
-    ];      
-    const columns1 = [
-        {
-          title: 'Sr. No.',
-          dataIndex: 'key',
-          key: 'key',
-          width: 70,
-         // ...getColumnSearchProps('key'),
-         // sorter: (a, b) => a.key.length - b.key.length,
-         // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'State',
-            dataIndex: 'state',
-            key: 'state',
-            width: 150,
-            // ...getColumnSearchProps('state'),
-            // sorter: (a, b) => a.state.length - b.state.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Act',
-            dataIndex: 'compliance',
-            key: 'compliance',
-            width: 100,
-            // ...getColumnSearchProps('act'),
-            // sorter: (a, b) => a.act.length - b.act.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: <div style={{ textAlign: 'center' }}>Rule</div>,
-            dataIndex: 'rule',
-            key: 'rule',
-            width: 200,
-            // ...getColumnSearchProps('rule'),
-            // sorter: (a, b) => a.rule.length - b.rule.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: <div style={{ textAlign: 'center' }}>Category</div>,
-            dataIndex: 'category',
-            key: 'category',
-            width: 100,
-            // ...getColumnSearchProps('category'),
-            // sorter: (a, b) => a.category.length - b.category.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: <div style={{ textAlign: 'center' }}>Question</div>,
-            dataIndex: 'question',
-            key: 'question',
-            width: 300,
-            // ...getColumnSearchProps('question'),
-            // sorter: (a, b) => a.question.length - b.question.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: <div style={{ textAlign: 'center' }}>Description</div>,
-            dataIndex: 'description',
-            key: 'description',
-            width: 300,
-            // ...getColumnSearchProps('question'),
-            // sorter: (a, b) => a.question.length - b.question.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Form',
-            dataIndex: 'image',
-            key: 'image',
-            width: 100,
-        //    ...getColumnSearchProps('image'),
-         //   sorter: (a, b) => a.image.length - b.image.length,
-         //   sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Document',
-            dataIndex: 'documents',
-            key: 'documents',
-            width: 100,
-           // ...getColumnSearchProps('documents'),
-           // sorter: (a, b) => a.image.length - b.image.length,
-           // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Recurrence',
-            dataIndex: 'recurrence',
-            key: 'recurrence',
-            width: 70,
-           // ...getColumnSearchProps('documents'),
-           // sorter: (a, b) => a.image.length - b.image.length,
-           // sortDirections: ['descend', 'ascend']
-        },     
-        {
-            title: 'Risk',
-            dataIndex: 'risk',
-            key: 'risk',
-            width: 70,
-           ...getColumnSearchProps('risk'),
-           sorter: (a, b) => a.risk.length - b.risk.length,
-           sortDirections: ['descend', 'ascend']
-        },   
-        {
-            title: 'Due Date',
-            dataIndex: 'duedate',
-            key: 'duedate',
-            width: 100,
-            // ...getColumnSearchProps('createdAt'),
-            // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
-          title: 'Revise/Update',
-          dataIndex: 'revise',
-          key: 'revise',
-          width: 100,
+    },
+    {
+      title: 'Created Date',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      width: 80,
+      // ...getColumnSearchProps('createdAt'),
+      // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
+      // sortDirections: ['descend', 'ascend']
+  }, 
+      {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        width: 40,
+       // ...getColumnSearchProps('frequency'),
+       // sorter: (a, b) => a.frequency.length - b.frequency.length,
+       // sortDirections: ['descend', 'ascend']
+    },  
+      {
+          title: 'Rejected Date',
+          dataIndex: 'rejected_at',
+          key: 'rejected_at',
+          width: 80,
           // ...getColumnSearchProps('createdAt'),
           // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
           // sortDirections: ['descend', 'ascend']
-        },
-        {
-            title: 'Reason',
-            dataIndex: 'reason',
-            key: 'reason',
-            width: 100,
-            // ...getColumnSearchProps('createdAt'),
-            // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-    ];  
+      }, 
+      {
+        title: 'View',
+        dataIndex: 'view',
+        key: 'view',
+        width: 80,
+        // ...getColumnSearchProps('createdAt'),
+        // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
+        // sortDirections: ['descend', 'ascend']
+    }, 
+      // { 
+      //     title: "View", view
+      //     key: "view", 
+      //     width: 50,
+      //     render: (record) => { 
+      //       return (
+      //         <>
+      //           {/* <Link className='text-white btn btn-dark text-decoration-none' onClick={(e)=>toapprove(record.key)}> View <VisibilityOffIcon fontSize='mediam' /></Link> */}
+      //           <Link className='text-white btn btn-dark text-decoration-none' onClick={(e)=>toapprove(record.key)} /*to={`/edit/${record.key}`}*/ >
+      //             View <VisibilityOffIcon fontSize='medium' />
+      //           </Link>
+      //         </>
+      //       );
+      //     }, 
+      // }, 
+  ];
     return (
     <React.Fragment>
         <div className="container">
             <div className="row">
                 <div className="col-lg-12">    
                     <div className="row">
-                        <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
+                        {/* <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
                             <label for="" class="form-label">Company</label>
                             <select className="form-select" ref={myElementRefCompany} aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);filter()}} required>
                                 <option value="">Select Company</option>
@@ -556,14 +400,13 @@ const ElibraryRejected = () =>{
                         <div className="col-md-2 col-lg-15 mb-2 mb-lg-2 mb-md-2">
                             <label for="" class="form-label">Rejected Date</label>
                             <input type="date" id="rejected" ref={myElementRefDate} className="form-control" name="someName1" placeholder="Select a date" value={datereject} onChange={(e) => {setDateReject(e.target.value);filter();}}/>
-                        </div>
+                        </div> */}
                     </div>    
-                    {loadingu && <Loading />}
-                    {showTable1 ? (
-                        <Table columns={columns} dataSource={dataSource}  pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 1000 }} sticky={true}/>
-                    ) : (
-                        <Table dataSource={dataSource} columns={columns1} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 3500 }} sticky={true}/>
-                    )} 
+                    {loadingerl && <Loading />}    
+                     <Table columns={columns} dataSource={dataSource} style={{ overflow:'-moz-hidden-unscrollable' }} pagination={{ pageSize: 4, /*total: 50,*/ showSizeChanger: false ,position: ["bottomCenter"],}} scroll={{ x: 1300 }} sticky={true}/>
+                     <Popup openPopup={openPopup} pageTitle={pageTitle} setOpenPopup={setOpenPopup} modalWidth={modalWidth} modalHeight={modalHeight} from="elibrary">
+                        {(openPopup) && <ElibraryRjectedPop addOrEdit={(e) => addOrEdit(e)} recordForEdit={recordForEdit} />}
+                    </Popup>
                 </div>
             </div>
         </div>

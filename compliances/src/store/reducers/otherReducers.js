@@ -227,6 +227,9 @@ import {
     ELIBRARY_REQUEST_SAVE_APPROVE,
     ELIBRARY_SUCCESS_SAVE_APPROVE,
     ELIBRARY_REQUEST_SAVE_APPROVE_FAIL,
+    ELIBRARY_REQUEST_GET_REJECT_LIST,
+    ELIBRARY_SUCCESS_GET_REJECT_LIST,
+    ELIBRARY_GET_FAIL_REJECT_LIST,
     COMPANYTAB1_CREATE_REQUEST,
     COMPANYTAB1_CREATE_SUCCESS,
     COMPANYTAB1_CREATE_FAIL,
@@ -923,6 +926,14 @@ export const elibraryUpdateByIdReducer = (state= {}, action) => {
                 case ELIBRARY_GET_REQUEST_UPDATE_BY_ID: return { loadingu:true };
                 case ELIBRARY_GET_SUCCESS_UPDATE_BY_ID: return { loadingu:false, elibraryInfoUpdateId: action.payload };
                 case ELIBRARY_GET_FAIL_UPDATE_BY_ID: return { loadingu:false, error: action.payload };
+                default: return state;
+        }
+}
+export const elibraryRejectedListReducer = (state= {}, action) => {
+        switch(action.type) {
+                case ELIBRARY_REQUEST_GET_REJECT_LIST: return { loadingerl:true };
+                case ELIBRARY_SUCCESS_GET_REJECT_LIST: return { loadingerl:false, elibraryRejectedLInfo: action.payload };
+                case ELIBRARY_GET_FAIL_REJECT_LIST: return { loadingerl:false, error: action.payload };
                 default: return state;
         }
 }

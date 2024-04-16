@@ -21,8 +21,8 @@ const Users = () => {
     lastname: '',
     role: '',
     email:'',
-    password:'Admin@2',
-    repassword:'Admin@2'
+    password: generatePassword(),
+    repassword:generatePassword()
   }
 const schema = Yup.object({
     firstname: Yup.string('')
@@ -69,6 +69,28 @@ const formik = useFormik({
 const tocategorypage = () => {
     navigate('/dashboard')
 };
+const  generatePassword = () => {
+  const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+  const specialCharacters = '!@#$%^&*()-_=+[{]};:,<.>?/';
+  const numbers = '0123456789';
+
+  const allCharacters = uppercaseLetters + lowercaseLetters + specialCharacters + numbers;
+
+  let password = '';
+  password += uppercaseLetters[Math.floor(Math.random() * uppercaseLetters.length)]; // At least one capital letter
+  password += specialCharacters[Math.floor(Math.random() * specialCharacters.length)]; // At least one special character
+  password += numbers[Math.floor(Math.random() * numbers.length)]; // At least one numeric character
+
+  for (let i = 0; i < 4; i++) { // Generate the rest of the password
+      password += allCharacters[Math.floor(Math.random() * allCharacters.length)];
+  }
+
+  // Shuffle the password to mix the characters
+  password = password.split('').sort(() => Math.random() - 0.5).join('');
+
+  return password;
+}
 const onUserCreate = async (val,action) => {
     
     const postBody = {

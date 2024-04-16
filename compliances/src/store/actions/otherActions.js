@@ -1,4 +1,4 @@
-import { auditoreGet,getExecutive,catCreate,catGet,catEdit,catDelete,gettingState,gettingUser,NotificationCreate,gettingNotification,userCreate,editUser,userDelete,createChecklist,gettingChecklist,gettingCompany,gettingCompanyTable,gettingBranch,createBranch,createCompany,createCompliances,gettingCompliances,gettingCompliancesById,gettingCompliancesOnCreate,complianceApporve,gettingCompliancesReject,complianceReject,updateCompliancesById,gettingCompliancesAll,gettingCompliancesFilter,gettingCompliancesAllFilter,gettingCompliancesRejetFilter,updateChecklistsById,checklistOnCreateegetting,gettingchecklistById,checklistAllgetting,checklistApporve,gettingchecklistAllFilter,gettingchecklistOnCreateFilter,checklistApprovegetting,gettingchecklistOnApproveFilter,checklistOnRejectegetting,rejectChecklist,gettingchecklistOnrejectFilter,gettingchecklistAllCompliance,gettingcomplianceOnApproveFilter,gettingChecklistOnCreate,createLiseReg,gettingAuditDetail,getttingReg,regsApporve,liseRegGettingByIds,liseregsFilters,liseRegUpdateByIds,regsReject,auditCreate,auditoreFilterChecklist,auditchecklistGetonCreate,auditAllFilter,gettingOnGoingAuditDetail,gettingOverviewAuditDetail,ElibraryCreate,ElibraryGet,elibraryGetById,elibraryUpdateById,elibraryReject,elibrarySaveandApprove,companytab1,companytab2,companytab3,companytab4,companytab5,companytab6,companytab7,companyL,gettingCompanyById,companyLcreate,companyLById,companyLUpdateById,apporveCompanyL,companyLicenseFilter,gettingCompliaceCSById,companySaveandApprove,createcompanyinteraction,gettingComppanyInterationById,updatecompanyinteractionById,gettingCompanyInractionTable,apporveCompanyInteraction,companyProfileFilter,licenseCompanyInteractcreate,licenseCompanyInteractGetOnCreate,companyinteractLicGetByid,companyinteractLicUpdateById,apporveCompanyInteractionLicense,companyLicenseIntractFilter,createAssign,getAssignid,assignsUpdateById,assignTableGet,getAssignOnCreate,viewAllAssignedCompanyFilter,assignedCompanyFilter} from "../../routes/api";
+import { auditoreGet,getExecutive,catCreate,catGet,catEdit,catDelete,gettingState,gettingUser,NotificationCreate,gettingNotification,userCreate,editUser,userDelete,createChecklist,gettingChecklist,gettingCompany,gettingCompanyTable,gettingBranch,createBranch,createCompany,createCompliances,gettingCompliances,gettingCompliancesById,gettingCompliancesOnCreate,complianceApporve,gettingCompliancesReject,complianceReject,updateCompliancesById,gettingCompliancesAll,gettingCompliancesFilter,gettingCompliancesAllFilter,gettingCompliancesRejetFilter,updateChecklistsById,checklistOnCreateegetting,gettingchecklistById,checklistAllgetting,checklistApporve,gettingchecklistAllFilter,gettingchecklistOnCreateFilter,checklistApprovegetting,gettingchecklistOnApproveFilter,checklistOnRejectegetting,rejectChecklist,gettingchecklistOnrejectFilter,gettingchecklistAllCompliance,gettingcomplianceOnApproveFilter,gettingChecklistOnCreate,createLiseReg,gettingAuditDetail,getttingReg,regsApporve,liseRegGettingByIds,liseregsFilters,liseRegUpdateByIds,regsReject,auditCreate,auditoreFilterChecklist,auditchecklistGetonCreate,auditAllFilter,gettingOnGoingAuditDetail,gettingOverviewAuditDetail,ElibraryCreate,ElibraryGet,elibraryGetById,elibraryUpdateById,elibraryReject,elibrarySaveandApprove,elibraryRejectedDocs,companytab1,companytab2,companytab3,companytab4,companytab5,companytab6,companytab7,companyL,gettingCompanyById,companyLcreate,companyLById,companyLUpdateById,apporveCompanyL,companyLicenseFilter,gettingCompliaceCSById,companySaveandApprove,createcompanyinteraction,gettingComppanyInterationById,updatecompanyinteractionById,gettingCompanyInractionTable,apporveCompanyInteraction,companyProfileFilter,licenseCompanyInteractcreate,licenseCompanyInteractGetOnCreate,companyinteractLicGetByid,companyinteractLicUpdateById,apporveCompanyInteractionLicense,companyLicenseIntractFilter,createAssign,getAssignid,assignsUpdateById,assignTableGet,getAssignOnCreate,viewAllAssignedCompanyFilter,assignedCompanyFilter} from "../../routes/api";
 
 import { toast } from 'react-toastify';
 import {
@@ -227,6 +227,9 @@ import {
     ELIBRARY_REQUEST_SAVE_APPROVE,
     ELIBRARY_SUCCESS_SAVE_APPROVE,
     ELIBRARY_REQUEST_SAVE_APPROVE_FAIL,
+    ELIBRARY_REQUEST_GET_REJECT_LIST,
+    ELIBRARY_SUCCESS_GET_REJECT_LIST,
+    ELIBRARY_GET_FAIL_REJECT_LIST,
     AUDIT_REQUEST_OVERDUE_DETAIL_DASHBOARD,
     AUDIT_SUCCESS_OVERDUE_DETAIL_DASHBOARD,
     AUDIT_FAIL_OVERDUE_DETAIL_DASHBOARD,
@@ -3725,6 +3728,56 @@ export const rejectsElibrary = (data) => async (dispatch) => {
                         }); 
                                         
                 });  
+}
+export const rejectedElibraryDocs = () => async (dispatch) => {
+        dispatch({ type: ELIBRARY_REQUEST_GET_REJECT_LIST });
+
+                await elibraryRejectedDocs().then(response=>{
+                // alert(JSON.stringify(response.data)) 
+                dispatch({ type: ELIBRARY_SUCCESS_GET_REJECT_LIST, payload: response.data });    
+                if(response.status===200)
+                {
+                        // toast.success('Category is Added Successfully!', {
+                        //         position: "bottom-right",
+                        //         hideProgressBar: false,
+                        //         progress: undefined,
+                        // });
+                /*swal({
+                        title: "Successful!",
+                        text: 'User Addes Successfully !',
+                        icon: "success",
+                        button: "OK!",
+                });*/
+                }
+                else
+                {
+                        dispatch({
+                                type: ELIBRARY_GET_FAIL_REJECT_LIST,
+                                payload:
+                                response.data });
+                        toast.error(response.data, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                // document.getElementById("submitting").innerText = "Save";
+                // document.getElementById("submitting").disabled  = false;                                           
+                }
+                }).catch(error =>{
+                        dispatch({
+                                type: ELIBRARY_GET_FAIL_REJECT_LIST,
+                                payload:
+                                error.message });
+
+                        toast.error(error.message, {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        }); 
+                // document.getElementById("submitting").innerText = "Save";
+                // document.getElementById("submitting").disabled  = false;                                            
+                });  
+     
 }
 export const companytab1create = (postbody) => async (dispatch) => {
         dispatch({ type: COMPANYTAB1_CREATE_REQUEST });

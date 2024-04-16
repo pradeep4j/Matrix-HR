@@ -216,6 +216,11 @@ const Companyinteractionlicense = () => {
                     renewalDate:formatDate(item.renewalDate),
                     expiryDate:formatDate(item.expiryDate),
                     details:(item.details),
+                    status: item.status === 1 ? (
+                      <Link className='text-white btn btn-success text-decoration-none'>Approved</Link>
+                    ) : (
+                        <Link className='text-white btn btn-danger text-decoration-none'>Pending</Link>
+                    ),
                 })
             });
           }
@@ -248,6 +253,11 @@ const Companyinteractionlicense = () => {
                   renewalDate:formatDate(item.renewalDate),
                   expiryDate:formatDate(item.expiryDate),
                   details:(item.details),
+                  status: item.status === 1 ? (
+                    <Link className='text-white btn btn-success text-decoration-none'>Approved</Link>
+                  ) : (
+                      <Link className='text-white btn btn-danger text-decoration-none'>Pending</Link>
+                  ),
                 })
             });
           }
@@ -329,6 +339,15 @@ const Companyinteractionlicense = () => {
           sorter: (a, b) => a.details.length - b.details.length,
           sortDirections: ['descend', 'ascend']
       }, 
+      {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        width: 50,
+      //    ...getColumnSearchProps('image'),
+      //   sorter: (a, b) => a.image.length - b.image.length,
+      //   sortDirections: ['descend', 'ascend']
+      },
       { 
           key: "action", 
           title: "Actions", 

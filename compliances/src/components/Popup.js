@@ -21,7 +21,7 @@ return (
             <span className={from === "elibrary" ? 'modal__close_elibrary' : 'modal__close'} onClick={(e) => setOpenPopup(false)}><CloseIcon /></span>
             </Typography>
             </DialogTitle>
-            <DialogContent style={{width:modalWidth,height:'800px'}} >
+            <DialogContent style={{width:modalWidth}} sx={{ height: '900px' }}>
                   {children}
             </DialogContent>
         </Dialog></div>

@@ -693,6 +693,17 @@ export const elibraryReject = async(data) => {
     //alert('JSON.stringify(data)'); return;
     return await axios.patch(`${URL}/elibraryReject`,data,config);
 }
+export const elibraryRejectedDocs = async() => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    //alert('JSON.stringify(data)'); return;
+    return await axios.get(`${URL}/elibraryRejectedDocs`,config);
+}
 export const elibrarySaveandApprove = async(data) => {
 
     const config = {
