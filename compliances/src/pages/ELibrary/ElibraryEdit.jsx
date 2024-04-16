@@ -55,15 +55,18 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
         placeholdername: '',
         label:'',
         description: '',
-        // image:''
+        image:'',
+        dates:''
     }
     let savedValues = {
         category: elibraryGetByIDInfo?.category,
         placeholdername: elibraryGetByIDInfo?.placeholdername,
         label:elibraryGetByIDInfo?.label,
         description: elibraryGetByIDInfo?.description,
-        image:elibraryGetByIDInfo?.image
+        image:elibraryGetByIDInfo?.image,
+        dates:formatDate(elibraryGetByIDInfo?.dates)
    }
+//    alert(savedValues.dates)
     const schema = Yup.object({
         category: Yup.string('')
             .required('Category Label is required!'),
@@ -96,6 +99,19 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
           onElibrary(values,action);
         }}
     );
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        
+        if (month.length < 2) 
+          month = '0' + month;
+        if (day.length < 2) 
+          day = '0' + day;
+        
+        return [year, month, day].join('-');
+    }
     const onElibrary = async (val,action) => {
         const formData = new FormData();
         formData.append("category", val.category);
@@ -252,11 +268,11 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
                 <div className="col-md-4 col-lg-4">
                     <label for="" className="form-label">Date</label>
                     <input   type="date" className="form-control" 
-                        // value={formik.values.dates} 
+                        value={savedValues.dates} 
                         id="dates"
                         name="dates" 
                         // onChange={formik.handleChange} 
-                        value={date.toLocaleDateString('en-CA')} 
+                        // value={date.toLocaleDateString('en-CA')} 
                         onChange={onSetDate} />
                 </div>
                 <div className="col-md-12 col-lg-12">

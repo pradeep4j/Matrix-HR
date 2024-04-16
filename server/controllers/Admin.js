@@ -5318,7 +5318,7 @@ export const elibraryGet = async (request, response, next) => {
         // else {
             aggregation = [
                 {
-                    $match: {}
+                    $match: {status: 0}
                 },
                 {
                     $lookup: {
@@ -5403,7 +5403,7 @@ export const elibraryUpdateById = async (request, response, next) => {
             const url = request.protocol + '://' + request.get('host');
             const uploadsDirectory = './data/uploads/';
             const imageDirectory = 'images/';
-            const documentDirectory = 'documents/';
+            // const documentDirectory = 'documents/';
             fs.access(uploadsDirectory, (err) => {
                 if (err) {
                     fs.mkdirSync(uploadsDirectory, { recursive: true });
@@ -5415,38 +5415,34 @@ export const elibraryUpdateById = async (request, response, next) => {
                     fs.mkdirSync(uploadsDirectory + imageDirectory, { recursive: true });
                 }
             });
-            // Ensure that the documents directory exists
-            fs.access(uploadsDirectory + documentDirectory, (err) => {
-                if (err) {
-                    fs.mkdirSync(uploadsDirectory + documentDirectory, { recursive: true });
-                }
-            });
-            if (imageFile.mimetype === 'image/jpeg' || imageFile.mimetype === 'image/jpg' || imageFile.mimetype === 'image/png') {
-                const formattedImageFileName = Date.now() + '-' + imageFile.originalname.split(' ').join('-');
-                imageUrl = url + '/' + imageDirectory + formattedImageFileName;
-                const imagePath = uploadsDirectory + imageDirectory + formattedImageFileName;
-                await sharp(imageFile.buffer).resize({ width: 600 }).toFile(imagePath);
-            }
-
-            // if (imageFile.mimetype === 'application/pdf') {
-            //     const formattedDocumentFileName = Date.now() + imageFile.originalname.split(' ').join('-');
-            //     imageUrl = url + '/' + documentDirectory + formattedDocumentFileName;
-            //     fs.writeFileSync(uploadsDirectory + documentDirectory + formattedDocumentFileName, imageFile.buffer);
+        
+            // if (imageFile.mimetype === 'image/jpeg' || imageFile.mimetype === 'image/jpg' || imageFile.mimetype === 'image/png') {
+            const formattedImageFileName = Date.now() + '-' + imageFile.originalname.split(' ').join('-');
+            imageUrl = url + '/' + imageDirectory + formattedImageFileName;
+            const imagePath = uploadsDirectory + imageDirectory + formattedImageFileName;
+            await sharp(imageFile.buffer).resize({ width: 600 }).toFile(imagePath);
             // }
+
             return imageUrl;
         };
+        const imageInRequest = async (requestImageName) => {
+            if (request.files.find(img => img.fieldname === requestImageName)) {
+                return await uploadImage(request.files.find(img => img.fieldname === requestImageName))
+                
+                // elibrary.requestImageName
+                // console.log(elibrary.image);
+            }
+        }
+        // if (!checkElibrary) {
+        //     return response.status(404).json("No such elibrary exists")
+        // }
         const data = request.body
-        const { category,  placeholdername, label, dates, description, approvedate, updated_at } = data
-        if (request.files.includes("image")) {
-            elibrary = {
-                category, placeholdername, label, dates, description, approvedate, updated_at, image: await uploadImage(request.files.find(img => img.fieldname === "image"))
-            }
+        const { category,placeholdername, executive, label, dates, description, approvedate, status, created_at, updated_at } = data
+  
+        elibrary = {
+            category, placeholdername, executive, label, dates, description, approvedate, status, created_at, updated_at
         }
-        else {
-            elibrary = {
-                category, placeholdername, label, dates, description, approvedate, updated_at
-            }
-        }
+        elibrary.image = await imageInRequest("image")
         const updateElibrary = await Elibrary.findByIdAndUpdate({ _id: elibraryId }, elibrary, { new: true })
         response.status(201).json(updateElibrary)
     } catch (error) {

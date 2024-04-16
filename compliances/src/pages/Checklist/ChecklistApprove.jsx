@@ -374,8 +374,8 @@ const ChecklistApprove = () =>{
             reason:reason,
             id:selectedRowIds1
         }
-        dispatch(checklistsReject(postBody));//relodreport
-        relodreport();
+        // dispatch(checklistsReject(postBody));//relodreport
+        // relodreport();
     }     
     const saveandapprove = () => {
       if (selectedRows1.length === 0) {
