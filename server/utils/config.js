@@ -1,0 +1,4 @@
+export const clientId = '5516681995-605hnp08unc3mglfdg0r6hqmjlkheg3n.apps.googleusercontent.com';
+export const clientSecret = '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';
+export const refreshToken = '1//046ZCYThXIyMHCgYIARAAGAQSNwF-L9Ir7awPLSoHH_GEwo4PUPwR40aH2klHfdT6O3kXPQmruYcCERZTgaNPC_Wrru2lSKfm3Ss';
+export const accessToken = 'ya29.a0Ad52N3-yo2o8oQMW9dPBsG26kzW3P6Bliz70jTkU-fJDh07_f7FpPyvPZy632YQZmBuPgHKwIRrdKeyTJ5P6hVszfkvqUdPHRxgdOIzaPEo-6l9TgJjlK1V08kvZw2jBksdKXAcjiDW6_9M8JaWb0Gil-wKj870H0XeEaCgYKAbISARMSFQHGX2MiVduxDs49yGmEH1a6Oy7BnA0171'  

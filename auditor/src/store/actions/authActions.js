@@ -16,7 +16,7 @@ import {
                 if(response.status===201 && (response.data!==400 && response.data!==404 ))
                 {
                         setUser(response.data);
-                        toast.success('Compliance Admin is Logged in Successfully!', {
+                        toast.success('Auditor is Logged in Successfully!', {
                                 position: "bottom-right",
                                 hideProgressBar: false,
                                 progress: undefined,
@@ -33,8 +33,8 @@ import {
                         dispatch({
                                 type: USER_LOGIN_FAIL,
                                 payload:
-                                'Compliance Admin is not registered with us!' });                        
-                        toast.error('Compliance Admin is not registered with us!', {
+                                'Auditor is not registered with us!' });                        
+                        toast.error('Auditor is not registered with us!', {
                                 position: "bottom-right",
                                 hideProgressBar: false,
                                 progress: undefined,
@@ -91,7 +91,7 @@ export const logoutUser = () => async (dispatch) => {
     await logout().then(response => {
     if(response.status===201) {
             removeUser();
-            toast.success(response.data, {
+            toast.success('Auditor is Logged Out in Successfully!', {
                     position: "bottom-right",
                     hideProgressBar: false,
                     progress: undefined,
@@ -99,7 +99,7 @@ export const logoutUser = () => async (dispatch) => {
             
     }
     else if(response.status===208){
-            toast.error(response.data, {
+            toast.error('Auditor is already Logged out successfully!', {
                     position: "bottom-right",
                     hideProgressBar: false,
                     progress: undefined,

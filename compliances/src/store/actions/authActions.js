@@ -91,7 +91,7 @@ export const logoutUser = () => async (dispatch) => {
     await logout().then(response => {
     if(response.status===201) {
             removeUser();
-            toast.success(response.data, {
+            toast.success('Compliance Admin is Logged Out Successfully!', {
                     position: "bottom-right",
                     hideProgressBar: false,
                     progress: undefined,
@@ -99,7 +99,7 @@ export const logoutUser = () => async (dispatch) => {
             
     }
     else if(response.status===208){
-            toast.error(response.data, {
+            toast.error('Compliance Admin is already Logged out successfully!', {
                     position: "bottom-right",
                     hideProgressBar: false,
                     progress: undefined,

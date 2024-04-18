@@ -35,6 +35,9 @@ import {
     USER_REQUEST_GET,
     USER_SUCCESS_GET,
     USER_GET_FAIL,
+    USER_DELETE_REQUEST,
+    USER_DELETE_SUCCESS,
+    USER_DELETE_FAIL,
     NOTFICATION_CREATE_REQUEST,
     NOTFICATION_CREATE_SUCCESS,
     NOTFICATION_CREATE_FAIL,
@@ -1038,9 +1041,10 @@ export const userEdit = (postbody,id) => async (dispatch) => {
      
 }
 export const deleteUser = (id) => async (dispatch) => {
-        dispatch({ type: CATEGORY_DELETE_REQUEST });
+        // alert(id);return;
+        dispatch({ type: USER_DELETE_REQUEST });
                 await userDelete(id).then(response=>{
-                dispatch({ type: CATEGORY_DELETE_SUCCESS, payload: response.data });    
+                dispatch({ type: USER_DELETE_SUCCESS, payload: response.data });    
                 if(response.status===201)
                 {
                         toast.success(response.data, {
@@ -1058,7 +1062,7 @@ export const deleteUser = (id) => async (dispatch) => {
                 else
                 {
                         dispatch({
-                                type: CATEGORY_DELETE_FAIL,
+                                type: USER_DELETE_FAIL,
                                 payload:
                                 response.data });
                         toast.error(response.data, {
@@ -1069,7 +1073,7 @@ export const deleteUser = (id) => async (dispatch) => {
                 }
                 }).catch(error =>{
                         dispatch({
-                                type: CATEGORY_DELETE_FAIL,
+                                type: USER_DELETE_FAIL,
                                 payload:
                                 error.message });
 

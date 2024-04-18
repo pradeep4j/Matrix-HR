@@ -53,6 +53,9 @@ import {
     USER_REQUEST_EDIT,
     USER_SUCCESS_EDIT,
     USER_EDIT_FAIL,
+    USER_DELETE_REQUEST,
+    USER_DELETE_SUCCESS,
+    USER_DELETE_FAIL,
     CHECKLIST_CREATE_REQUEST,
     CHECKLIST_CREATE_SUCCESS,
     CHECKLIST_CREATE_FAIL,
@@ -485,7 +488,14 @@ export const userEditReducer = (state= {}, action) => {
                 default: return state;
         }
 }
-
+export const userDeleteReducer = (state= {}, action) => {
+        switch(action.type) {
+                case USER_DELETE_REQUEST: return { loading:true };
+                case USER_DELETE_SUCCESS: return { loading:false, userDeleteInfo: action.payload };
+                case USER_DELETE_FAIL: return { loading:false, error: action.payload };
+                default: return state;
+        }
+}
 export const branchGetReducer = (state= {}, action) => {
         switch(action.type) {
                 case BRANCH_REQUEST_GET: return { loadingu:true };

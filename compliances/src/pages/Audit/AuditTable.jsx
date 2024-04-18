@@ -449,7 +449,7 @@ const Audit = () => {
                     </div> 
                     <div className="col-md-15 col-lg-15">
                         <select className="form-select" ref={myElementRefExecutive} aria-label="Default select example" name="users" value={user} onChange={(e)=>{setUser(e.target.value);filter();}}>
-                                <option value="">Seclect Excutive</option>
+                                <option value="">Select Executive</option>
                                 {usersInfo != 'undefind' && usersInfo?.length > 0 && usersInfo.map(item => 
                                 <option value={item._id}>{item.firstName}{' '}{item.lastName}</option>
                             )};

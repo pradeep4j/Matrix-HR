@@ -19,7 +19,7 @@ const Login = () => {
     const userLogin = useSelector((state) => state.userLogin);
     const { loading, userInfo } = userLogin;
     const initialValues = {
-        email: 'pradeepmaurya@yahoo.com',
+        email: 'matrixcms2024@gmail.com',
         password: 'Amitabh!5',
         recaptcha:''
       }

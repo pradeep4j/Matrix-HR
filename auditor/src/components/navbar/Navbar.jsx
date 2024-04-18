@@ -156,21 +156,21 @@ const itemsListNotLoggedIn = [
         icon: <ManageAccountsIcon onClick={(e) => onAudit(e)}/>,
         onClick: (e) => onAudit(e)
     },
-    {
-        text: "Companies",
-        icon: <BusinessIcon onClick={(e) => onCompany(e)}/>,
-        onClick: (e) => onCompany(e)
-    },
-    {
-        text: "Users",
-        icon: <PeopleAltIcon onClick={(e) => onUserRegister(e)}/>,
-        onClick: (e) => onUserRegister(e)
-    },
-    {
-        text: "Category",
-        icon: <CategoryIcon onClick={(e) => onCategory(e)}/>,
-        onClick: (e) => onCategory(e)
-    },
+    // {
+    //     text: "Companies",
+    //     icon: <BusinessIcon onClick={(e) => onCompany(e)}/>,
+    //     onClick: (e) => onCompany(e)
+    // },
+    // {
+    //     text: "Users",
+    //     icon: <PeopleAltIcon onClick={(e) => onUserRegister(e)}/>,
+    //     onClick: (e) => onUserRegister(e)
+    // },
+    // {
+    //     text: "Category",
+    //     icon: <CategoryIcon onClick={(e) => onCategory(e)}/>,
+    //     onClick: (e) => onCategory(e)
+    // },
     {
         text: "E-Library",
         icon: <LocalLibraryIcon onClick={(e) => onElibrary(e)}/>,
@@ -181,12 +181,12 @@ const itemsListNotLoggedIn = [
         icon: <NotificationsNoneIcon onClick={(e) => onNotification(e)}/>,
         onClick: (e) => onNotification(e)
     }
-    ,
-    {
-        text: "Lise/Regs",
-        icon: <img src={Lisereg} alt="My Image" onClick={(e) => onLisereg(e)} />,
-        onClick: (e) => onLisereg(e)
-    }
+    // ,
+    // {
+    //     text: "Lise/Regs",
+    //     icon: <img src={Lisereg} alt="My Image" onClick={(e) => onLisereg(e)} />,
+    //     onClick: (e) => onLisereg(e)
+    // }
 ];
 
     const onLogin = (e) => {

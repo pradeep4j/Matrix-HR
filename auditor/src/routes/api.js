@@ -1,8 +1,8 @@
 import axios from 'axios';
 import {getToken} from '../utils/localStorage'
-const URL = 'http://localhost:8000/api/admin'; 
+// const URL = 'http://localhost:8000/api/admin'; 
 
-//const URL = 'http://103.160.107.21:8000/api/admin'; 
+const URL = 'http://103.160.107.21:8000/api/admin'; 
 axios.defaults.withCredentials = true;  
 ///api of users starts
 export const login = async(data) => {
@@ -692,6 +692,17 @@ export const elibraryReject = async(data) => {
     }
     //alert('JSON.stringify(data)'); return;
     return await axios.patch(`${URL}/elibraryReject`,data,config);
+}
+export const elibraryRejectedDocs = async() => {
+
+    const config = {
+        headers: {
+            "Content-Type":"application/json",
+            Authorization : `Bearer ${getToken()}`
+        }
+    }
+    //alert('JSON.stringify(data)'); return;
+    return await axios.get(`${URL}/elibraryRejectedDocs`,config);
 }
 export const elibrarySaveandApprove = async(data) => {
 

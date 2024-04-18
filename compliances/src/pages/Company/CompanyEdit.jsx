@@ -10,6 +10,7 @@ import { categoryGet, stateGets, companytab1create, companytab2create, companyta
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+
 import Companyprofile from './Companyprofile';
 import Companylicense from './Companylicense';
 import Assigncompanies from './Assigncompanies';
@@ -33,7 +34,9 @@ import DynamicHTMLGeneratorE from './DynamicGenerator/DynamicHTMLGeneratorE'
 import DynamicHTMLGeneratorF1 from './DynamicGenerator/DynamicHTMLGeneratorF1'
 import DynamicHTMLGeneratorGCC from './DynamicGenerator/DynamicHTMLGeneratorGCC'
 import Loading1 from '../../components/layout/Loading1';
-const CompanyEdit = (editId) => {
+const CompanyEdit = (props) => {
+    const {editId,refreshctab} = props;
+    // console.log(editId)
     const navigate = useNavigate();
     const dispatch = useDispatch();
     let defaultDate = new Date()
@@ -51,7 +54,9 @@ const CompanyEdit = (editId) => {
     const factoryRefClicknotshowmain = useRef(null);
     const myRefE3div = useRef(null);
     const useRefnoOfEmpDeployedAgreementE2 = useRef(null);
-     
+    const getByIdCompany = useSelector(state => state.getByIdCompany)
+    const {loadingcompanygetbyid, companyGetByIdInfo } = getByIdCompany;
+    console.log(companyGetByIdInfo)
     const refnoshowgclrashow = useRef(null);
     const refshowgclrashow = useRef(null);
     const inputRefsclra  = {
@@ -229,7 +234,7 @@ const CompanyEdit = (editId) => {
     const [noemD3,setnoemD3] = useState('');
     const [noefD3,setnoefD3] = useState('');
     const [issueauthfD3,setissueauthfD3] = useState('');
-    const [issueauthfD3image,setissueauthfDimage] = useState('');
+    const [issueauthfD3image,setissueauthfD3image] = useState('');
     const [issueauthfD3remark,setissueauthfD3remark] = useState('');
     const [licensenumber,setlicensenumber] = useState('');
     const [licensenumberimage,setlicensenumberimage] = useState('');
@@ -308,7 +313,128 @@ const CompanyEdit = (editId) => {
     const [g13form5securityfee,setg13form5securityfee] = useState('');
     const [g13form5securityfeeimage,setg13form5securityfeeimage] = useState('');
     const [g13form5securityfeeremark,setg13form5securityfeeremark] = useState('');
-    
+    useEffect(()=>{
+        if(companyGetByIdInfo && companyGetByIdInfo.length > 0 ) {
+            const data = companyGetByIdInfo[0]; 
+            setcompanyname(data.companyname)
+            setcompanyimage(data.companyimage)
+            setcompanyremark(data.companyremark)
+            setcompanyaddress(data.companyaddress)
+            setcompanystate(data.companystate)
+            setcompanydistrict(data.companydistrict)
+            setcompanypin(data.companypin)
+            setcompanyaddressimage(data.companyaddressimage)
+            setcompanyaddressremark(data.companyaddressremark)
+            setcompanytype(data.companytype)
+            setcompanytypeimage(data.companytypeimage)
+            setcompanytyperemark(data.companytyperemark)
+            setcompanycategory(data.companycategory)
+            setcompanycategoryimage(data.companycategoryimage)
+            setcompanycategoryremark(data.companycategoryremark)
+            setcompanynatureofbusiness(data.companynatureofbusiness)
+            setcompanynatureofbusinessimage(data.companynatureofbusinessimage)
+            setcompanynatureofbusinessremark(data.companynatureofbusinessremark)
+            setcompanyregistration(data.companyregistration)
+            setcompanyregistrationimage(data.companyregistrationimage)
+            setcompanyregistrationremark(data.companyregistrationremark)
+            setcompanycin(data.companycin)
+            setcompanyciniamge(data.companyciniamge)
+            setcompanycinremark(data.companycinremark)
+            setcompanyissuedplace(data.companyissuedplace)
+            setcompanyissuedplaceimage(data.companyissuedplaceimage)
+            setcompanyissuedplaceremark(data.companyissuedplaceremark)
+            setcompanyauthority(data.companyauthority)
+            setcompanyauthorityimage(data.companyauthorityimage)
+            setcompanyauthorityremark(data.companyauthorityremark)
+            setcompanyregistrationdate(data.companyregistrationdate)
+            setcompanytan(data.companytan)
+            setcompanytandetails(data.companytandetails)
+            setcompanytanimage(data.companytanimage)
+            setcompanytanremark(data.companytanremark)
+            setcompanytin(data.companytin)
+            setcompanypan(data.companypan)
+            setcompanypanimage(data.companypanimage)
+            setcompanypanremark(data.companypanremark)
+            setcompanytinimage(data.companytinimage)
+            setcompanytinremark(data.companytinremark)
+            setcompanygst(data.companygst)
+            setcompanygstimage(data.companygstimage)
+            setcompanygstremark(data.companygstremark)
+            setpfnumber(data.pfnumber)
+            setpfdetails(data.pfdetails)
+            setpfimage(data.pfimage)
+            setpfdremark(data.pfdremark)
+            setdoc(data.doc)
+            setpfaddress(data.pfaddress)
+            setpfstate(data.pfstate)
+            setpfdistrict(data.pfdistrict)
+            setpfpin(data.pfpin)
+            setpfaddressimage(data.pfaddressimage)
+            setpfaddressremark(data.pfaddressremark)
+            setesinumber(data.esinumber)
+            setesiimage(data.esiimage)
+            setesidremark(data.esidremark)
+            setesidoc(data.esidoc)
+            setesiaddress(data.esiaddress)
+            setesistate(data.esistate)
+            setesidistrict(data.esidistrict)
+            setesipin(data.esipin)
+            setesiaddressimage(data.esiaddressimage)
+            setesiaddressremark(data.esiaddressremark)
+            setregistrationD3(data.registrationD3)
+            setregistrationD3image(data.registrationD3image)
+            setregistrationD3remark(data.registrationD3remark)
+            setdoregistrationD3(data.doregistrationD3)
+            setdoeregistrationD3(data.doeregistrationD3)
+            setdoddrregistrationD3(data.doddrregistrationD3)
+            setmanagernameD3(data.managernameD3)
+            setmanagernameD3image(data.managernameD3image)
+            setmanagernameD3remark(data.managernameD3remark)
+            setnoeD3(data.noeD3)
+            setnoemD3(data.noemD3)
+            setnoefD3(data.noefD3)
+            setissueauthfD3(data.issueauthfD3)
+            setissueauthfD3image(data.issueauthfD3image) // check line no. 237 it set name is changed there
+            setissueauthfD3remark(data.issueauthfD3remark)
+            setlicensenumber(data.licensenumber)
+            setlicensenumberimage(data.licensenumberimage)
+            setlicensenumberremark(data.licensenumberremark)
+            setdor(data.dor)
+            setdoe(data.doe)
+            setdoddr(data.doddr)
+            setmanagernamelicense(data.managernamelicense)
+            setmanagerlicenseimage(data.managerlicenseimage)
+            setmanagerlicenseremark(data.managerlicenseremark)
+            setnoe(data.noe)
+            setnom(data.nom)
+            setnof(data.nof)
+            setissuingauth(data.issuingauth)
+            setissuingauthimage(data.issuingauthimage)
+            setissuingauthremark(data.issuingauthremark)
+            setfpD3(data.fpD3)
+            setfpD3image(data.fpD3image)
+            setfpD3remark(data.fpD3remark)
+            setdoapp(data.doapp)
+            setissueauthfpD3(data.issueauthfpD3)
+            setissueauthfpD3image(data.issueauthfpD3image)
+            setissueauthfpD3remark(data.issueauthfpD3remark)
+            setpowerfpD3(data.powerfpD3)
+            setpowerfpD3image(data.powerfpD3image)
+            setpowerfpD3remark(data.powerfpD3remark)
+            setpowerhpfpD3(data.powerhpfpD3)
+            setpowerhpfpD3image(data.powerhpfpD3image)
+            setpowerhpfpD3remark(data.powerhpfpD3remark)
+            setregistrationlwfD3(data.registrationlwfD3)
+            setregistrationlwfD3image(data.registrationlwfD3image)
+            setregistrationlwfD3remark(data.registrationlwfD3remark)
+            setdoregistrationlwfD3(data.doregistrationlwfD3)
+            setregistrationptrD3(data.registrationptrD3)
+            setregistrationptrD3image(data.registrationptrD3image)
+            setregistrationptrD3remark(data.registrationptrD3remark)
+            setdoregistrationptrD3(data.doregistrationptrD3)
+            setlabourEngaged(data.labourEngaged)
+        }
+    },[companyGetByIdInfo])
     const catGet = useSelector((state) => state.catGet);
     const { loading, categoryInfo, error } = catGet;
     const getState = useSelector((state) => state.getState);
@@ -685,6 +811,7 @@ const CompanyEdit = (editId) => {
         dispatch(categoryGet());
         dispatch(stateGets())
         dispatch(companyTableGet());
+        dispatch(companyGettingById(editId))
         // if(companytab1CreateInfo?._id){
         //     dispatch(companyGettingById(companytab1CreateInfo?._id))
         // }
@@ -2156,7 +2283,7 @@ const CompanyEdit = (editId) => {
                                                                                     <input type="file"  class="form-control" multiple="" accept="image/*,application/pdf" style={{ height:'10px' }}
                                                                                     name="issueauthfD3image" id="issueauthfD3image"
                                                                                     
-                                                                                    onChange={(e) => setissueauthfDimage(e.target.files[0])} required
+                                                                                    onChange={(e) => setissueauthfD3image(e.target.files[0])} required
                                                                                     />
                                                                                 </div>
                                                                             </div>

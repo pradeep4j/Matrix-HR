@@ -32,7 +32,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
     const { loadingebid,elibraryGetByIDInfo } = elibraryGetByIds;
     let defaultDate = new Date()
     defaultDate.setDate(defaultDate.getDate() )
-    const [date, setDate] = useState(defaultDate)
+    const [dates, setDate] = useState()
     const [dating, setDates] = useState('');
     const [category, setCategory] = useState('');
     const [reason, setReason] = useState('');
@@ -55,8 +55,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
         placeholdername: '',
         label:'',
         description: '',
-        image:'',
-        dates:''
+        image:''
     }
     let savedValues = {
         category: elibraryGetByIDInfo?.category,
@@ -64,7 +63,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
         label:elibraryGetByIDInfo?.label,
         description: elibraryGetByIDInfo?.description,
         image:elibraryGetByIDInfo?.image,
-        dates:formatDate(elibraryGetByIDInfo?.dates)
+        // dates:formatDate(elibraryGetByIDInfo?.dates)
    }
 //    alert(savedValues.dates)
     const schema = Yup.object({
@@ -116,7 +115,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
         const formData = new FormData();
         formData.append("category", val.category);
         formData.append("placeholdername", val.placeholdername);
-        formData.append("dates", date);
+        formData.append("dates", dates);
         formData.append("label", val.label);
         formData.append("executive", '659d4f2609c9923c9e7b8f72');
         formData.append("description", val.description);
@@ -181,7 +180,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
         // alert('showModal')
       setVisible(true);
     };
-    console.log(visible)
+    // console.log(visible)
     const handleCancel = () => {
       setVisible(false);
     };
@@ -206,8 +205,9 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
         dispatch(rejectsElibrary(postBody));
         console.log('Form submitted:', formData);
         setVisible(false);
+        handleClose();
       };
-    
+    // console.log(elibraryGetByIDInfo?.status)
     ////Reject modal handling functions ends
     const saveandapprove = (e) => {
         e.preventDefault();
@@ -217,8 +217,9 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
             id:recordForEdit,
         }
         dispatch(elibrarySaveandApproved(postBody));//relodreport
-        // relodreport();
+        handleClose();
     }
+    console.log(formatDate(elibraryGetByIDInfo?.dates),elibraryGetByIDInfo?.dates)
     return(
         <><div style={{/*width: '900px',*/marginTop:'20px',overflowY: 'hidden',height:'570px',overflowX: 'hidden',marginLeft:'20px' }} >
             <form className="row g-3"  method="post" enctype="multipart/form-data" onSubmit={formik.handleSubmit}>
@@ -268,12 +269,12 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
                 <div className="col-md-4 col-lg-4">
                     <label for="" className="form-label">Date</label>
                     <input   type="date" className="form-control" 
-                        value={savedValues.dates} 
+                        value={formatDate(elibraryGetByIDInfo?.dates)} 
                         id="dates"
                         name="dates" 
                         // onChange={formik.handleChange} 
                         // value={date.toLocaleDateString('en-CA')} 
-                        onChange={onSetDate} />
+                        onChange={(e)=>setDate(e.target.value)} />
                 </div>
                 <div className="col-md-12 col-lg-12">
                     <label for="" className="form-label">Write Description</label>
@@ -308,13 +309,13 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
                     </ImageList>
                 </div>
                 <div className="col-md-4 col-lg-4" >
-                    <button type="button" className="w-100 btn btn-danger"  onClick={showModal}>Reject</button>
+                {elibraryGetByIDInfo?.status ===2 ?(<button type="button" className="w-100 btn btn-danger" >Rejected</button>):(<button type="button" className="w-100 btn btn-danger"  onClick={showModal}>Reject</button>)}
                 </div>
                 <div className="col-md-4 col-lg-4">
                     <button type="submit" className="w-100 btn btn btn-success" >Edit <EditIcon fontSize='mediam' /></button>
                 </div>
                 <div className="col-md-4 col-lg-4">
-                    <button type="button" className="w-100 btn btn-primary"  onClick={saveandapprove}>Save and Approve</button>
+                    {elibraryGetByIDInfo?.status ===0 ?(<button type="button" className="w-100 btn btn-primary"  onClick={saveandapprove}>Save and Approve</button>):(<button type="button" className="w-100 btn btn-primary" >Approved</button>)}
                 </div>
             </form>
         </div>

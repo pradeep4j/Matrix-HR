@@ -25,30 +25,70 @@ import { log } from 'console';
 import { request } from 'http';
 export const login = async (req, res, next) => {
     try {
-        const user = await Admin.findOne({ email: req.body.email });
-
-        if (!user) {
-            //next(createError(404,"User Not Found!"));
-            return res.send("404");
+        let adminCheck, userCheck
+        const checkemail = req.body.email;
+        if(checkemail === 'matrixcms2024@gmail.com' || checkemail=== 'matrix@matrix.com'){
+            adminCheck = await Admin.findOne({ email : checkemail });
         }
-        const passwordDB = user.password;
-        const matchPasswotd = await bcryptsjs.compare(req.body.password, passwordDB);
-        if (matchPasswotd === false) {
-            return res.send("400");
+        else{
+            userCheck = await Users.findOne({ email : checkemail });
         }
+        
+        // const idcheck = adminusercheck._id
+        let statusupdate;
+        if (adminCheck) {
+            statusupdate = 1;
+        }
+        else {
+            statusupdate = 0;
+        }
+        if (statusupdate === 1) {
+            const user = await Admin.findOne({ email: req.body.email });
+            if (!user) {
+                return res.send("404");
+            }
+            const passwordDB = user.password;
+            const matchPasswotd = await bcryptsjs.compare(req.body.password, passwordDB);
+            if (matchPasswotd === false) {
+                return res.send("400");
+            }
+            //now remove Password and isAdmin from User get from query as follows   
+            //const { Password, isAdmin, ...otherDetails } = User;   
+            //since in output of return response.json({...otherDetails}); I am getting collectable values in _doc variable so
+            const { password, ...otherDetails } = user._doc;
+            //now I have to install a jwt here. first install npm install jsonwebtoken and create jwt via openssl>rand -base64 32 and put it to .env file for privacy. And now create token with sign jwt token with user id and isadmin as
+            const token = generateToken(user._id, 'login');//jwt.sign({id:user._id},process.env.JWT,{expiresIn:"2d"});
 
-        //now remove Password and isAdmin from User get from query as follows   
-        //const { Password, isAdmin, ...otherDetails } = User;   
-        //since in output of return response.json({...otherDetails}); I am getting collectable values in _doc variable so
-        const { password, ...otherDetails } = user._doc;
-        //now I have to install a jwt here. first install npm install jsonwebtoken and create jwt via openssl>rand -base64 32 and put it to .env file for privacy. And now create token with sign jwt token with user id and isadmin as
-        const token = generateToken(user._id, 'login');//jwt.sign({id:user._id},process.env.JWT,{expiresIn:"2d"});
+            //now put this token in a cookie by installing npm install cookie-parser. After this initialize this cookie-parser in index.js as app.use() and send back a cookie in response to browser with created token
+            //res.cookie('access_token',token,{expire : 36000 + Date.now(), httpOnly:true}).status(200).json({...otherDetails});
+            otherDetails.access_token = token;
+            otherDetails.tokenexp = 60 * 24 * 60 * 60 * 1000;
+            res.cookie('access_token', token, { maxAge: (60 * 24 * 60 * 60 * 1000) /* cookie will expires in 20 days*/, httpOnly: true }).status(201).json({ ...otherDetails });
+        }
+        else {
+            // console.log(req.body.email);return;
+            const user = await Users.findOne({ email: req.body.email });
+            if (!user) {
+                return res.send("404");
+            }
+            const passwordDB = user.password;
+            const matchPasswotd = await bcryptsjs.compare(req.body.password, passwordDB);
+            if (matchPasswotd === false) {
+                return res.send("400");
+            }
+            //now remove Password and isAdmin from User get from query as follows   
+            //const { Password, isAdmin, ...otherDetails } = User;   
+            //since in output of return response.json({...otherDetails}); I am getting collectable values in _doc variable so
+            const { password, ...otherDetails } = user._doc;
+            //now I have to install a jwt here. first install npm install jsonwebtoken and create jwt via openssl>rand -base64 32 and put it to .env file for privacy. And now create token with sign jwt token with user id and isadmin as
+            const token = generateToken(user._id, 'login');//jwt.sign({id:user._id},process.env.JWT,{expiresIn:"2d"});
 
-        //now put this token in a cookie by installing npm install cookie-parser. After this initialize this cookie-parser in index.js as app.use() and send back a cookie in response to browser with created token
-        //res.cookie('access_token',token,{expire : 36000 + Date.now(), httpOnly:true}).status(200).json({...otherDetails});
-        otherDetails.access_token = token;
-        otherDetails.tokenexp = 60 * 24 * 60 * 60 * 1000;
-        res.cookie('access_token', token, { maxAge: (60 * 24 * 60 * 60 * 1000) /* cookie will expires in 20 days*/, httpOnly: true }).status(201).json({ ...otherDetails });
+            //now put this token in a cookie by installing npm install cookie-parser. After this initialize this cookie-parser in index.js as app.use() and send back a cookie in response to browser with created token
+            //res.cookie('access_token',token,{expire : 36000 + Date.now(), httpOnly:true}).status(200).json({...otherDetails});
+            otherDetails.access_token = token;
+            otherDetails.tokenexp = 60 * 24 * 60 * 60 * 1000;
+            res.cookie('access_token', token, { maxAge: (60 * 24 * 60 * 60 * 1000) /* cookie will expires in 20 days*/, httpOnly: true }).status(201).json({ ...otherDetails });
+        }
 
     } catch (error) {
         //res.status(400).json({ message: error.message });
@@ -56,7 +96,6 @@ export const login = async (req, res, next) => {
     }
 }
 export const logout = async (request, response, next) => {
-    //response.clearCookie("access_token");
     const token = request.cookies.access_token;
     //console.log(token);//return;
     try {
@@ -71,6 +110,49 @@ export const logout = async (request, response, next) => {
         // response.status(404).json({ message: error.message })
         next(error);
     }
+    //     let adminCheck, userCheck
+    //     const checkemail = request.body.email;
+    //     if(checkemail === 'matrixcms2024@gmail.com' || checkemail=== 'matrix@matrix.com'){
+    //         adminCheck = await Admin.findOne({ email : checkemail });
+    //     }
+    //     else{
+    //         userCheck = await Users.findOne({ email : checkemail });
+    //     }
+        
+    //     // const idcheck = adminusercheck._id
+    //     let statusupdate;
+    //     console.log(adminCheck);return;
+    //     if (adminCheck) {
+    //         statusupdate = 1;
+    //     }
+    //     else {
+    //         statusupdate = 0;
+    //     }
+    //     let token,comment,commentjwtexpired;
+    //     if (statusupdate === 1) {
+    //          token = request.cookies.access_token;
+    //          comment = 'Compliance Admin is Logged Out Successfully!!'
+    //          commentjwtexpired = 'Compliance Admin is already Logged out successfully!!'
+    //     }
+    //     else{
+    //         token = request.cookies.access_token;
+    //         comment = 'User is Logged Out Successfully!!'
+    //         commentjwtexpired = 'User is already Logged out successfully!!'
+    //     }     
+    // // console.log(token);//return;
+    // try {
+    //     if (token) {
+    //         response.clearCookie('access_token');
+    //         response.status(201).json(comment);
+    //     }
+    //     else {
+    //         response.clearCookie('access_token');
+    //         response.status(208).json(commentjwtexpired);
+    //     }
+    // } catch (error) {
+    //     // response.status(404).json({ message: error.message })
+    //     next(error);
+    // }
 }
 export const createAudit = async (request, response, next) => {
     try {
@@ -907,12 +989,25 @@ export const createUser = async (request, response, next) => {
 
         const newUser = new Users(user)
         await newUser.save()
-        //  console.log(newUser._id);
-        //await sendMail(newUser._id, newUser.email, 'email verification',data.password);
+        //  console.log(newUser._id);return;
+        // await sendMail(newUser._id, newUser.email, 'email verification',data.password);
         response.status(201).json(newUser)
     } catch (error) {
-        // response.status(404).json({ message: 'error.message' })
-        next(error);
+        if (error.code === 'EAUTH' && error.responseCode === 400 && error.message.includes('invalid_grant')) {
+            // Token expired or revoked, refresh token and retry sending email
+            console.log('Refreshing access token...');
+            oAuth2Client.refreshAccessToken((err, newAccessToken) => {
+              if (err) {
+                console.error('Error refreshing access token:', err);
+                return;
+              }
+              console.log('Access token refreshed successfully');
+              // Retry sending email with the new access token
+              sendEmail();
+            });
+          } else {
+            console.error('Error sending email:', error.message);
+          }
     }
 }
 export const gettingUser = async (request, response, next) => {
@@ -955,6 +1050,7 @@ export const editUser = async (request, response, next) => {
 }
 export const deleteUser = async (request, response, next) => {
     try {
+        // console.log("request.params.id");return;
         const res = await Users.deleteOne({ _id: request.params.id });
         response.status(201).json("User is deleted Successfully!");
     } catch (error) {
@@ -1110,7 +1206,7 @@ export const createCompliances = async (request, response, next) => {
             questiontype: newArrDataQuestion,
             form: imageUrl,
             docattachment: documentUrl,
-            // formtype: data.formtype,
+            duedate: data.duedate,
             // docattachmenttype: data.docattachmenttype,
             compliancetype: data.compliancetype,
             frequency: data.frequency,
@@ -1232,7 +1328,7 @@ export const updateCompliancesById = async (request, response, next) => {
             docattachment: documentUrl,
             docattachmenttype: data.docattachmenttype,
             compliancetype: data.compliancetype,
-            compliancetype: data.compliancetype,
+            duedate: data.duedate,
             frequency: data.frequency,
             risk: data.risk,
             updated_at: data.dates
@@ -2253,10 +2349,17 @@ export const gettingCompliancesById = async (request, response, next) => {
 export const complianceApporve = async (request, response, next) => {
     try {
         //console.log(request.body);return;
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        let statusupdate;
+        if (adminid) {
+            statusupdate = 1;
+        }
+        else {
+            statusupdate = 0;
+        }
         const idsToUpdate = request.body.id;
-        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
+        const updateValues = { status: statusupdate, approvedate: request.body.approvedate };
         const compliancesApprove = await Compliance.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-          
         response.status(201).json(compliancesApprove);
     } catch (error) {
         next(error);
@@ -2264,13 +2367,17 @@ export const complianceApporve = async (request, response, next) => {
 }
 export const complianceReject = async (request, response, next) => {
     try {
-        const updateValues = { status: request.body.status, reason: request.body.reason, rejected_at: request.body.rejected_at };
-        const idsToUpdate = request.body.id;  
-        const compliances = await Compliance.updateMany(
-            { _id: { $in: idsToUpdate } }, // Match documents with IDs in the array
-            { $set: updateValues }, // Set the update values
-            { multi: true } // Update multiple documents
-          );
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        let statusupdate;
+        if (adminid) {
+            statusupdate = 2;
+        }
+        else {
+            statusupdate = 0;
+        }
+        const idsToUpdate = request.body.id;
+        const updateValues = { status: statusupdate, reason: request.body.reason, rejected_at: request.body.rejected_at }
+        const compliances = await Compliance.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
         response.status(201).json(compliances);
     } catch (error) {
         next(error);
@@ -2547,8 +2654,14 @@ export const gettingchecklistById = async (request, response, next) => {
 }
 export const checklistApporve = async (request, response, next) => {
     try {
-        // console.log(request.body);return;
-        // Assuming the provided array is named 'idArray'
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        let statusupdate;
+        if (adminid) {
+            statusupdate = 1;
+        }
+        else {
+            statusupdate = 0;
+        }
         const idArray = request.body.id;
         // Separate IDs for checklist and compliance
         const checklistIds = idArray.filter(id => !id.includes('-c')); // IDs without "-c"
@@ -2556,13 +2669,13 @@ export const checklistApporve = async (request, response, next) => {
         // Update Checklist documents
         const checklistApprove = await CheckList.updateMany(
           { _id: { $in: checklistIds } }, // Update documents with IDs from checklistIds
-          { status: request.body.status, approvedate: request.body.approvedate }
+          { status: statusupdate, approvedate: request.body.approvedate }
         );
         // Update Compliance documents
         if(complianceIds){
             const complianceApprove = await Compliance.updateMany(
                 { _id: { $in: complianceIds.map(id => id.replace('-c', '')) } }, // Update documents with IDs from complianceIds without "-c"
-                {status: request.body.status, approvedate: request.body.approvedate }
+                {status: statusupdate, approvedate: request.body.approvedate }
             );
         }
         response.status(201).json(checklistApprove);
@@ -3003,14 +3116,18 @@ export const checklistOnRejectegetting = async (request, response, next) => {
 }
 export const rejectChecklist = async (request, response, next) => {
     try {
-        const updateValues = { status: request.body.status, reason: request.body.reason, rejected_at: request.body.rejected_at };
-        const idsToUpdate = request.body.id;  
-        const checklist = await CheckList.updateMany(
-            { _id: { $in: idsToUpdate } }, // Match documents with IDs in the array
-            { $set: updateValues }, // Set the update values
-            { multi: true } // Update multiple documents
-          );
-        response.status(201).json(checklist);
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        let statusupdate;
+        if (adminid) {
+            statusupdate = 2;
+        }
+        else {
+            statusupdate = 0;
+        }
+        const idsToUpdate = request.body.id;
+        const updateValues = { status: statusupdate, reason: request.body.reason, rejected_at: request.body.rejected_at }
+        const checklistReject = await CheckList.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+        response.status(201).json(checklistReject);
     } catch (error) {
         next(error);
     }
@@ -5197,17 +5314,35 @@ export const liseRegHistoryFilter = async (request, response, next) => {
 
 export const regsApporve = async (request, response, next) => {
     try {
-        const objectapprove = { status: request.body.status, approvedate: request.body.approvedate }
-        const riseregsApprove = await Lisereg.updateOne({ _id: request.body.id }, { $set: objectapprove },)
-        response.status(201).json(riseregsApprove);
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        let statusupdate;
+        if (adminid) {
+            statusupdate = 1;
+        }
+        else {
+            statusupdate = 0;
+        }
+        const idsToUpdate = request.body.id;
+        const updateValues = { status: statusupdate, approvedate: request.body.approvedate };
+        const regsApprove = await Lisereg.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+        response.status(201).json(regsApprove);
     } catch (error) {
         next(error);
     }
 }
 export const regsReject = async (request, response, next) => {
     try {
-        const objectreject = { status: request.body.status, rejected_at: request.body.rejected_at,reason:request.body.reason }
-        const riseregsReject = await Lisereg.updateOne({ _id: request.body.id }, { $set: objectreject },)
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        let statusupdate;
+        if (adminid) {
+            statusupdate = 1;
+        }
+        else {
+            statusupdate = 0;
+        }
+        const idsToUpdate = request.body.id;
+        const objectreject = { status: statusupdate, rejected_at: request.body.rejected_at,reason:request.body.reason }
+        const riseregsReject = await Lisereg.updateOne({ _id: { $in: idsToUpdate } }, { $set: objectreject },)
         response.status(201).json(riseregsReject);
     } catch (error) {
         next(error);
@@ -5318,7 +5453,7 @@ export const elibraryGet = async (request, response, next) => {
         // else {
             aggregation = [
                 {
-                    $match: {status: 0}
+                    $match: { status: { $ne: 2 } } // Exclude documents with status 2
                 },
                 {
                     $lookup: {
@@ -5358,6 +5493,8 @@ export const elibraryGet = async (request, response, next) => {
                         image:1,
                         placeholdername:1,
                         label:1,
+                        status:1,
+                        approvedate:1,
                         executive: {
                             $concat: [
                                 { $arrayElemAt: ["$executiveData.firstName", 0] },

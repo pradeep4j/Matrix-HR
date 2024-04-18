@@ -73,6 +73,7 @@ const { loadings, userEditInfo } = userEdits;
       okType: "danger",
       onOk: () => {
         setDataSource((pre) => {
+          // alert(record.id);return;
           dispatch(deleteUser(record.id));
           return pre.filter((category) => category.id !== record.id);
         });

@@ -16,26 +16,45 @@ const Users = () => {
   const [valuesRe, setValuesRe] = useState({showRePassword: false});
   const userCreate = useSelector((state) => state.userCreate);
   const { loading, userCreateInfo,error } = userCreate;
-  const  generatePassword = () => {
+  function generatePassword() {
     const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
     const specialCharacters = '!@#$%^&*()-_=+[{]};:,<.>?/';
     const numbers = '0123456789';
-  
-    const allCharacters = uppercaseLetters + lowercaseLetters + specialCharacters + numbers;
-  
+
     let password = '';
-    password += uppercaseLetters[Math.floor(Math.random() * uppercaseLetters.length)]; // At least one capital letter
-    password += specialCharacters[Math.floor(Math.random() * specialCharacters.length)]; // At least one special character
-    password += numbers[Math.floor(Math.random() * numbers.length)]; // At least one numeric character
-  
-    for (let i = 0; i < 4; i++) { // Generate the rest of the password
-        password += allCharacters[Math.floor(Math.random() * allCharacters.length)];
+
+    // Generate one uppercase letter
+    password += uppercaseLetters[Math.floor(Math.random() * uppercaseLetters.length)];
+
+    // Generate five random lowercase letters (6 in total with the uppercase)
+    for (let i = 0; i < 5; i++) {
+        password += lowercaseLetters[Math.floor(Math.random() * lowercaseLetters.length)];
     }
-  
+
+    // Generate one special character
+    password += specialCharacters[Math.floor(Math.random() * specialCharacters.length)];
+
+    // Generate one numeric character
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+
     // Shuffle the password to mix the characters
     password = password.split('').sort(() => Math.random() - 0.5).join('');
-  
+
+    // Check if the password length is less than 8
+    if (password.length < 8) {
+        const missingLength = 8 - password.length;
+        const remainingCharacters = lowercaseLetters + specialCharacters + numbers;
+
+        // Add missing characters to meet the length requirement
+        for (let i = 0; i < missingLength; i++) {
+            password += remainingCharacters[Math.floor(Math.random() * remainingCharacters.length)];
+        }
+
+        // Shuffle again to mix the added characters
+        password = password.split('').sort(() => Math.random() - 0.5).join('');
+    }
+
     return password;
   }
   let bothpassword =  generatePassword();
@@ -66,13 +85,13 @@ const schema = Yup.object({
     password: Yup.string()
         .min(6, 'Password should be of minimum 6 characters length')
         .max(15, 'Password should be of minimum 15 characters length')
-        .required('Password is required') //in editing password is not required initially because it comes from database and we will not check its required
-        .matches(/^(?=.*\d)(?=.*[@#\-_$%^&+=ยง!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=ยง!\?]+$/, 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and a special characters.'),
+        .required('Password is required'), //in editing password is not required initially because it comes from database and we will not check its required
+        // .matches(/^(?=.*\d)(?=.*[@#\-_$%^&+=ยง!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=ยง!\?]+$/, 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and a special characters.'),
     repassword: Yup.string('')
         .min(6, 'Password should be of minimum 6 characters length')
         .max(15, 'Password should be of minimum 15 characters length')
         .required('Re Password is required') //.required('Password is required') in editing password is not required initially because it comes from database  and we will not check its required
-        .matches(/^(?=.*\d)(?=.*[@#\-_$%^&+=ยง!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=ยง!\?]+$/, 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and a special characters.')
+        // .matches(/^(?=.*\d)(?=.*[@#\-_$%^&+=ยง!\?])(?=.*[a-z])(?=.*[A-Z])[0-9A-Za-z@#\-_$%^&+=ยง!\?]+$/, 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and a special characters.')
         .when('password', {
           is: (val) => !!(val && val.length > 0),
           then: Yup.string().oneOf(
@@ -123,7 +142,14 @@ useEffect(() => {
 const calling = () => {
   dispatch(usersGet());
 }
-
+const createnew = () => {
+  // dispatch(usersCreates());
+}
+const handleClickGeneratePassword = () => {
+  const newPassword = generatePassword();
+  formik.setFieldValue('password', newPassword);
+  formik.setFieldValue('repassword', newPassword);
+};
   return (
 
     <React.Fragment>
@@ -136,7 +162,7 @@ const calling = () => {
                   <button class="nav-link w-100 active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true" onClick={calling}>View All</button>
                 </li>
                 <li class="nav-item col-md-6 col-lg-6 col-12" role="presentation">
-                  <button class="nav-link w-100" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Create New</button>
+                  <button class="nav-link w-100" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" onClick={createnew}>Create New</button>
                 </li>
               </ul>
               <div class="tab-content" id="pills-tabContent" >
@@ -254,11 +280,13 @@ const calling = () => {
                         <div className="error">{formik.errors.repassword}</div>
                       )}
                     </div>
-
-                    <div class="col-md-6 ">
+                    {/* <div class="col-md-6"> */}
+                      <button type="button" class="btn btn-secondary" onClick={handleClickGeneratePassword}>Generate New Password</button>
+                    {/* </div> */}
+                    <div class="col-md-6 mb-2">
                       <button type="submit" class="w-100 btn btn-dark" id="cancel" style={{marginTop:'230px'}} onClick={tocategorypage}>Cancel</button>
                     </div>
-                   <div class="col-md-6">
+                   <div class="col-md-6 mb-2">
                       <button type="submit" class="w-100 btn btn-primary" style={{marginTop:'230px'}}>Save</button>
                     </div>
                   </form>
