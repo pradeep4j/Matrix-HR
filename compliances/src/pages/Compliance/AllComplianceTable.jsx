@@ -38,7 +38,7 @@ const AllComplianceTable = () =>{
     const [date, setDate] = useState('');
     const getComplianceall = useSelector((state) => state.getComplianceall);
     const { loadingu,complianceInfoAll } = getComplianceall; 
-    // console.log(complianceInfoAll)
+     console.log(complianceInfoAll)
     const complianceByIdUpdate = useSelector((state) => state.complianceByIdUpdate);
     const { loadingupdate,complianceInfoUpdateId } = complianceByIdUpdate; 
     const userLogin = useSelector(state=>state.userLogin);

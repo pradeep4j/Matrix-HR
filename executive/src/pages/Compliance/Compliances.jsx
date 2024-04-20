@@ -115,7 +115,7 @@ const Compliances = () => {
                 recurrence:item.frequency,
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 executive:name?'admin':item.executive,
-                duedate:item.duedate == null ? item.duedate:formatDate(item.duedate),
+                duedate:formatDate(item.duedate),
               })
           });
         }
@@ -142,7 +142,7 @@ const Compliances = () => {
                   compliancetype:item.compliancetype,
                   recurrence:item.frequency,
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-                  duedate:item.duedate == null ? item.duedate:formatDate(item.duedate),
+                  duedate:formatDate(item.duedate),
                 })
             });
           }
@@ -526,7 +526,7 @@ const Compliances = () => {
                                     <button className="nav-link w-100 rounded-0 text-dark active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true" onClick={calling} > <ContentPasteIcon /> All Compliances</button>
                                 </li>
                                 <li className="nav-item col-md-3 col-12 border-end" role="presentation">
-                                    <button className="nav-link w-100 rounded-0 text-dark" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" onClick={callingapprove}><ContentPasteIcon />Approved Compliances</button>
+                                    <button className="nav-link w-100 rounded-0 text-dark" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" onClick={callingapprove}><ContentPasteIcon /> Compliances Approve</button>
                                 </li>
                                 <li className="nav-item col-md-3 col-12 border-end" role="presentation">
                                     <button className="nav-link w-100 rounded-0 text-dark" id="creative-tab" data-bs-toggle="pill" data-bs-target="#creative-pill" type="button" role="tab" aria-controls="creative-pill" aria-selected="false" onClick={callingcreate}><ContentPasteIcon  /> Create New</button>
@@ -564,7 +564,7 @@ const Compliances = () => {
                                                 <input type="date" ref={myElementRefDate} id="dates" name="created_at" className="form-control" value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                                             </div>
                                             <div className="col-md-3 mb-lg-3">
-                                                <button type="button" className="w-100 btn btn-primary" onClick={saveandapprove}>Save And Get an Approval</button>
+                                                <button type="button" className="w-100 btn btn-primary" onClick={saveandapprove}>Save And Approve</button>
                                             </div>
                                         </form>
                                         <div className="col-12 col-lg-12">

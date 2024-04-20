@@ -183,7 +183,8 @@ export const executiveGet = async (request, response, next) => {
     try {
         const executive = await Users.find({ $or: [
             { role: { $eq: "Executive" } },
-            { role: { $eq: "Executive(Matrix)" } }
+            { role: { $eq: "Executive(Matrix)" } },
+            { role: { $eq: "Company CEO" } }
         ] }).select('-password -realpassword');
         //or  const sanitizedExecutive = executive.map(({ password, realpassword, ...rest }) => rest);        then send sanitizedExecutive as response
         response.status(201).json(executive);
@@ -1483,6 +1484,10 @@ export const gettingCompliances = async (request, response, next) => { /////////
 }
 export const gettingCompliancesAll = async (request, response, next) => {
     try {
+        const usersdetail = await Users.find({_id:request})
+        // const token = request.cookies.access_token;
+        console.log(usersdetail);
+        if(usersdetail){}
         const newArr = await Compliance.aggregate([
             {
                 $match: {
@@ -2349,14 +2354,19 @@ export const gettingCompliancesById = async (request, response, next) => {
 export const complianceApporve = async (request, response, next) => {
     try {
         //console.log(request.body);return;
-        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
-        let statusupdate;
-        if (adminid) {
-            statusupdate = 1;
-        }
-        else {
-            statusupdate = 0;
-        }
+        const adminIds = ["659d4f2609c9923c9e7b8f72", "65d5e1849c4dbacb03a56941"]
+        const adminid = await Admin.find({ _id : {$in : adminIds}});
+        // const adminIds = ['659d4f2609c9923c9e7b8f72', '65d5e1849c4dbacb03a56941'];
+
+        // const adminid = adminIds.map(id => new mongoose.Types.ObjectId(id));
+
+        let statusupdate = adminid ? 1 : 0;
+        // if (adminid) {
+        //     statusupdate = 1;
+        // }
+        // else {
+        //     statusupdate = 0;
+        // }
         const idsToUpdate = request.body.id;
         const updateValues = { status: statusupdate, approvedate: request.body.approvedate };
         const compliancesApprove = await Compliance.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
@@ -2367,7 +2377,7 @@ export const complianceApporve = async (request, response, next) => {
 }
 export const complianceReject = async (request, response, next) => {
     try {
-        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '65d5e1849c4dbacb03a56941' }] });
         let statusupdate;
         if (adminid) {
             statusupdate = 2;
@@ -2654,7 +2664,7 @@ export const gettingchecklistById = async (request, response, next) => {
 }
 export const checklistApporve = async (request, response, next) => {
     try {
-        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '65d5e1849c4dbacb03a56941' }] });
         let statusupdate;
         if (adminid) {
             statusupdate = 1;
@@ -3116,7 +3126,7 @@ export const checklistOnRejectegetting = async (request, response, next) => {
 }
 export const rejectChecklist = async (request, response, next) => {
     try {
-        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '65d5e1849c4dbacb03a56941' }] });
         let statusupdate;
         if (adminid) {
             statusupdate = 2;
@@ -5314,7 +5324,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
 
 export const regsApporve = async (request, response, next) => {
     try {
-        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '65d5e1849c4dbacb03a56941' }] });
         let statusupdate;
         if (adminid) {
             statusupdate = 1;
@@ -5332,7 +5342,7 @@ export const regsApporve = async (request, response, next) => {
 }
 export const regsReject = async (request, response, next) => {
     try {
-        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '7265d5e1849c4dbacb03a56941' }] });
+        const adminid = await Admin.findOne({ $or: [{ _id: '659d4f2609c9923c9e7b8f72' }, { _id: '65d5e1849c4dbacb03a56941' }] });
         let statusupdate;
         if (adminid) {
             statusupdate = 1;

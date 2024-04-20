@@ -227,9 +227,9 @@ const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
         formData.append("formtype", image);
 		formData.append("docattachmenttype", document);
         formData.append("compliancetype", compliancetype);
+        formData.append("duedate", duedate);
 		formData.append("frequency", frequency);
         formData.append("risk",risk);
-        formData.append("duedate", duedate);
         formData.append("dates",date);
         dispatch(complianceCreate(formData));
         setCategorys('');

@@ -366,7 +366,7 @@ const ComplianceApprove = () =>{
       }
       const postBody = {
           duedate: defaultDate,
-          // status:1,
+          status:1,
           id:selectedRowIds
       }
       dispatch(compliancesSaveandApprove(postBody));//relodreport
@@ -683,12 +683,12 @@ const ComplianceApprove = () =>{
                     <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                         <input type="date" ref={myElementRefDate} className="form-control" id="dates" placeholder='Date' value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                     </div>
-                    {/* <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
+                    <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                         <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={complianceInfo != undefined && complianceInfo?.length==0 } onClick={saveandapprove}>Save And Approve</button>
                     </div>
                     <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                        <button type="submit" className="w-100 btn btn-danger" /*onClick={reject} onClick={showModal} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Reject</button>
-                    </div> */}
+                        <button type="submit" className="w-100 btn btn-danger" /*onClick={reject}*/ onClick={showModal} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Reject</button>
+                    </div>
                     <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                         <button type="submit" className="w-100 btn btn-primary" onClick={toggleTables} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Edit</button>
                     </div>

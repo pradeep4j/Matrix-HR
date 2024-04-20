@@ -52,7 +52,7 @@ router.post('/createBranch',protectRoute, createBranch);
 /*branh ends*/
 /*compliance start*/
 router.post('/createCompliances',upload.fields([{ name: 'image' }, { name: 'document' }]),protectRoute, createCompliances);
-router.get('/gettingCompliances',protectRoute, gettingCompliances);
+router.get('/gettingCompliances',protectRoute, gettingCompliances);///aprrove compliance table
 router.get('/gettingCompliancesAll',protectRoute, gettingCompliancesAll);
 router.get('/gettingCompliancesOnCreate',protectRoute, gettingCompliancesOnCreate);
 router.get('/gettingCompliancesById/:id',protectRoute,gettingCompliancesById);

@@ -115,7 +115,7 @@ const Compliances = () => {
                 recurrence:item.frequency,
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 executive:name?'admin':item.executive,
-                duedate:item.duedate == null ? item.duedate:formatDate(item.duedate),
+                duedate:formatDate(item.duedate),
               })
           });
         }
@@ -142,7 +142,7 @@ const Compliances = () => {
                   compliancetype:item.compliancetype,
                   recurrence:item.frequency,
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-                  duedate:item.duedate == null ? item.duedate:formatDate(item.duedate),
+                  duedate:formatDate(item.duedate),
                 })
             });
           }
