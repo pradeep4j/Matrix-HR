@@ -32,6 +32,11 @@ const checkListSchema = new mongoose.Schema({
         trim : true,
         index : true
     },
+    approvalstatus  : { 
+        type: Number, 
+        index: true, 
+        default: 0
+    },
     description : {
         type : String,
         required: true,

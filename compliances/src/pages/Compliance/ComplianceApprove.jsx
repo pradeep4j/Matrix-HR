@@ -624,6 +624,15 @@ const ComplianceApprove = () =>{
            sortDirections: ['descend', 'ascend']
         },   
         {
+          title: 'Executive',
+          dataIndex: 'executive',
+          key: 'executive',
+          width: 70,
+         // ...getColumnSearchProps('documents'),
+         // sorter: (a, b) => a.image.length - b.image.length,
+         // sortDirections: ['descend', 'ascend']
+        },   
+        {
             title: 'Due Date',
             dataIndex: 'duedate',
             key: 'duedate',

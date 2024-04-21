@@ -267,6 +267,7 @@ const Checklist = () => {
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
+                  duedate:(item.duedate)!==undefined?formatDate(item.duedate):(item.duedate),
                   executive:item.executive,
                 })
             });
@@ -739,7 +740,8 @@ const Checklist = () => {
             approvedate: defaultDate,
             status:0,
             id:selectedRowIds,
-            type:'auditor'
+            type:'auditor',
+            approvalstatus:1
         }
         dispatch(checklistSaveandApprove(postBody));//relodreport
         relodreport();

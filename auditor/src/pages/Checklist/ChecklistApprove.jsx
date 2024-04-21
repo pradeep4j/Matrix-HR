@@ -395,7 +395,8 @@ const ChecklistApprove = () =>{
           approvedate: defaultDate,
           status:0,
           id:selectedRowIds1,
-          type:'auditor'
+          type:'auditor',
+          approvalstatus:1
       }
       dispatch(checklistSaveandApprove(postBody));//relodreport
       relodreport();

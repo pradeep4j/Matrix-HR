@@ -215,6 +215,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
             approvedate: defaultDate,
             status:0,
             id:recordForEdit,
+            type:'executive'
         }
         dispatch(elibrarySaveandApproved(postBody));//relodreport
         handleClose();

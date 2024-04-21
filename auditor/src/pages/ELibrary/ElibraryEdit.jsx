@@ -215,6 +215,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
             approvedate: defaultDate,
             status:1,
             id:recordForEdit,
+            type:'auditor'
         }
         dispatch(elibrarySaveandApproved(postBody));//relodreport
         handleClose();
@@ -308,14 +309,14 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
                                
                     </ImageList>
                 </div>
-                <div className="col-md-4 col-lg-4" >
+                {/* <div className="col-md-4 col-lg-4" >
                 {elibraryGetByIDInfo?.status ===2 ?(<button type="button" className="w-100 btn btn-danger" >Rejected</button>):(<button type="button" className="w-100 btn btn-danger"  onClick={showModal}>Reject</button>)}
-                </div>
+                </div> */}
                 <div className="col-md-4 col-lg-4">
                     <button type="submit" className="w-100 btn btn btn-success" >Edit <EditIcon fontSize='mediam' /></button>
                 </div>
                 <div className="col-md-4 col-lg-4">
-                    {elibraryGetByIDInfo?.status ===0 ?(<button type="button" className="w-100 btn btn-primary"  onClick={saveandapprove}>Save and Approve</button>):(<button type="button" className="w-100 btn btn-primary" >Approved</button>)}
+                    {elibraryGetByIDInfo?.status ===0 ?(<button type="button" className="w-100 btn btn-primary"  onClick={saveandapprove}>Save And Get an Approval</button>):(<button type="button" className="w-100 btn btn-primary" >Approved</button>)}
                 </div>
             </form>
         </div>

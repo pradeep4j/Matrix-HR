@@ -449,6 +449,15 @@ const Compliances = () => {
          // sortDirections: ['descend', 'ascend']
       },     
       {
+        title: 'Executive',
+        dataIndex: 'executive',
+        key: 'executive',
+        width: 70,
+       // ...getColumnSearchProps('documents'),
+       // sorter: (a, b) => a.image.length - b.image.length,
+       // sortDirections: ['descend', 'ascend']
+    },   
+      {
           title: 'Risk',
           dataIndex: 'risk',
           key: 'risk',

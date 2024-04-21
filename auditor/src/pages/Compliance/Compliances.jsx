@@ -512,7 +512,8 @@ const Compliances = () => {
         approvedate: defaultDate,
         status:0,
         id:selectedRowIds1,
-        type:'auditor'
+        type:'auditor',
+        approvalstatus:1
     }
     dispatch(compliancesSaveandApprove(postBody));//relodreport
     relodreport();

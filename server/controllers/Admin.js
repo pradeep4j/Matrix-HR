@@ -1382,7 +1382,10 @@ export const updateCompliancesById = async (request, response, next) => {
         next(error)
     }
 }
-export const gettingCompliancesOnCreate = async (request, response, next) => {
+export const gettingCompliancesOnCreate = async (request, response, next) => { //here we have to manage match stage according to executive and auditor panel
+    const matchStage = {}
+    matchStage.status = {$eq : 0}
+    matchStage.approvalstatus = {$eq : 1}
     try {
         let newArr = await Compliance.aggregate([
             {
@@ -1431,6 +1434,7 @@ export const gettingCompliancesOnCreate = async (request, response, next) => {
                     created_at: 1,
                     updated_at: 1,
                     duedate: 1,
+                    approvalstatus:1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
                     // executive: {
@@ -1456,7 +1460,11 @@ export const gettingCompliancesOnCreate = async (request, response, next) => {
         const username = user.userName;
         
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.executive === username);
+            newArr = newArr.filter(docs => {
+                if(docs.approvalstatus === 0){
+                    return docs.executive === username
+                }
+            });
         } else {
             response.status(201).json(newArr);
             return;
@@ -1467,15 +1475,12 @@ export const gettingCompliancesOnCreate = async (request, response, next) => {
         next(error)
     }
 }
-export const gettingCompliances = async (request, response, next) => { /////////this is when getting on approvecompliance page
+export const gettingCompliances = async (request, response, next) => { /////////this is when getting on approvecompliance page  also //here we have to manage match stage according to executive and auditor panel
     try {
         let newArr = await Compliance.aggregate([
             {
                 $match: {
-                    $and: [
-                        { status: { $eq: 0 } },
-                        // { executive: { $ne: new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72") } }
-                    ]
+                    status: { $eq: 0 }
                 }
             },
             {
@@ -1519,6 +1524,7 @@ export const gettingCompliances = async (request, response, next) => { /////////
                     created_at: 1,
                     updated_at: 1,
                     duedate: 1,
+                    approvalstatus:1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
                     executive: {
@@ -1536,7 +1542,12 @@ export const gettingCompliances = async (request, response, next) => { /////////
         const username = user.userName;
         
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.executive === username);
+            newArr = newArr.filter(docs => {
+                if(docs.approvalstatus === 0){
+                    return docs.executive === username
+                }
+            });
+            
         } else {
             response.status(201).json(newArr);
             return;
@@ -2469,7 +2480,7 @@ export const gettingCompliancesById = async (request, response, next) => {
 export const complianceApporve = async (request, response, next) => {
     try {
         const idsToUpdate = request.body.id;
-        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate,approvalstatus:request.body.approvalstatus };
         const compliancesApprove = await Compliance.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
         if(request.body.type==='executive'){
             response.status(202).json(compliancesApprove);
@@ -2776,13 +2787,13 @@ export const checklistApporve = async (request, response, next) => {
         // Update Checklist documents
         const checklistApprove = await CheckList.updateMany(
           { _id: { $in: checklistIds } }, // Update documents with IDs from checklistIds
-          { status: request.body.status, approvedate: request.body.approvedate }
+          { status: request.body.status, approvedate: request.body.approvedate,approvalstatus:request.body.approvalstatus }
         );
         // Update Compliance documents
         if(complianceIds){
             const complianceApprove = await Compliance.updateMany(
                 { _id: { $in: complianceIds.map(id => id.replace('-c', '')) } }, // Update documents with IDs from complianceIds without "-c"
-                {status: request.body.status, approvedate: request.body.approvedate }
+                {status: request.body.status, approvedate: request.body.approvedate,approvalstatus:request.body.approvalstatus }
             );
         }
         if(request.body.type==='executive'){
@@ -2802,7 +2813,7 @@ export const checklistApporve = async (request, response, next) => {
         next(error);
     }
 }
-export const checklistOnCreateegetting = async (request, response, next) => {
+export const checklistOnCreateegetting = async (request, response, next) => { //here we have to manage match stage according to executive and auditor panel
     try {
         let newArr = await CheckList.aggregate([
             {
@@ -2872,6 +2883,7 @@ export const checklistOnCreateegetting = async (request, response, next) => {
                     state:1,
                     created_at: 1,
                     approvedate:1,
+                    approvalstatus:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -2915,11 +2927,16 @@ export const checklistOnCreateegetting = async (request, response, next) => {
         const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.executive === username);
+            newArr = newArr.filter(docs => {
+                if(docs.approvalstatus === 0){
+                    return docs.executive === username
+                }
+            });
         } else {
             response.status(201).json(newArr);
             return;
         }
+        // console.log(newArr);
         response.status(201).json(newArr)
     }
     catch (error) {
@@ -3040,19 +3057,12 @@ export const checklistAllgetting = async (request, response, next) => {
     }
 }
 
-export const checklistApprovegetting = async (request, response, next) => {
+export const checklistApprovegetting = async (request, response, next) => { //here we have to manage match stage according to executive and auditor panel
     try {
-        // const compliance = await Compliance.find({ $and: [ { status: { $eq: 0 } }, { executive: { $ne: '659d4f2609c9923c9e7b8f72' } } ] }).populate("category").populate('state')
-        const matchStage = {}
-        // matchStage['status'] = {$eq : 0}
-        // matchStage['executive'] = { $ne: '659d4f2609c9923c9e7b8f72' }
         let newArr = await CheckList.aggregate([
             {
                 $match: {
-                    $and: [
-                        { status: { $eq: 0 } },
-                        // { executive: { $ne: new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72") } }
-                    ]
+                    status: { $eq: 0 }
                 }
             },
             {
@@ -3118,6 +3128,7 @@ export const checklistApprovegetting = async (request, response, next) => {
                     risk: 1,
                     created_at: 1,
                     approvedate: 1,
+                    approvalstatus:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -3149,7 +3160,11 @@ export const checklistApprovegetting = async (request, response, next) => {
         const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.executive === username);
+            newArr = newArr.filter(docs => {
+                if(docs.approvalstatus === 0){
+                    return docs.executive === username
+                }
+            });
         } else {
             response.status(201).json(newArr);
             return;
@@ -4315,10 +4330,10 @@ export const checkListCreateFilter = async (request, response, next) => {
                     from: "users",
                     localField: "executive",
                     foreignField: "_id",
-                    as: "executiveData",
+                    as: "executive",
                 },
             },
-            { $unwind: "$executiveData" },
+            { $unwind: "$executive" },
         ]);
 
         const gettingCompany = await Companydata.find({});
@@ -7211,7 +7226,7 @@ export const createCompanyProfile = async (request, response, next) => {
         const data = request.body
         const { companyTitle, details, remark,company } = data;
         const uploadImage = async (imageFile) => {
-            console.log(imageFile);
+            // console.log(imageFile);
             let imageUrl
             if (!imageFile) {
                 return null; // Return null if image is not provided
@@ -8021,7 +8036,7 @@ export const viewAllAssignedCompanyFilter = async (request, response, next) => {
         const filterKeys = Object.keys(filters).filter(key => filters[key] !== undefined && filters[key] !== "");
 
         // Build match stage based on filters
-        console.log(filterKeys);
+        // console.log(filterKeys);
         if (filterKeys.length > 0) {
             for (const key of filterKeys) {
                 if (key === "company" || key === "state" || key === "executive") {
@@ -8195,7 +8210,7 @@ export const assignedCompanyFilter = async (request, response, next) => {
         const filterKeys = Object.keys(filters).filter(key => filters[key] !== undefined && filters[key] !== "");
 
         // Build match stage based on filters
-        console.log(filterKeys);
+        // console.log(filterKeys);
         if (filterKeys.length > 0) {
             for (const key of filterKeys) {
                 if (key === "company" || key === "state" || key === "executive") {

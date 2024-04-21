@@ -510,15 +510,6 @@ const RejectedChecklist = () =>{
           sortDirections: ['descend', 'ascend']
         }, 
         {
-            title: 'Due Date',
-            dataIndex: 'duedate',
-            key: 'duedate',
-            width: 100,
-            // ...getColumnSearchProps('createdAt'),
-            // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
-            // sortDirections: ['descend', 'ascend']
-        },
-        {
           title: 'Revise/Update',
           dataIndex: 'revise',
           key: 'revise',

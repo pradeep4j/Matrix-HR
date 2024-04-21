@@ -74,7 +74,7 @@ router.get('/gettingchecklistById/:id',protectRoute,gettingchecklistById);
 router.get('/checklistAllgetting',protectRoute, checklistAllgetting);
 router.get('/checklistApprovegetting',protectRoute, checklistApprovegetting)
 router.patch('/checklistApporve',protectRoute,checklistApporve);
-router.post('/gettingchecklistAllFilter',protectRoute, checkListAllFilter)
+router.post('/checkListAllFilter',protectRoute, checkListAllFilter)
 router.post('/checkListApproveFilter',protectRoute, checkListApproveFilter)
 router.post('/checkListCreateFilter',protectRoute, checkListCreateFilter)
 router.get('/checklistOnRejectegetting',protectRoute, checklistOnRejectegetting) 
