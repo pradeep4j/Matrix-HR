@@ -2,7 +2,7 @@ import React,{useState,useEffect,useRef} from 'react'
 import { Link,NavLink, useNavigate } from 'react-router-dom'
 import { FormLabel,styled} from '@mui/material';
 import { Modal } from 'antd';
-import {stateGets,branchGet,companyGet,auditGetDataAll,auditOnCreate,checklistGetonCreateAudit,companyTableGet} from "../../store/actions/otherActions";
+import {stateGets,branchGet,companyGet,auditGetDataAll,auditOnCreate,checklistGetonCreateAudit,companyTableGet,auditorGet} from "../../store/actions/otherActions";
 import { useDispatch,useSelector } from 'react-redux';
 import AuditTable from './AuditTable';
 import AuditChecklistTable from './AuditChecklistTable';
@@ -65,7 +65,7 @@ const Audit = () => {
         }
         dispatch(companyTableGet());
         dispatch(auditGetDataAll())
-        // dispatch(getExecutive())
+        dispatch(auditorGet())
         dispatch(checklistGetonCreateAudit());
     },[dispatch]);
     const getBbranch = (company) => {

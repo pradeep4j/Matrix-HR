@@ -141,7 +141,7 @@ const ChecklistApprove = () =>{
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 created_at:formatDate(item.created_at),
                 approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                executive:'Admin',
+                executive:item.executive,
               })
           });
         }
@@ -183,7 +183,7 @@ const ChecklistApprove = () =>{
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                  executive:'Admin',
+                  executive:item.executive,
                 })
             });
           }
@@ -393,7 +393,7 @@ const ChecklistApprove = () =>{
       }
       const postBody = {
           approvedate: defaultDate,
-          status:1,
+          status:0,
           id:selectedRowIds1
       }
       dispatch(checklistSaveandApprove(postBody));//relodreport
@@ -749,10 +749,10 @@ const ChecklistApprove = () =>{
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                             <input type="date" className="form-control" id="dates" ref={myElementRefDate} placeholder='Date' value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                         </div>
-                        {/* <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                            <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={saveandapprove}>Save And Approve</button>
-                        </div>
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
+                            <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={saveandapprove}>Save And Get an Approval</button>
+                        </div>
+                        {/* <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                             <button type="submit" className="w-100 btn btn-danger" disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } /*onClick={reject} onClick={showModal}>Reject</button>
                         </div> */}
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">

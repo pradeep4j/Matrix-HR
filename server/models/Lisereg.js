@@ -162,9 +162,9 @@ const liseRegSchema = new mongoose.Schema({
         index: true
     },
     branch: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Branch',
-        default: null
+        type: String,
+        trim:true,
+        index:true
     },
     status: {
         type: Number,
@@ -173,7 +173,7 @@ const liseRegSchema = new mongoose.Schema({
     },
     company: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company',
+        ref: 'Companydata',
         default: null
     },
     executive: {

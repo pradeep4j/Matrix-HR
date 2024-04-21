@@ -11,7 +11,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 import CompliancePopupEdit from './CompliancePopupEdit';
 import Popup from "../../components/Popup";
-import {compliancesGetAll,companyGet,usersGet,stateGets,complianceAllFiltering} from "../../store/actions/otherActions";
+import {compliancesGetAll,companyGet,usersGet,stateGets,complianceAllFiltering,companyTableGet} from "../../store/actions/otherActions";
 import Loading from '../../components/layout/Loading';
 
 const AllComplianceTable = () =>{
@@ -42,13 +42,17 @@ const AllComplianceTable = () =>{
     const complianceByIdUpdate = useSelector((state) => state.complianceByIdUpdate);
     const { loadingupdate,complianceInfoUpdateId } = complianceByIdUpdate; 
     const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
     const userGet = useSelector((state) => state.userGet);
     const { usersInfo } = userGet;  
+    console.log(usersInfo)
     const getCompney = useSelector((state) => state.getCompney);
     const { companyInfo } = getCompney; 
-    const {userInfo} = userLogin;
+  
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const complianceAllFiltered = useSelector((state) => state.complianceAllFiltered);
     const { loadingallFilter,complianceGetAllFilterInfo } = complianceAllFiltered; 
     // console.log(complianceGetAllFilterInfo)
@@ -97,7 +101,7 @@ const AllComplianceTable = () =>{
     useEffect(() => {
         dispatch(stateGets());
         dispatch(usersGet());
-        dispatch(companyGet());
+        dispatch(companyTableGet());
         dispatch(compliancesGetAll());
     },[dispatch])
     useEffect(() => {
@@ -123,7 +127,8 @@ const AllComplianceTable = () =>{
                 compliancetype:item.compliancetype,
                 recurrence:item.frequency,
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'red' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-                executive:name?'admin':item.executive,
+                // executive:name?'admin':item.executive,
+                executive:item.executive,
                 updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
                 duedate:formatDate(item.duedate),
               })
@@ -155,6 +160,7 @@ const AllComplianceTable = () =>{
                 compliancetype:item.compliancetype,
                 recurrence:item.frequency,
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
+                executive:item.executive,
                 updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
                 duedate:formatDate(item.duedate),
               })
@@ -197,7 +203,7 @@ const AllComplianceTable = () =>{
                 compliancetype:item.compliancetype,
                 recurrence:item.frequency,
                 risk:item.risk,
-                executive:name?'admin':item.executive,
+                executive:item.executive,
                 updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
                 duedate:formatDate(item.duedate),
               })
@@ -430,7 +436,7 @@ const AllComplianceTable = () =>{
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Rule</div>,
+          title: <div style={{ textAlign: 'left' }}>Rule</div>,
           dataIndex: 'rule',
           key: 'rule',
           width: 300,
@@ -448,7 +454,7 @@ const AllComplianceTable = () =>{
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Question</div>,
+          title: <div style={{ textAlign: 'left' }}>Question</div>,
           dataIndex: 'question',
           key: 'question',
           width: 300,
@@ -457,7 +463,7 @@ const AllComplianceTable = () =>{
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Description</div>,
+          title: <div style={{ textAlign: 'left' }}>Description</div>,
           dataIndex: 'description',
           key: 'description',
           width: 300,
@@ -510,6 +516,15 @@ const AllComplianceTable = () =>{
          sorter: (a, b) => a.risk.length - b.risk.length,
          sortDirections: ['descend', 'ascend']
       },   
+      {
+        title: 'Executive',
+        dataIndex: 'executive',
+        key: 'executive',
+        width: 100,
+        // ...getColumnSearchProps('executive'),
+        // sorter: (a, b) => a.executive.length - b.executive.length,
+        // sortDirections: ['descend', 'ascend']
+    }, 
       {
           title: 'Due Date',
           dataIndex: 'duedate',

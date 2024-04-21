@@ -7,7 +7,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import {usersGet,companyTableGet,auditorGet,checklistGetonCreateAudit,auditGetDataAll,ongoingAudits,gettingAuditorOverdueDashboard} from "../../store/actions/otherActions";//outgoingAudit, overDueAudit
 import { useDispatch,useSelector } from 'react-redux';
 import DashboardTableAudit from "./DashboardTableAudit";
-import DashboardTableUser from "./DashboardTableUser";
+import DashboardTableCompany from "./DashboardTableCompany";
 import DashboardTableNotification from "./DashboardTableNotification";
 const Dashboard = () => {
     const dispatch = useDispatch();
@@ -214,42 +214,9 @@ const Dashboard = () => {
 
                     <div className='row'>
                         <div className='col-md-6 col-lg-6 col-xl-6'>
-                            <DashboardTableUser />
+                            <DashboardTableCompany />
                         </div>
                         <div className='col-md-6 col-lg-6 col-xl-6'>
-                            {/* <div className="card p-3">
-                                <div className="card-boy">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th colSpan={2}>Notification (25)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>You have a bug that needs to be the fix</td>
-                                                <td className='text-muted'>20 Minuts Ago</td>
-                                            </tr>
-                                            <tr>
-                                                <td>You have a bug that needs to be the fix</td>
-                                                <td className='text-muted'>20 Minuts Ago</td>
-                                            </tr>
-                                            <tr>
-                                                <td>You have a bug that needs to be the fix</td>
-                                                <td className='text-muted'>20 Minuts Ago</td>
-                                            </tr>
-                                            <tr>
-                                                <td>You have a bug that needs to be the fix</td>
-                                                <td className='text-muted'>20 Minuts Ago</td>
-                                            </tr>
-                                            <tr>
-                                                <td>You have a bug that needs to be the fix</td>
-                                                <td className='text-muted'>20 Minuts Ago</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div> */}
                             <DashboardTableNotification />
                         </div>
                         <div className='col-md-12 col-lg-12 col-xl-12'>

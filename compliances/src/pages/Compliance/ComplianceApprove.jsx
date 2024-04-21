@@ -115,7 +115,7 @@ const ComplianceApprove = () =>{
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 duedate:item.duedate !=null ? formatDate(item.duedate):item.duedate,
                 updated_at:item.updated_at !=null ? formatDate(item.updated_at):item.updated_at,
-                executive:name?'admin':item.executive,
+                executive:item.executive,
               })
           });
         }
@@ -155,7 +155,7 @@ const ComplianceApprove = () =>{
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'red' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   duedate:item.duedate !=null ? formatDate(item.duedate):item.duedate,
                   updated_at:item.updated_at !=null ? formatDate(item.updated_at):item.updated_at,
-                  executive:name?'admin':item.executive,
+                  executive:item.executive,
                 })
             });
           }

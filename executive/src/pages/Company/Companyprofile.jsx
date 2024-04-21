@@ -7,7 +7,8 @@ import { useDispatch,useSelector } from 'react-redux';
 import {companyTableGet,companyGet,usersGet,stateGets,branchGet,liseregAllFilter} from "../../store/actions/otherActions";
 import CompanyEdit from './CompanyEdit';
 import Loading from '../../components/layout/Loading';
-const Companyprofile = () => {
+const Companyprofile = (props) => {
+    const {linkref} =props;
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const searchInput = useRef(null);
@@ -106,21 +107,31 @@ const Companyprofile = () => {
       return (formattedDateTime);
     }
     useEffect(() => {
-      //  alert(showTable1)
+        // alert(showTable1)
         setShowTable1(showTable1);
         if(showTable1===false){
-          toggleTables();
+          // toggleTables();
         }
-        // const elementstate = myElementRefState.current;
-        // const elementcompany = myElementRefCompany.current;
-        // const elementbranch = myElementRefBranch.current;
-        // const elementdate = myElementRefDate.current;
-        // const elementuser = myElementRefUser.current;
-        // elementstate && elementstate.style.display='inline';
-        // elementcompany && elementcompany.style.display='inline';
-        // elementdate && elementdate.style.display='inline';
-        // elementuser && elementuser.style.display='inline';
-        // elementbranch && elementbranch.style.display='inline';
+        const elementstate = myElementRefState.current;
+        const elementcompany = myElementRefCompany.current;
+        const elementbranch = myElementRefBranch.current;
+        const elementdate = myElementRefDate.current;
+        const elementuser = myElementRefUser.current;
+        if(elementstate){
+          elementstate.style.display='none';
+        }
+        if(elementcompany){
+          elementcompany.style.display='none';
+        }
+        if(elementdate){
+          elementdate.style.display='none';
+        }
+        if(elementuser){
+          elementuser.style.display='none';
+        }
+        if(elementbranch){
+          elementbranch.style.display='none';
+        }
         // let branchenaming;
         let companyTableArrAll = [];
             if (typeof (companyGetTableInfo) !== 'undefined' && companyGetTableInfo?.length > 0 ) {
@@ -136,7 +147,7 @@ const Companyprofile = () => {
                     companystate: item.companystate,
                     branchenames: branchNames,
                     totalBranches: branchCount,
-                    executive: name ? 'admin' : item.executive,
+                    executive:item.executive,
                     created_at: item.created_at ? formatDate(item.created_at) : item.created_at,
                     license: item.license,
                     status: item.status === 1 ? (
@@ -158,7 +169,7 @@ const Companyprofile = () => {
                     companystate: item.companystate,
                     branchenames: '',
                     totalBranches: 0,
-                    executive: name ? 'admin' : item.executive,
+                    executive:item.executive,
                     created_at: item.created_at ? formatDate(item.created_at) : item.created_at,
                     license: item.license,
                     status: item.status === 1 ? (
@@ -176,41 +187,41 @@ const Companyprofile = () => {
           }
           setDataSource(companyTableArrAll);
       },[companyGetTableInfo])
-      useEffect(() => {
-        // setShowTable1(showTable1);
-        // if(showTable1===false){
-        //   toggleTables();
-        // }
-        // const elementstate = myElementRefState.current;
-        // const elementcompany = myElementRefCompany.current;
-        // const elementbranch = myElementRefBranch.current;
-        // const elementdate = myElementRefDate.current;
-        // const elementuser = myElementRefUser.current;
-        // elementstate.style.display='inline';
-        // elementcompany.style.display='inline';
-        // elementdate.style.display='inline';
-        // elementuser.style.display='inline';
-        // elementbranch.style.display='inline';
-        let regsArrFilterAll = [];
-            if (typeof (regsFilterGetInfo) !== 'undefined' && regsFilterGetInfo?.length > 0 ) {
-              regsFilterGetInfo.map((item, index) => {
-                regsArrFilterAll.push({
-                      key:index+1,
-                      id: item._id,
-                      company:item.company,
-                      state:item.state,
-                      branchname:item.branch,
-                      executive:name?'admin':item.executive,
-                      regNo: item.regNo,
-                      created_at:formatDate(item.created_at),
-                      status:item.status ===1 ? <a href="#" className='text-white btn btn-success text-decoration-none mx-2' disabled>Approved</a>:<a onClick={(e)=>{toggleTables(e);editPage(item._id)}} disabled={false}><Link className='text-white btn btn-danger text-decoration-none mx-2' >Pending</Link></a>,
-                      approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
+    //   useEffect(() => {
+    //     // setShowTable1(showTable1);
+    //     // if(showTable1===false){
+    //     //   toggleTables();
+    //     // }
+    //     // const elementstate = myElementRefState.current;
+    //     // const elementcompany = myElementRefCompany.current;
+    //     // const elementbranch = myElementRefBranch.current;
+    //     // const elementdate = myElementRefDate.current;
+    //     // const elementuser = myElementRefUser.current;
+    //     // elementstate.style.display='inline';
+    //     // elementcompany.style.display='inline';
+    //     // elementdate.style.display='inline';
+    //     // elementuser.style.display='inline';
+    //     // elementbranch.style.display='inline';
+    //     let regsArrFilterAll = [];
+    //         if (typeof (regsFilterGetInfo) !== 'undefined' && regsFilterGetInfo?.length > 0 ) {
+    //           regsFilterGetInfo.map((item, index) => {
+    //             regsArrFilterAll.push({
+    //                   key:index+1,
+    //                   id: item._id,
+    //                   company:item.company,
+    //                   state:item.state,
+    //                   branchname:item.branch,
+    //                   executive:name?'admin':item.executive,
+    //                   regNo: item.regNo,
+    //                   created_at:formatDate(item.created_at),
+    //                   status:item.status ===1 ? <a href="#" className='text-white btn btn-success text-decoration-none mx-2' disabled>Approved</a>:<a onClick={(e)=>{toggleTables(e);editPage(item._id)}} disabled={false}><Link className='text-white btn btn-danger text-decoration-none mx-2' >Pending</Link></a>,
+    //                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
 
-                })
-            });
-          }
-          setDataSource(regsArrFilterAll);
-    },[regsFilterGetInfo])
+    //             })
+    //         });
+    //       }
+    //       setDataSource(regsArrFilterAll);
+    // },[regsFilterGetInfo])
    
     const filter = () => {
         const elementstate = myElementRefState.current;
@@ -359,7 +370,7 @@ const Companyprofile = () => {
             title: 'Total Branch',
             dataIndex: 'totalBranches',
             key: 'totalBranches',
-            width: 30,
+            width: 70,
         },
         {
             title: 'Executive',
@@ -441,13 +452,13 @@ const Companyprofile = () => {
                                 <div className="card p-3 ">
                                     <div className="table-responsive">
                                     {loadingcompanytable && <Loading />}
-                                        <Table dataSource={dataSource} columns={columns} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 3500 }} sticky={true}/>
+                                        <Table dataSource={dataSource} columns={columns} pagination={{ pageSize: 4, showSizeChanger: false, position: ["bottomCenter"],}}  scroll={{ x: 2000 }} sticky={true}/>
                                     </div>
                                 </div>
                             </div>                          
                            ) : ( 
                           
-                            <CompanyEdit editId={idForEdit} /> 
+                            <CompanyEdit editId={idForEdit} refreshctab={linkref}/> 
                             )} 
     </>            
   )

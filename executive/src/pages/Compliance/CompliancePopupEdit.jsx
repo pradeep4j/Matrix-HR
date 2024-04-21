@@ -3,7 +3,7 @@ import {  FormGroup,styled,ImageListItem,ImageList } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {complianceCreate,categoryGet,stateGets,compliancesGetByid,complianceUpdateById} from "../../store/actions/otherActions";
+import {complianceCreate,categoryGet,stateGets,compliancesGetByid,complianceUpdateById,usersGet} from "../../store/actions/otherActions";
 import Loading from '../../components/layout/Loading';
 import { useForm, Form } from '../../components/useForm';
 const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
@@ -23,7 +23,8 @@ const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
     const { loading, categoryInfo,error } = catGet;  
     const complianceId = useSelector((state) => state.complianceId);
     const { loadingg,complianceInfoId } = complianceId; 
-   // console.log(complianceInfoId?.category);
+    const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
     const complianceByIdUpdate = useSelector((state) => state.complianceByIdUpdate);
     const { loadingu,complianceInfoUpdateId } = complianceByIdUpdate; 
     const createCompliance = useSelector((state) => state.createCompliance);
@@ -192,11 +193,11 @@ const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
 		formData.append("rule", rules.slice(1));
 		formData.append("question", questions.slice(1));
 		formData.append("description", description.slice(1));
-        formData.append("executive", '659d4f2609c9923c9e7b8f72');
+        formData.append("executive", userInfo._id);
         formData.append("image", fileto);
         formData.append("document", documentto);
-        formData.append("formtype", image);
-		formData.append("docattachmenttype", document);
+        // formData.append("formtype", image);
+		// formData.append("docattachmenttype", document);
         formData.append("compliancetype", compliancetype);
 		formData.append("frequency", frequency);
         formData.append("duedate", duedate);
@@ -221,11 +222,11 @@ const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
 		formData.append("rule", rules.slice(1));
 		formData.append("question", questions.slice(1));
 		formData.append("description", description.slice(1));
-        formData.append("executive", '659d4f2609c9923c9e7b8f72');
+        formData.append("executive", userInfo._id);
 		formData.append("image", fileto);
 		formData.append("document", documentto);
-        formData.append("formtype", image);
-		formData.append("docattachmenttype", document);
+        // formData.append("formtype", image);
+		// formData.append("docattachmenttype", document);
         formData.append("compliancetype", compliancetype);
         formData.append("duedate", duedate);
 		formData.append("frequency", frequency);
@@ -250,6 +251,7 @@ const CompliancePopupEdit = ({ addOrEdit,recordForEdit }) => {
         }
         dispatch(categoryGet());
         dispatch(stateGets());
+        dispatch(usersGet());
     },[dispatch]);
     useEffect(()=>{
         let categoryArr = [];

@@ -11,12 +11,10 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 import ChecklistPopup from './ChecklistPopup';
 import Popup from "../../components/Popup";
-import {checklistGetApprove,checklistsReject,usersGet,stateGets,branchGet,companyGet,checklistsApproveFilter,checklistSaveandApprove} from "../../store/actions/otherActions";
+import {checklistGetApprove,checklistsReject,usersGet,stateGets,branchGet,companyGet,checklistsApproveFilter,elibrarySaveandApproved} from "../../store/actions/otherActions";
 import Loading from '../../components/layout/Loading';
 
 const ElibraryApprove = () =>{
-    alert(editId);
-    return;
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const searchInput = useRef(null);
@@ -304,9 +302,9 @@ const ElibraryApprove = () =>{
     const saveandapprove = () => {
       const postBody = {
           approvedate: defaultDate,
-          status:1
+          status:0
       }
-     // dispatch(checklistSaveandApprove(postBody));//relodreport
+      dispatch(elibrarySaveandApproved(postBody));//relodreport
       relodreport();
   }
     const filter = () => {
@@ -696,11 +694,11 @@ const ElibraryApprove = () =>{
                             <input type="date" className="form-control" id="dates" ref={myElementRefDate} placeholder='Date' value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                         </div>
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                            <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={saveandapprove}>Save And Apporove</button>
+                            <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={saveandapprove}>Save And Get an Approval</button>
                         </div>
-                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
+                        {/* <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                             <button type="submit" className="w-100 btn btn-danger" disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={reject}>Reject</button>
-                        </div>
+                        </div> */}
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                             <button type="submit" className="w-100 btn btn-primary" disabled={checklistInfoApprove != undefined && checklistInfoApprove?.length==0 } onClick={toggleTables}>Edit</button>
                         </div>

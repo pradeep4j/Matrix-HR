@@ -201,7 +201,7 @@ const ElibraryAllTable = () => {
                   image:<a href={item.image} target="_blank">Form</a>,
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                  executive:name?'admin':item.executive,
+                  executive:item.executive,
                   view:<Link className='text-white btn btn-dark text-decoration-none' onClick={(e)=>openInPopupForUpdate(item._id)} >
                   View <VisibilityOffIcon fontSize='medium' />
                 </Link>

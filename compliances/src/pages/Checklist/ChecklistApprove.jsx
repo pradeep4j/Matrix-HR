@@ -141,7 +141,7 @@ const ChecklistApprove = () =>{
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 created_at:formatDate(item.created_at),
                 approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                executive:'Admin',
+                executive:item.executive,
               })
           });
         }
@@ -183,7 +183,7 @@ const ChecklistApprove = () =>{
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                  executive:'Admin',
+                  executive:item.executive,
                 })
             });
           }

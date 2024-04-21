@@ -267,7 +267,7 @@ const Checklist = () => {
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                  executive:name?'admin':item.executive,
+                  executive:item.executive,
                 })
             });
           }
@@ -334,7 +334,7 @@ const Checklist = () => {
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)!==undefined?formatDate(item.approvedate):(item.approvedate),
                   duedate:(item.duedate)!==undefined?formatDate(item.duedate):(item.duedate),
-                  executive:name?'admin':item.executive,
+                  executive:item.executive,
                 })
             });
           }
@@ -550,7 +550,7 @@ const Checklist = () => {
         //   sortDirections: ['descend', 'ascend']
         },
         {
-            title: <div style={{ textAlign: 'center' }}>Rule</div>,
+            title: <div style={{ textAlign: 'left' }}>Rule</div>,
             dataIndex: 'rule',
             key: 'rule',
             width: 300,
@@ -568,7 +568,7 @@ const Checklist = () => {
             sortDirections: ['descend', 'ascend']
         },
         {
-            title: <div style={{ textAlign: 'center' }}>Question</div>,
+            title: <div style={{ textAlign: 'left' }}>Question</div>,
             dataIndex: 'question',
             key: 'question',
             width: 200,
@@ -577,7 +577,7 @@ const Checklist = () => {
             // sortDirections: ['descend', 'ascend']
         },
         {
-          title: <div style={{ textAlign: 'center' }}>Description</div>,
+          title: <div style={{ textAlign: 'left' }}>Description</div>,
             dataIndex: 'description',
             key: 'description',
             width: 200,

@@ -61,8 +61,8 @@
       "react-app/jest"
     ]
   },
-  "homepage": "/compliances",
-  "build:compliances": "react-scripts build --output-path=build/compliances --base-url=/compliances",
+  "homepage": "/compliance",
+  "build:compliances": "react-scripts build --output-path=build/compliance --base-url=/compliance",
   "browserslist": {
     "production": [
       ">0.2%",

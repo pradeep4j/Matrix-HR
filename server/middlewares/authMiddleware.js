@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import Admin from '../models/Admin.js';
+import Users from '../models/Users.js';
 
 export const protectRoute = async (req, res, next) => {
 	let token;
@@ -18,7 +19,7 @@ export const protectRoute = async (req, res, next) => {
 			);
 				
 			// fetch that user from db, but not get the user's password and set this fetched user to the req.user
-			req.user = await Admin.findById(decodedToken.id).select('-password');
+			req.user = await Users.findById(decodedToken.id).select('-password');
 			next();
 		} catch (error) {
 			console.log(error);
@@ -33,6 +34,7 @@ export const protectRoute = async (req, res, next) => {
 		//throw new Error('Not authorized, no token available');
 	}
 }
+
 
 export const isAdmin = (req, res, next) => {
 	if (req.user && req.user.isAdmin) next();

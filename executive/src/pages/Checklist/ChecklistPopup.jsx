@@ -1,14 +1,14 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import { FormGroup,styled,ImageListItem,ImageList } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
-import {checklistCreate,stateGets,usersGet,categoryGet,branchGet,compliancesAllForChecklist,companyGet,checklistUpdateById,checklistGetByid} from "../../store/actions/otherActions";
+import {checklistCreate,stateGets,usersGet,categoryGet,branchGet,compliancesAllForChecklist,companyTableGet,checklistUpdateById,checklistGetByid} from "../../store/actions/otherActions";
 
 //import { updatestatuswithremark } from '../../routes/api';
 import { useForm, Form } from '../../components/useForm';
 const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
-    //alert(recordForEdit._id); 
+//   alert(recordForEdit._id); 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     let defaultDate = new Date()
@@ -26,18 +26,18 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
     const { loading, categoryInfo,error } = catGet;  
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
-    //console.log(stateInfo);
-    const userGet = useSelector((state) => state.userGet);
-    const { usersInfo } = userGet;  
+    const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
     const getBranch = useSelector((state) => state.getBranch);
     const { branchInfo } = getBranch; 
-    const getCompney = useSelector((state) => state.getCompney);
-    const { companyInfo } = getCompney; 
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const checklist = useSelector((state) => state.checklist);
     const { loadingChecklist,checklistInfo } = checklist; 
     const checklistId = useSelector((state) => state.checklistId);
     const { loadingg,checklistInfoId } = checklistId;
-   
+    const myElementRefCompany = useRef(null);
+    const myElementRefBranch = useRef(null);
     const [category, setCategory] = useState();
     const [image,setImage] = useState('');
     const [document,setDocument] = useState('');
@@ -190,15 +190,15 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
             formData.append("category", categorys);
             formData.append("company", company);
             formData.append("compliance", compliance);
-            formData.append("executive", '659d4f2609c9923c9e7b8f72');
+            formData.append("executive", userInfo._id);
             formData.append("branch", branch);
             formData.append("rule", rules.slice(1));
             formData.append("question", questions.slice(1));
             formData.append("description", description.slice(1));
             formData.append("image", fileto);
             formData.append("document", documentto);
-            formData.append("imagetype", image);
-            formData.append("documentstype", document);
+            // formData.append("imagetype", image);
+            // formData.append("documentstype", document);
             formData.append("frequency", frequency);
             formData.append("risk",risk);
             formData.append("dates",date);
@@ -223,15 +223,15 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
             formData.append("category", categorys);
             formData.append("company", company);
             formData.append("compliance", compliance);
-            formData.append("executive", '659d4f2609c9923c9e7b8f72');
+            formData.append("executive", userInfo._id);
             formData.append("branch", branch);
             formData.append("rule", rules.slice(1));
             formData.append("question", questions.slice(1));
             formData.append("description", description.slice(1));
             formData.append("image", fileto);
             formData.append("document", documentto);
-            formData.append("imagetype", image);
-            formData.append("documentstype", document);
+            // formData.append("imagetype", image);
+            // formData.append("documentstype", document);
             formData.append("frequency", frequency);
             formData.append("risk",risk);
             formData.append("dates",date);
@@ -255,10 +255,23 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
         dispatch(categoryGet());
         dispatch(stateGets());
         dispatch(usersGet());
-        dispatch(branchGet());
+        const elementcompanybranch = myElementRefCompany.current;
+        const postBody = {
+          id : elementcompanybranch.value
+        }
+        if (elementcompanybranch) {
+          dispatch(branchGet(postBody));
+        }
         dispatch(compliancesAllForChecklist());
-        dispatch(companyGet());
+        dispatch(companyTableGet());
     },[dispatch]);
+    const getBbranch = (company) => {
+        const elementcompanybranch = myElementRefCompany.current;
+        const postBody = {
+         id : elementcompanybranch.value
+       }
+        dispatch(branchGet(postBody));
+      }
     useEffect(()=>{
         let categoryArr = [];
         if (typeof (categoryInfo) !== 'undefined' && categoryInfo?.length > 0 ) {
@@ -279,6 +292,7 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
         }
         dispatch(categoryGet());
         dispatch(stateGets());
+        dispatch(usersGet());
     },[dispatch]);
     useEffect(() => {
         if(recordForEdit?.id !== undefined && recordForEdit?.id !== null) {
@@ -386,11 +400,11 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
             </div>
             <div class="col-md-12 col-lg-12 mb-2">
                 <label for="" class="form-label">Company *</label>
-                <select className="form-select" aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>setCompany(e.target.value)} required>
+                <select className="form-select" aria-label="Default select example"     id="companies" name="company" ref={myElementRefCompany} value={company} onChange={(e)=>{setCompany(e.target.value);getBbranch(e.target.value)}} required>
                         <option value="">Select Company</option>
-                    {companyInfo != 'undefind' && companyInfo?.length > 0 && companyInfo.map(item => 
-                        <option value={item._id}>{item.companyname}</option>
-                    )};
+                        {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                            <option value={item._id}>{item.companyname}</option>
+                        )};
                 </select>
             </div>    
             <div class="col-md-12 col-lg-12 mb-2">
@@ -405,12 +419,13 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
             </div>
             <div class="col-md-12 col-lg-12 mb-2">
                 <label for="cat" class="form-label">Branch *</label>
-                <select className="form-select" aria-label="Default select example" id="branch" name="branch" onChange={(e)=>setBranch(e.target.value)} value={branch} required>
+                <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);}} value={branch} required>
                     <option value="">Select Branch</option>
                     {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
-                        <option value={item._id}>{item.name}</option>
+                        <option value={item.id}>{item.name}</option>
                     )};
-                </select>
+                    
+                    </select>
             </div>
             <div class="col-12 col-lg-12 col-md-12 mb-2">
                 <label for="inputrule" class="form-label">Rule *</label>
@@ -536,7 +551,7 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
                 <button type="submit" class="w-100 btn btn-dark" id="cancel" onClick={tocategorypage}>Cancel</button>
             </div>
             <div class="col-md-6">
-                <button type="button" variant="contained" class="w-100 btn btn-primary" >Save</button>
+                <button type="submit" variant="contained" class="w-100 btn btn-primary" >Save</button>
             </div>
             </form>
             </div>

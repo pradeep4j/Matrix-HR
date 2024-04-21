@@ -149,16 +149,16 @@ const Elibrary = () => {
                     <div className="row">
                         <div className="col-lg-12">
                             <ul className="nav nav-pills mb-3 bg-light rounded overflow-hidden" id="pills-tab" role="tablist">
-                                <li className="nav-item col-md-6 col-lg-6 col-12 border-end border-md-bottom" role="presentation">
+                                <li className="nav-item col-md-6 col-lg-4 col-12 border-end border-md-bottom" role="presentation">
                                     <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'viewall' ? 'active' : ''}`} id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true" ref={myElementRefTab1} onClick={(e)=>{viewall();handleTabChange('viewall')}}> View All </button>
                                 </li>
                                 {/* <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
                                     <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'approve' ? 'active' : ''}`} id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" ref={myElementRefTab2} onClick={(e)=>{/*viewall();handleTabChange('viewall')}}>Approve</button>
                                 </li> */}
-                                {/* <li className="nav-item col-md-6 col-lg-4 col-12 border-end" role="presentation">
+                                <li className="nav-item col-md-6 col-lg-4 col-12 border-end" role="presentation">
                                     <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'reject' ? 'active' : ''}`} id="creative-tab" data-bs-toggle="pill" data-bs-target="#creative-pill" type="button" role="tab" aria-controls="creative-pill" aria-selected="false" onClick={(e)=>{rejected();handleTabChange('reject')}}>Reject</button>
-                                </li> */}
-                                <li className="nav-item col-md-6 col-lg-6 col-12" role="presentation">
+                                </li>
+                                <li className="nav-item col-md-6 col-lg-4 col-12" role="presentation">
                                     <button className={`nav-link w-100 rounded-0 text-dark ${activeTab === 'Create New' ? 'active' : ''}`} id="reject-pill" data-bs-toggle="pill" data-bs-target="#reject-tab" type="button" role="tab" aria-controls="reject-tab" aria-selected="false" onClick={(e)=>{/*viewall();*/handleTabChange('Create New')}}>Create New </button>
                                 </li>
                             </ul>
@@ -209,7 +209,7 @@ const Elibrary = () => {
                                         </div>
                                     </div>
                                 </div> */}
-                                {/* <div className={`tab-pane fade ${activeTab === 'reject' ? 'show active' : ''}`} id="creative-pill" role="tabpanel" aria-labelledby="creative-tab">
+                                <div className={`tab-pane fade ${activeTab === 'reject' ? 'show active' : ''}`} id="creative-pill" role="tabpanel" aria-labelledby="creative-tab">
                                     <div className="row">
                                         <div className="col-12 col-lg-12">
                                             <div className="card p-3 ">
@@ -219,7 +219,7 @@ const Elibrary = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div> */}
+                                </div>
                                 <div className={`tab-pane fade ${activeTab === 'Create New' ? 'show active' : ''}`} id="reject-tab" role="tabpanel" aria-labelledby="reject-pill">
                                     <form className="row g-3"  method="post" enctype="multipart/form-data" onSubmit={formik.handleSubmit}>
                                         <div className="col-md-12 col-lg-12">

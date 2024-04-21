@@ -9,11 +9,12 @@ const auditSchema = new mongoose.Schema({
     },
     company: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company',
+        ref: 'Companydata',
     },
     branch: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Branch',
+        type: String,
+        trim:true,
+        index:true
     },
     compliance:{
         type: mongoose.Schema.Types.ObjectId,

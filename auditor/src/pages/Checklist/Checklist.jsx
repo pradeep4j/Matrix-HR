@@ -267,7 +267,7 @@ const Checklist = () => {
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                  executive:name?'admin':item.executive,
+                  executive:item.executive,
                 })
             });
           }
@@ -334,7 +334,7 @@ const Checklist = () => {
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)!==undefined?formatDate(item.approvedate):(item.approvedate),
                   duedate:(item.duedate)!==undefined?formatDate(item.duedate):(item.duedate),
-                  executive:name?'admin':item.executive,
+                  executive:item.executive,
                 })
             });
           }
@@ -550,7 +550,7 @@ const Checklist = () => {
         //   sortDirections: ['descend', 'ascend']
         },
         {
-            title: <div style={{ textAlign: 'center' }}>Rule</div>,
+            title: <div style={{ textAlign: 'left' }}>Rule</div>,
             dataIndex: 'rule',
             key: 'rule',
             width: 300,
@@ -568,7 +568,7 @@ const Checklist = () => {
             sortDirections: ['descend', 'ascend']
         },
         {
-            title: <div style={{ textAlign: 'center' }}>Question</div>,
+            title: <div style={{ textAlign: 'left' }}>Question</div>,
             dataIndex: 'question',
             key: 'question',
             width: 200,
@@ -577,7 +577,7 @@ const Checklist = () => {
             // sortDirections: ['descend', 'ascend']
         },
         {
-          title: <div style={{ textAlign: 'center' }}>Description</div>,
+          title: <div style={{ textAlign: 'left' }}>Description</div>,
             dataIndex: 'description',
             key: 'description',
             width: 200,
@@ -737,7 +737,7 @@ const Checklist = () => {
         }
         const postBody = {
             approvedate: defaultDate,
-            status:1,
+            status:0,
             id:selectedRowIds
         }
         dispatch(checklistSaveandApprove(postBody));//relodreport
@@ -767,7 +767,7 @@ const Checklist = () => {
                                     <button className="nav-link w-100 rounded-0 text-dark active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true" onClick={calling}> <ContentPasteIcon /> All Checklist</button>
                                 </li>
                                 <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
-                                    <button className="nav-link w-100 rounded-0 text-dark" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" onClick={callingapprove}><ContentPasteIcon /> Approved Checklist</button>
+                                    <button className="nav-link w-100 rounded-0 text-dark" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" onClick={callingapprove}><ContentPasteIcon /> Approve Checklist</button>
                                 </li>
                                 <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
                                     <button className="nav-link w-100 rounded-0 text-dark" id="creative-tab" data-bs-toggle="pill" data-bs-target="#creative-pill" type="button" role="tab" aria-controls="creative-pill" aria-selected="false" onClick={callingcreate}><ContentPasteIcon /> Create New</button>

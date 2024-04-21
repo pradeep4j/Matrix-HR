@@ -147,7 +147,7 @@ const Companyprofile = (props) => {
                     companystate: item.companystate,
                     branchenames: branchNames,
                     totalBranches: branchCount,
-                    executive: name ? 'admin' : item.executive,
+                    executive:item.executive,
                     created_at: item.created_at ? formatDate(item.created_at) : item.created_at,
                     license: item.license,
                     status: item.status === 1 ? (
@@ -169,7 +169,7 @@ const Companyprofile = (props) => {
                     companystate: item.companystate,
                     branchenames: '',
                     totalBranches: 0,
-                    executive: name ? 'admin' : item.executive,
+                    executive:item.executive,
                     created_at: item.created_at ? formatDate(item.created_at) : item.created_at,
                     license: item.license,
                     status: item.status === 1 ? (

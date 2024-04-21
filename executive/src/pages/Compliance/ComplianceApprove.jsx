@@ -115,7 +115,7 @@ const ComplianceApprove = () =>{
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                 duedate:item.duedate !=null ? formatDate(item.duedate):item.duedate,
                 updated_at:item.updated_at !=null ? formatDate(item.updated_at):item.updated_at,
-                executive:name?'admin':item.executive,
+                executive:item.executive,
               })
           });
         }
@@ -155,7 +155,7 @@ const ComplianceApprove = () =>{
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'red' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   duedate:item.duedate !=null ? formatDate(item.duedate):item.duedate,
                   updated_at:item.updated_at !=null ? formatDate(item.updated_at):item.updated_at,
-                  executive:name?'admin':item.executive,
+                  executive:item.executive,
                 })
             });
           }
@@ -354,7 +354,7 @@ const ComplianceApprove = () =>{
       if (selectedRows.length === 0) {
         Modal.error({
           title: 'Error',
-          content: 'Please select at least one checklist from list.',
+          content: 'Please select at least one Compliance from list.',
         });
         // <Alert
         //   message="Error"
@@ -366,7 +366,7 @@ const ComplianceApprove = () =>{
       }
       const postBody = {
           duedate: defaultDate,
-          status:1,
+          status:0,
           id:selectedRowIds
       }
       dispatch(compliancesSaveandApprove(postBody));//relodreport
@@ -684,11 +684,11 @@ const ComplianceApprove = () =>{
                         <input type="date" ref={myElementRefDate} className="form-control" id="dates" placeholder='Date' value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                     </div>
                     <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                        <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={complianceInfo != undefined && complianceInfo?.length==0 } onClick={saveandapprove}>Save And Approve</button>
+                        <button type="submit" className="w-100 btn btn-primary" style={{ width:'170px' }} disabled={complianceInfo != undefined && complianceInfo?.length==0 } onClick={saveandapprove}>Save And Get an Approval</button>
                     </div>
-                    <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
-                        <button type="submit" className="w-100 btn btn-danger" /*onClick={reject}*/ onClick={showModal} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Reject</button>
-                    </div>
+                    {/* <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
+                        <button type="submit" className="w-100 btn btn-danger" /*onClick={reject} onClick={showModal} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Reject</button>
+                    </div> */}
                     <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3">
                         <button type="submit" className="w-100 btn btn-primary" onClick={toggleTables} disabled={complianceInfo != undefined && complianceInfo?.length==0 }>Edit</button>
                     </div>

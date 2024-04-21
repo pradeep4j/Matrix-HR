@@ -140,7 +140,7 @@ const AllChecklistTable = () =>{
                     created_at:formatDate(item.created_at),
                     updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
                     approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                    executive:name?'admin':item.executive,
+                    executive:item.executive,
               })
           });
         }
@@ -184,7 +184,7 @@ const AllChecklistTable = () =>{
                       created_at:formatDate(item.created_at),
                       updated_at:item.updated_at!==undefined?formatDate(item.updated_at):item.updated_at,
                       approvedate:(item.approvedate)?formatDate(item.approvedate):(item.approvedate),
-                      executive:name?'admin':item.executive,
+                      executive:item.executive,
                 })
             });
           }
@@ -432,7 +432,7 @@ const AllChecklistTable = () =>{
         //   sortDirections: ['descend', 'ascend']
         },
         {
-            title: <div style={{ textAlign: 'center' }}>Rule</div>,
+            title: <div style={{ textAlign: 'left' }}>Rule</div>,
             dataIndex: 'rule',
             key: 'rule',
             width: 300,
@@ -450,7 +450,7 @@ const AllChecklistTable = () =>{
             sortDirections: ['descend', 'ascend']
         },
         {
-            title: <div style={{ textAlign: 'center' }}>Question</div>,
+            title: <div style={{ textAlign: 'left' }}>Question</div>,
             dataIndex: 'question',
             key: 'question',
             width: 300,
@@ -459,7 +459,7 @@ const AllChecklistTable = () =>{
             // sortDirections: ['descend', 'ascend']
         },
         {
-            title: <div style={{ textAlign: 'center' }}>Description</div>,
+            title: <div style={{ textAlign: 'left' }}>Description</div>,
             dataIndex: 'description',
             key: 'description',
             width: 300,

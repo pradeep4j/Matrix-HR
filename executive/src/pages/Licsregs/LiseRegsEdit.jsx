@@ -486,7 +486,7 @@ const LiseRegsEdit = (props) => {
         const postBody = {
             id:regsGetByIdInfo?._id,
             approvedate: defaultDate,
-            status:1
+            status:0
         }
         dispatch(lisregsSaveandApprove(postBody));
     }
@@ -688,11 +688,11 @@ const LiseRegsEdit = (props) => {
                                 onChange={onSetDate}
                             />
                             </div> */}
-                            <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3" >
+                            <div className="col-md-6 col-lg-15 mb-2 mb-lg-3 mb-md-3" >
                                 <button type="submit" className="w-100 btn btn-success" style={{ borderRadius:'0.9'}} onClick={editclick}>Edit</button>
                             </div>
-                            <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3" style={{  }}>
-                                <button type="submit" className="w-100 btn btn-primary"  onClick={saveandapprove}>Save And Get an Approval</button>
+                            <div className="col-md-6 col-lg-15 mb-2 mb-lg-3 mb-md-3" style={{  }}>
+                                <button type="submit" className="w-110 btn btn-primary" style={{ width:'250px' }} onClick={saveandapprove}>Save And Get an Approval</button>
                             </div>
                             {/* inner tab start here */}
                             <div className="col-12 col-lg-12">
@@ -1215,7 +1215,7 @@ const LiseRegsEdit = (props) => {
                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3 p-2" >
                             <button type="submit" className="w-100 btn btn btn-success"  onClick={editclick}>Edit <EditIcon fontSize='mediam' /></button>
                         </div>
-                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3 p-2" >
+                        <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3" style={{ marginTop:'9px' }}>
                             <button type="submit" className="w-100 btn btn-primary"  onClick={saveandapprove}>Save And Get an Approval</button>
                         </div>
                         {/* <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3 p-2" >

@@ -114,7 +114,7 @@ const Compliances = () => {
                 compliancetype:item.compliancetype,
                 recurrence:item.frequency,
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-                executive:name?'admin':item.executive,
+                executive:item.executive,
                 duedate:formatDate(item.duedate),
               })
           });
@@ -141,6 +141,7 @@ const Compliances = () => {
                   docattachment:<a href={item.docattachment} target="_blank">Document</a>,
                   compliancetype:item.compliancetype,
                   recurrence:item.frequency,
+                  executive:item.executive,
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   duedate:formatDate(item.duedate),
                 })
@@ -376,7 +377,7 @@ const Compliances = () => {
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Rule</div>,
+          title: <div style={{ textAlign: 'left' }}>Rule</div>,
           dataIndex: 'rule',
           key: 'rule',
           width: 300,
@@ -394,7 +395,7 @@ const Compliances = () => {
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Question</div>,
+          title: <div style={{ textAlign: 'left' }}>Question</div>,
           dataIndex: 'question',
           key: 'question',
           width: 300,
@@ -403,7 +404,7 @@ const Compliances = () => {
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Description</div>,
+          title: <div style={{ textAlign: 'left' }}>Description</div>,
           dataIndex: 'description',
           key: 'description',
           width: 300,
@@ -497,7 +498,7 @@ const Compliances = () => {
     if (selectedRows1.length === 0) {
       Modal.error({
         title: 'Error',
-        content: 'Please select at least one checklist from list.',
+        content: 'Please select at least one Compliance from list.',
       });
       // <Alert
       //   message="Error"
@@ -509,7 +510,7 @@ const Compliances = () => {
     }
     const postBody = {
         approvedate: defaultDate,
-        status:1,
+        status:0,
         id:selectedRowIds1
     }
     dispatch(compliancesSaveandApprove(postBody));//relodreport
@@ -564,7 +565,7 @@ const Compliances = () => {
                                                 <input type="date" ref={myElementRefDate} id="dates" name="created_at" className="form-control" value={date} onChange={(e) => {setDate(e.target.value);filter();}} />
                                             </div>
                                             <div className="col-md-3 mb-lg-3">
-                                                <button type="button" className="w-100 btn btn-primary" onClick={saveandapprove}>Save And Approve</button>
+                                                <button type="button" className="w-100 btn btn-primary" onClick={saveandapprove}>Save And Get an Approval</button>
                                             </div>
                                         </form>
                                         <div className="col-12 col-lg-12">

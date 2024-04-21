@@ -114,7 +114,7 @@ const Compliances = () => {
                 compliancetype:item.compliancetype,
                 recurrence:item.frequency,
                 risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
-                executive:name?'admin':item.executive,
+                executive:item.executive,
                 duedate:formatDate(item.duedate),
               })
           });
@@ -141,6 +141,7 @@ const Compliances = () => {
                   docattachment:<a href={item.docattachment} target="_blank">Document</a>,
                   compliancetype:item.compliancetype,
                   recurrence:item.frequency,
+                  executive:item.executive,
                   risk:item.risk=='Low'?<div style={{ color:'#34953D' }}>{item.risk}</div>:item.risk=='High'?<div style={{ color:'#DF8787' }}>{item.risk}</div>:item.risk=='Medium'?<div style={{ color:'#D89D13' }}>{item.risk}</div>:item.risk=='Very High'?<div style={{ color:'red' }}>{item.risk}</div>:<div style={{ color:'red' }}>{item.risk}</div>,
                   duedate:formatDate(item.duedate),
                 })
@@ -376,7 +377,7 @@ const Compliances = () => {
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Rule</div>,
+          title: <div style={{ textAlign: 'left' }}>Rule</div>,
           dataIndex: 'rule',
           key: 'rule',
           width: 300,
@@ -394,7 +395,7 @@ const Compliances = () => {
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Question</div>,
+          title: <div style={{ textAlign: 'left' }}>Question</div>,
           dataIndex: 'question',
           key: 'question',
           width: 300,
@@ -403,7 +404,7 @@ const Compliances = () => {
           // sortDirections: ['descend', 'ascend']
       },
       {
-          title: <div style={{ textAlign: 'center' }}>Description</div>,
+          title: <div style={{ textAlign: 'left' }}>Description</div>,
           dataIndex: 'description',
           key: 'description',
           width: 300,

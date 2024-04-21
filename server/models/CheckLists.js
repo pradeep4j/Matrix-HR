@@ -7,12 +7,13 @@ const checkListSchema = new mongoose.Schema({
         index : true
     },
     branchname: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Branch"
+        type: String,
+        trim:true,
+        index:true
     },
     company: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Company"
+        ref: "Companydata"
     },
     rule : {
         type : String,
