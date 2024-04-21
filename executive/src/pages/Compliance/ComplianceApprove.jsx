@@ -367,7 +367,8 @@ const ComplianceApprove = () =>{
       const postBody = {
           duedate: defaultDate,
           status:0,
-          id:selectedRowIds
+          id:selectedRowIds,
+          type:'executive'
       }
       dispatch(compliancesSaveandApprove(postBody));//relodreport
       relodreport();

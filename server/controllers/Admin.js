@@ -2471,7 +2471,19 @@ export const complianceApporve = async (request, response, next) => {
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const compliancesApprove = await Compliance.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-        response.status(201).json(compliancesApprove);
+        if(request.body.type==='executive'){
+            response.status(202).json(compliancesApprove);
+            return;
+        }
+        else if(request.body.type==='auditor'){
+            response.status(203).json(compliancesApprove);
+            return;
+        }
+        else
+        {
+            response.status(201).json(compliancesApprove);
+            return;
+        }
     } catch (error) {
         next(error);
     }
@@ -2773,7 +2785,19 @@ export const checklistApporve = async (request, response, next) => {
                 {status: request.body.status, approvedate: request.body.approvedate }
             );
         }
-        response.status(201).json(checklistApprove);
+        if(request.body.type==='executive'){
+            response.status(202).json(checklistApprove);
+            return;
+        }
+        else if(request.body.type==='auditor'){
+            response.status(203).json(checklistApprove);
+            return;
+        }
+        else
+        {
+            response.status(201).json(checklistApprove);
+            return;
+        }
     } catch (error) {
         next(error);
     }
@@ -2904,7 +2928,7 @@ export const checklistOnCreateegetting = async (request, response, next) => {
 }
 export const checklistAllgetting = async (request, response, next) => {
     try {
-        const newArr = await CheckList.aggregate([
+        let newArr = await CheckList.aggregate([
             {
                 $match: {
                     status: { $eq: 1 }
@@ -2998,6 +3022,16 @@ export const checklistAllgetting = async (request, response, next) => {
 
                 })
             })
+        }
+        const user = await Users.findOne({ _id: request.user._id });
+        const role = user.role;
+        const username = user.userName;
+
+        if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
+            newArr = newArr.filter(docs => docs.executive === username);
+        } else {
+            response.status(201).json(newArr);
+            return;
         }
         response.status(201).json(newArr)
     }
@@ -3267,7 +3301,7 @@ export const checkListAllFilter = async (request, response, next) => {
         const branchFilter = request.body.branchname;
         const dateFilter = request.body.created_at;
 
-        // console.log(request.body);
+        console.log(request.body);
         const matchStage = {};
         matchStage['status'] = { $eq: 1 };
         if (stateFilter !== undefined && dateFilter !== undefined && executiveFilter !== undefined && companyFilter !== undefined && branchFilter !== undefined && stateFilter !== "" && dateFilter !== "" && executiveFilter !== "" && companyFilter !== "" && branchFilter !== "") {
@@ -3600,7 +3634,7 @@ export const checkListAllFilter = async (request, response, next) => {
                     },
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    company: { $arrayElemAt: ["$companyData.name", 0] },
+                    company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     // branchname: { $arrayElemAt: ["$branchData.name", 0] },
                     compliance: { $arrayElemAt: ["$complianceData.act", 0] },
                 }
@@ -3629,6 +3663,7 @@ export const checkListAllFilter = async (request, response, next) => {
             response.status(201).json(filter);
             return;
         }
+        console.log(filter)
         response.status(201).json(filter);
     } catch (error) {
         next(error);
@@ -4274,7 +4309,16 @@ export const checkListCreateFilter = async (request, response, next) => {
                     as: "category"
                 }
             },
-            { $unwind: "$category" }
+            { $unwind: "$category" },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "executive",
+                    foreignField: "_id",
+                    as: "executiveData",
+                },
+            },
+            { $unwind: "$executiveData" },
         ]);
 
         const gettingCompany = await Companydata.find({});
@@ -4310,22 +4354,33 @@ export const checkListCreateFilter = async (request, response, next) => {
                 })
             })
         }
+        console.log('here')
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
         const username = user.userName;
-
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             filter = filter.filter(docs => docs.executive === username);
+            if (companyFilter !== undefined && companyFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
+                console.log([...filter, ...newArr])
+                response.status(201).json([...filter, ...newArr]);
+            }
+            else {
+                console.log([...filter])
+                response.status(201).json([...filter]);
+            }
+            return;
         } else {
-            response.status(201).json(filter);
+            if (companyFilter !== undefined && companyFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
+                console.log(newArr)
+                response.status(201).json([...filter, ...newArr]);
+            }
+            else {
+                console.log([...filter])
+                response.status(201).json([...filter]);
+            }
             return;
         }
-        if (companyFilter !== undefined && companyFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
-            response.status(201).json([...filter, ...newArr]);
-        }
-        else {
-            response.status(201).json([...filter]);
-        }
+       
 
     } catch (error) {
         next(error);
@@ -4869,9 +4924,9 @@ export const createLiseReg = async (request, response, next) => {
         next(error)
     }
 }
-export const liseRegGetting = async (requxest, response, next) => {
+export const liseRegGetting = async (request, response, next) => {
     try {
-        const liseReg = await Lisereg.aggregate([
+        let liseReg = await Lisereg.aggregate([
             {
                 $lookup: {
                     from: "companydatas",
@@ -4965,6 +5020,15 @@ export const liseRegGetting = async (requxest, response, next) => {
 
                 })
             })
+        }
+        const user = await Users.findOne({ _id: request.user._id });
+        const role = user.role;
+        const username = user.userName;
+        if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
+            liseReg = liseReg.filter(docs => docs.executive === username);
+        } else {
+            response.status(201).json(liseReg);
+            return;
         }
         response.status(201).json(liseReg)
     }
@@ -5388,7 +5452,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         }
 
         // console.log(matchStage);
-        const filter = await Lisereg.aggregate([
+        let filter = await Lisereg.aggregate([
             // {
             //     $match: matchStage,
             // },
@@ -5480,7 +5544,19 @@ export const regsApporve = async (request, response, next) => {
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const regsApprove = await Lisereg.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-        response.status(201).json(regsApprove);
+        if(request.body.type==='executive'){
+            response.status(202).json(regsApprove);
+            return;
+        }
+        else if(request.body.type==='auditor'){
+            response.status(203).json(regsApprove);
+            return;
+        }
+        else
+        {
+            response.status(201).json(regsApprove);
+            return;
+        }
     } catch (error) {
         next(error);
     }
@@ -5817,7 +5893,19 @@ export const elibrarySaveandApprove = async (request, response, next) => {
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const elibraryApprove = await Elibrary.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-        response.status(201).json(elibraryApprove);
+        if(request.body.type==='executive'){
+            response.status(202).json(elibraryApprove);
+            return;
+        }
+        else if(request.body.type==='auditor'){
+            response.status(203).json(elibraryApprove);
+            return;
+        }
+        else
+        {
+            response.status(201).json(elibraryApprove);
+            return;
+        }
     } catch (error) {
         next(error);
     }
@@ -6832,9 +6920,20 @@ export const companySaveandApprove = async (request, response, next) => {
         //console.log(request.body);return;
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
-        const companyApprove = await License.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-          
-        response.status(201).json(companyApprove);
+        const companyApprove = await Companydata.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+        if(request.body.type==='executive'){
+            response.status(202).json(companyApprove);
+            return;
+        }
+        else if(request.body.type==='auditor'){
+            response.status(203).json(companyApprove);
+            return;
+        }
+        else
+        {
+            response.status(201).json(companyApprove);
+            return;
+        }
     } catch (error) {
         next(error);
     }
@@ -7049,8 +7148,19 @@ export const apporveCompanyL = async (request, response, next) => {
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const companyLApprove = await License.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-          
-        response.status(201).json(companyLApprove);
+        if(request.body.type==='executive'){
+            response.status(202).json(companyLApprove);
+            return;
+        }
+        else if(request.body.type==='auditor'){
+            response.status(203).json(companyLApprove);
+            return;
+        }
+        else
+        {
+            response.status(201).json(companyLApprove);
+            return;
+        }
     } catch (error) {
         next(error);
     }

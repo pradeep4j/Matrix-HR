@@ -486,7 +486,8 @@ const LiseRegsEdit = (props) => {
         const postBody = {
             id:regsGetByIdInfo?._id,
             approvedate: defaultDate,
-            status:0
+            status:0,
+            type:'executive'
         }
         dispatch(lisregsSaveandApprove(postBody));
     }

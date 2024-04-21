@@ -451,17 +451,17 @@ export const checklistApporve = async(data) => {
     //alert('JSON.stringify(data)'); return;
     return await axios.patch(`${URL}/checklistApporve`,data,config);
 }
-export const checkListAllFilter = async(postBody) => {
-    const config = {
-        headers: {
-            "Content-Type":"application/json",
-            Authorization : `Bearer ${getToken()}`
-        }
-    }
-    //alert(JSON.stringify(postBody));return;
-   // alert(`${URL}/gettingCompliancesFilter?state=${state}&created_at=${created_at}`);return;
-    return await axios.post(`${URL}/checkListAllFilter`,postBody,config);
-}
+// export const checkListAllFilter = async(postBody) => {
+//     const config = {
+//         headers: {
+//             "Content-Type":"application/json",
+//             Authorization : `Bearer ${getToken()}`
+//         }
+//     }
+//     //alert(JSON.stringify(postBody));return;
+//    // alert(`${URL}/gettingCompliancesFilter?state=${state}&created_at=${created_at}`);return;
+//     return await axios.post(`${URL}/checkListAllFilter`,postBody,config);
+// }
 export const gettingchecklistAllFilter = async(postBody) => {
     const config = {
         headers: {

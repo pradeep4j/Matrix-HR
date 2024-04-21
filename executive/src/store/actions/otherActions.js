@@ -1689,6 +1689,13 @@ export const compliancesSaveandApprove = (data) => async (dispatch) => {
                                 progress: undefined,
                         });
                 }
+                else if(response.status===202){
+                        toast.success('Compliace is sent for Approval Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
                 else
                 {
                         dispatch({
@@ -2374,12 +2381,20 @@ export const checklistSaveandApprove = (data) => async (dispatch) => {
                                 hideProgressBar: false,
                                 progress: undefined,
                         });
+                
                 /*swal({
                         title: "Successful!",
                         text: 'User Addes Successfully !',
                         icon: "success",
                         button: "OK!",
                 });*/
+                }
+                else if(response.status===202){
+                        toast.success('Checklist is sent for Approval Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
                 }
                 else
                 {
@@ -2412,6 +2427,7 @@ export const checklistSaveandApprove = (data) => async (dispatch) => {
      
 }
 export const checklistsAllFilter = (postBody) => async (dispatch) => {
+        // alert('sasas')
         dispatch({ type: CHECKLIST_REQUEST_ALL_FILTER });
 
                 await gettingchecklistAllFilter(postBody).then(response=>{
@@ -3047,6 +3063,13 @@ export const lisregsSaveandApprove = (data) => async (dispatch) => {
                                 progress: undefined,
                         });
                 }
+                else if(response.status===202){
+                        toast.success('License/Registration is sent for Approval Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
                 else
                 {
                         dispatch({
@@ -3664,6 +3687,14 @@ export const elibrarySaveandApproved = (postBody) => async (dispatch) => {
                                 progress: undefined,
                         });
                 }
+                else if(response.status===202){
+                        toast.success('Elibrary is sent for Approval Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+
                 else
                 {
                         dispatch({
@@ -4197,11 +4228,18 @@ export const SaveandApproveCompany = (postBody) => async (dispatch) => {
                 dispatch({ type: COMPANY_SUCCESS_SAVE_APPROVE, payload: response.data });    
                 if(response.status===201)
                 {
-                        // toast.success('License/Registration is Approved Successfully!', {
-                        //         position: "bottom-right",
-                        //         hideProgressBar: false,
-                        //         progress: undefined,
-                        // });
+                        toast.success('Company is Approved Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+                else if(response.status===202){
+                        toast.success('Company is sent for Approval Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
                 }
                 else
                 {

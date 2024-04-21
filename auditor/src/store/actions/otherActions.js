@@ -1689,6 +1689,13 @@ export const compliancesSaveandApprove = (data) => async (dispatch) => {
                                 progress: undefined,
                         });
                 }
+                else if(response.status===203){
+                        toast.success('Compliance is sent for Approval Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }                
                 else
                 {
                         dispatch({
@@ -2381,6 +2388,13 @@ export const checklistSaveandApprove = (data) => async (dispatch) => {
                         button: "OK!",
                 });*/
                 }
+                else if(response.status===203){
+                        toast.success('Checklist is sent for Approval Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }                
                 else
                 {
                         dispatch({
@@ -3047,6 +3061,13 @@ export const lisregsSaveandApprove = (data) => async (dispatch) => {
                                 progress: undefined,
                         });
                 }
+                else if(response.status===203){
+                        toast.success('License/Registration is sent for Approval Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }                
                 else
                 {
                         dispatch({
@@ -3659,6 +3680,13 @@ export const elibrarySaveandApproved = (postBody) => async (dispatch) => {
                 if(response.status===201)
                 {
                         toast.success('Elibrary is Approved Successfully!', {
+                                position: "bottom-right",
+                                hideProgressBar: false,
+                                progress: undefined,
+                        });
+                }
+                else if(response.status===203){
+                        toast.success('Elibrary is sent for Approval Successfully!', {
                                 position: "bottom-right",
                                 hideProgressBar: false,
                                 progress: undefined,
