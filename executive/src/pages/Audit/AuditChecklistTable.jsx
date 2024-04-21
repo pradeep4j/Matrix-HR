@@ -456,15 +456,15 @@ const handleCheckboxChange = (e, record) => {
            // sorter: (a, b) => a.image.length - b.image.length,
            // sortDirections: ['descend', 'ascend']
         },
-        {
-            title: 'Branch Name',
-            dataIndex: 'branchname',
-            key: 'branchname',
-            width: 70,
-            // ...getColumnSearchProps('branchname'),
-            // sorter: (a, b) => a.branchname.length - b.branchname.length,
-            // sortDirections: ['descend', 'ascend']
-        },
+        // {
+        //     title: 'Branch Name',
+        //     dataIndex: 'branchname',
+        //     key: 'branchname',
+        //     width: 70,
+        //     // ...getColumnSearchProps('branchname'),
+        //     // sorter: (a, b) => a.branchname.length - b.branchname.length,
+        //     // sortDirections: ['descend', 'ascend']
+        // },
         {
             title: 'Create Date',
             dataIndex: 'created_at',

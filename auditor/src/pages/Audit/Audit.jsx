@@ -2,7 +2,7 @@ import React,{useState,useEffect,useRef} from 'react'
 import { Link,NavLink, useNavigate } from 'react-router-dom'
 import { FormLabel,styled} from '@mui/material';
 import { Modal } from 'antd';
-import {stateGets,branchGet,companyGet,auditGetDataAll,auditOnCreate,checklistGetonCreateAudit,companyTableGet,auditorGet} from "../../store/actions/otherActions";
+import {stateGets,branchGet,companyGet,auditGetDataAll,auditOnCreate,checklistGetonCreateAudit,companyTableGet} from "../../store/actions/otherActions";
 import { useDispatch,useSelector } from 'react-redux';
 import AuditTable from './AuditTable';
 import AuditChecklistTable from './AuditChecklistTable';
@@ -56,19 +56,19 @@ const Audit = () => {
     const { loadingoncreate,auditorChecklistInfoOncreate } = onCreateChecklistAudit; 
     useEffect(()=>{
         dispatch(stateGets());
-        const elementcompanybranch = myElementCompany.current;
-        const postBody = {
-          id : elementcompanybranch.value
-        }
-        if (elementcompanybranch) {
-          dispatch(branchGet(postBody));
-        }
+        // const elementcompanybranch = myElementCompany.current;
+        // const postBody = {
+        //   id : elementcompanybranch.value
+        // }
+        // if (elementcompanybranch) {
+        //   dispatch(branchGet(postBody));
+        // }
         dispatch(companyTableGet());
         dispatch(auditGetDataAll())
-        dispatch(auditorGet())
+        // dispatch(getExecutive())
         dispatch(checklistGetonCreateAudit());
     },[dispatch]);
-    const getBbranch = (company) => {
+    const getBbranchs = (company) => {
         // const elementcompanybranch = myElementRefCompany1.current;
         // alert(company);return;
         const postBody = {
@@ -131,7 +131,7 @@ const Audit = () => {
         } 
         // unsetRefValue(elementtable);
         // unsetRefValue(elementtableinput);
-    },[auditorChecklistInfoOncreate,stateInfo,branchInfo,auditorCreateInfo]);
+    },[]);
     const showtable = () => {
         const elementtable = myElementRefTable.current;
         const elementtableinput = myElementRefTableInput.current;
@@ -492,13 +492,16 @@ const Audit = () => {
                                         </div> 
                                         <div className="col-md-3">
                                             <label for="inputcompany" className="form-label">Select Company</label>
-                                                <select className="form-select" aria-label="Default select example" ref={myElementCompany} id="companies" name="company"  value={company} onChange={(e)=>{setCompany(e.target.value);getBbranch(e.target.value)}} required>
-                                                        <option value="">Select Company</option>
-                                                        {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
-                                                        <option value={item._id}>{item.companyname}</option>
-                                                        )};
-                                                </select>
-                                                <Spanning ref={myElementRefCompany}></Spanning>
+                                            <select className="form-select"  aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);getBbranchs(e.target.value)}} required>
+                                            <option value="">Select Company</option>
+                                            {companyGetTableInfo && companyGetTableInfo.length > 0 &&
+                                                companyGetTableInfo.map((item) => (
+                                                <option key={item._id} value={item._id}>
+                                                    {item.companyname}
+                                                </option>
+                                                ))}
+                                            </select>
+                                            <Spanning ref={myElementRefCompany}></Spanning>
                                         </div>
                                         <div className="col-md-3">
                                             <label for="" className="form-label">Select State</label>
