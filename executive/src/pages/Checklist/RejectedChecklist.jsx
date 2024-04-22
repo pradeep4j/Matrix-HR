@@ -385,8 +385,7 @@ const RejectedChecklist = () =>{
         // ...getColumnSearchProps('executive'),
         // sorter: (a, b) => a.executive.length - b.executive.length,
         // sortDirections: ['descend', 'ascend']
-      },    
-      ,  
+      },     
         { 
           key: "action", 
           title: "Actions", 
@@ -419,6 +418,15 @@ const RejectedChecklist = () =>{
             // sorter: (a, b) => a.state.length - b.state.length,
             // sortDirections: ['descend', 'ascend']
         },
+        {
+          title: 'Executive',
+          dataIndex: 'executive',
+          key: 'executive',
+          width: 70,
+          // ...getColumnSearchProps('executive'),
+          // sorter: (a, b) => a.executive.length - b.executive.length,
+          // sortDirections: ['descend', 'ascend']
+        }, 
         {
             title: 'Act',
             dataIndex: 'compliance',

@@ -293,8 +293,9 @@ const Checklist = () => {
         let acts;
         let images;
         let document;
+        let executives;
           if (typeof (checklistInfoFilter) !== 'undefined' && checklistInfoFilter?.length > 0 ) {
-              // alert('compliances')
+             
               setcompliancedata('compliances')
               checklistInfoFilter.map((item, index) => {
                 if(item.compliance){
@@ -302,6 +303,12 @@ const Checklist = () => {
                 }
                 else{
                   acts = item.act
+                }
+                if(item.executive && !item.executive.firstName){
+                  executives = item.executive
+                }
+                else{
+                  executives = item.executive.firstName+' '+item.executive.lastName;
                 }
                 if(item.image){
                   images = <a href={item.image} target="_blank">Form</a>
@@ -333,7 +340,7 @@ const Checklist = () => {
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)!==undefined?formatDate(item.approvedate):(item.approvedate),
                   duedate:(item.duedate)!==undefined?formatDate(item.duedate):(item.duedate),
-                  executive:item.executive,
+                  executive:executives,
                 })
             });
           }

@@ -303,6 +303,12 @@ const Checklist = () => {
                 else{
                   acts = item.act
                 }
+                if(item.executive && !item.executive.firstName){
+                  executives = item.executive
+                }
+                else{
+                  executives = item.executive.firstName+' '+item.executive.lastName;
+                }
                 if(item.image){
                   images = <a href={item.image} target="_blank">Form</a>
                 }
@@ -325,8 +331,6 @@ const Checklist = () => {
                   category:item.category.name,
                   question:<div className='new-line'>{item.question}</div>,
                   description:<div className='new-line'>{item.description}</div>,
-                  // image:<a href={item.image} target="_blank">Form</a>,
-                  // documents:<a href={item.documents} target="_blank">Document</a>,
                   image:images,
                   documents:document,
                   frequency:item.frequency,
@@ -335,7 +339,7 @@ const Checklist = () => {
                   created_at:formatDate(item.created_at),
                   approvedate:(item.approvedate)!==undefined?formatDate(item.approvedate):(item.approvedate),
                   duedate:(item.duedate)!==undefined?formatDate(item.duedate):(item.duedate),
-                  executive:item.executive,
+                  executive:executives,
                 })
             });
           }
