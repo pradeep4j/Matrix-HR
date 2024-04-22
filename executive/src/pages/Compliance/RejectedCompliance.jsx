@@ -463,6 +463,15 @@ const RejectedCompliance = () =>{
           // sorter: (a, b) => a.createdAt.length - b.createdAt.length,
           // sortDirections: ['descend', 'ascend']
       },
+      {
+        title: 'Executive',
+        dataIndex: 'executive',
+        key: 'executive',
+        width: 70,
+       // ...getColumnSearchProps('documents'),
+       // sorter: (a, b) => a.image.length - b.image.length,
+       // sortDirections: ['descend', 'ascend']
+    },   
         {
             title: 'Reason',
             dataIndex: 'reason',

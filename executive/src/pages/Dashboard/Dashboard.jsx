@@ -7,7 +7,7 @@ import { CloudUploadOutlined,UploadOutlined,SearchOutlined,EditOutlined,DeleteOu
 import {usersGet,companyTableGet,auditorGet,checklistGetonCreateAudit,auditGetDataAll,ongoingAudits,gettingAuditorOverdueDashboard} from "../../store/actions/otherActions";//outgoingAudit, overDueAudit
 import { useDispatch,useSelector } from 'react-redux';
 import DashboardTableAudit from "./DashboardTableAudit";
-import DashboardTableUser from "./DashboardTableUser";
+import DashboardTableCompany from "./DashboardTableCompany";
 import DashboardTableNotification from "./DashboardTableNotification";
 const Dashboard = () => {
     const dispatch = useDispatch();
@@ -213,8 +213,8 @@ const Dashboard = () => {
                     </div>
 
                     <div className='row'>
-                        <div className='col-md-6 col-lg-6 col-xl-6'>
-                            <DashboardTableUser />
+                    <div className='col-md-6 col-lg-6 col-xl-6'>
+                            <DashboardTableCompany />
                         </div>
                         <div className='col-md-6 col-lg-6 col-xl-6'>
                             {/* <div className="card p-3">

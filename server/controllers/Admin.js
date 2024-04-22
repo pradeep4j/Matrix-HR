@@ -5669,18 +5669,18 @@ export const elibraryCreate = async (request, response, next) => {
 }
 export const elibraryGet = async (request, response, next) => {
     try {
-        let aggregation = [
+        let elibraryData = await Elibrary.aggregate([
                 {
                     $match: { status: { $ne: 2 } } // Exclude documents with status 2
                 },
-                {
-                    $lookup: {
-                        from: "companydatas",
-                        localField: "company",
-                        foreignField: "_id",
-                        as: "companyData"
-                    },
-                },
+                // {
+                //     $lookup: {
+                //         from: "companydatas",
+                //         localField: "company",
+                //         foreignField: "_id",
+                //         as: "companyData"
+                //     },
+                // },
                 {
                     $lookup: {
                         from: "users",
@@ -5722,13 +5722,13 @@ export const elibraryGet = async (request, response, next) => {
                         },
                         state: { $arrayElemAt: ["$stateData.name", 0] },
                         category: { $arrayElemAt: ["$categoryData.name", 0] },
-                        company: { $arrayElemAt: ["$companyData.companyname", 0] },
+                        // company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     }
                 }
-            ]
+            ])
         // }
-
-        let elibraryData = await Elibrary.aggregate(aggregation)
+          
+        // let elibraryData = await Elibrary.aggregate(aggregation)
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
         const username = user.userName;
@@ -5739,6 +5739,7 @@ export const elibraryGet = async (request, response, next) => {
             response.status(200).json(elibraryData);
             return;
         }
+        // console.log(elibraryData);
         response.status(200).json(elibraryData)
     } catch (error) {
         next(error)
