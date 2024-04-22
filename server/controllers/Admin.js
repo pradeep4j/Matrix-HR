@@ -1033,21 +1033,7 @@ export const createUser = async (request, response, next) => {
         // await sendMail(newUser._id, newUser.email, 'email verification',data.password);
         response.status(201).json(newUser)
     } catch (error) {
-        if (error.code === 'EAUTH' && error.responseCode === 400 && error.message.includes('invalid_grant')) {
-            // Token expired or revoked, refresh token and retry sending email
-            console.log('Refreshing access token...');
-            oAuth2Client.refreshAccessToken((err, newAccessToken) => {
-              if (err) {
-                console.error('Error refreshing access token:', err);
-                return;
-              }
-              console.log('Access token refreshed successfully');
-              // Retry sending email with the new access token
-              sendEmail();
-            });
-          } else {
-            console.error('Error sending email:', error.message);
-          }
+        next(error);
     }
 }
 export const gettingUser = async (request, response, next) => {
