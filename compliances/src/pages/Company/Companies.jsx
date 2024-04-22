@@ -43,7 +43,7 @@ const Companies = () => {
     const myRefSubcodes = useRef(null);
     const myRefSubcodesESI = useRef(null);
     const myRefSubcodesLabour = useRef(null);
-    const refCompanyProfile = useRef(null);
+    const myRefBranch = useRef(null);
     const myRefF1Labour = useRef(null);
     const myRefGLabour = useRef(null);
     const myRefGCLRA = useRef(null);
@@ -96,8 +96,6 @@ const Companies = () => {
     const { loadingtab6,companytab6CreateInfo } = createCompanytab6;
     const createCompanytab7 = useSelector((state) => state.createCompanytab7);
     const { loadingtab7,companytab7CreateInfo } = createCompanytab7;
-    const getCompanyTable = useSelector(state => state.getCompanyTable)
-    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const [category, setCategory] = useState('')
     const [state, setState] = useState('')
     const [isDisabled, setIsDisabled] = useState(false);
@@ -812,7 +810,7 @@ const Companies = () => {
 
     const getcompanyall = () => {
         setTimeout(() => {
-            //    alert('yes getting')
+            //   alert('yes getting')
               dispatch(companyTableGet());
         }, 2000);
     }
@@ -1190,8 +1188,7 @@ const Companies = () => {
     const saveandapprove = () => {
         const postBody = {
             approvedate: defaultDate,
-            status:1,
-            id:companyGetTableInfo?._id
+            status:1
         }
         dispatch(SaveandApproveCompany(postBody));//relodreport
         // relodreport();
@@ -1204,7 +1201,7 @@ const Companies = () => {
     <div className="col-lg-12">
         <ul className="nav nav-pills mb-3 bg-light rounded overflow-hidden" id="pills-tab" role="tablist">
             <li className="nav-item col-md-6 col-lg-3 col-12 border-end border-md-bottom" role="presentation">
-                <button className="nav-link w-100 rounded-0 text-dark active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" ref={refCompanyProfile} aria-controls="pills-home" aria-selected="true" onClick={getcompanyall}>  Company Profile</button>
+                <button className="nav-link w-100 rounded-0 text-dark active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true" onClick={getcompanyall}>  Company Profile</button>
             </li>
             <li className="nav-item col-md-6 col-lg-3 col-12 border-end" role="presentation">
                 <button className="nav-link w-100 rounded-0 text-dark" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" onClick={createnew}> Create New</button>
@@ -1220,7 +1217,7 @@ const Companies = () => {
         <div className="tab-content" id="pills-tabContent">
             <div className="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                 <div className="row">
-                    <Companyprofile linkref={refCompanyProfile}/>
+                    <Companyprofile />
                 </div>
             </div>
 
@@ -2997,9 +2994,9 @@ const Companies = () => {
                                             </div>
                                             
                                         </div>
-                                        {/* <form name="save" onSubmit={saveandapprove}> */}
+                                        <form name="save" onSubmit={saveandapprove}>
                                             <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove} disabled={companytab1CreateInfo && companytab1CreateInfo.created_at === null?'disabled':''}>Save And Approve</button>
-                                        {/* </form> */}
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -3008,7 +3005,6 @@ const Companies = () => {
                             <div className="tab-pane fade" id="pills-profile-creat-li" role="tabpanel" aria-labelledby="pills-profile-tab-creat-li" >
                                     <div className="row">
                                         <Companylicense />
-                                        
                                     </div> 
                             </div>
                         </div> 

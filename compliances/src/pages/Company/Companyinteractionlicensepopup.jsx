@@ -35,7 +35,7 @@ const Companyinteractionlicensepopup = ({ addOrEdit,recordForEdit }) => {
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const companyinteractLicById = useSelector((state) => state.companyinteractLicById);
     const { loadingcigbid,companyinteractionLicGetByIDInfo } = companyinteractLicById; 
-    console.log(companyinteractionLicGetByIDInfo)
+    // console.log(companyinteractionLicGetByIDInfo)
     const checklistId = useSelector((state) => state.checklistId);
     const { loadingg,checklistInfoId } = checklistId;
     const [company,  setCompany] = useState();

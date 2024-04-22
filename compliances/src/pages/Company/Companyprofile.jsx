@@ -37,7 +37,7 @@ const Companyprofile = (props) => {
     const { loadings,stateInfo } = getState;  
     const getCompanyTable = useSelector(state => state.getCompanyTable)
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
-    console.log(companyGetTableInfo)   
+    // console.log(companyGetTableInfo)   
     const regsFilter = useSelector(state => state.regsFilter)
     const {loadingregsFilter, regsFilterGetInfo } = regsFilter;
     let defaultDate = new Date()

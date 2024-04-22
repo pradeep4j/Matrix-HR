@@ -9,7 +9,6 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
       nameimage: '',
       remarks: '',
       designation:'',
-      designationdetails: '',
       designationimage: '',
       designationremark: '',
       pan: '',
@@ -17,17 +16,14 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
       panimage: '',
       panremark: '',
       aadhaar: '',
-      aadhaardetails: '',
       aadhaarimage: '',
       aadhaarremark: '',
       mobile: '',
-      mobiledetail: '',
       mobileremark: '',
       email: '',
-      emaildetails: '',
       emailremark: '',
       authletter: '',
-      authletterdetails: '',
+      authletterimage: '',
       authletterremark: '',
     }));
     setFormData(newFormData);
@@ -58,7 +54,7 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
       <React.Fragment key={index}>
         <tr>
           <td>
-            <label className="form-label">Name{index+1}</label>
+            <label className="form-label">Name</label>
             <input
               type="text"
               className="form-control"
@@ -68,18 +64,6 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
               id={`name_${index}`}  
               name={`name_${index}`} 
               required
-            />
-          </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={director.details || ''}
-              onChange={(e) => handleInputChange(e, 'details', index)}
-              id={`details_${index}`}  
-              name={`details_${index}`} 
             />
           </td>
           <td>
@@ -96,9 +80,9 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
                 required
               />
             </div>
-          </td>
+          </td> 
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -112,7 +96,7 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
         </tr>
         <tr>
           <td>
-            <label className="form-label">Designation{index+1}</label>
+            <label className="form-label">Designation</label>
             <input
               type="text"
               className="form-control"
@@ -122,18 +106,6 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
               id={`designation${index}`}  
               name={`designation${index}`} 
               required
-            />
-          </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={director.designationdetails || ''}
-              onChange={(e) => handleInputChange(e, 'designationdetails', index)}
-              id={`designationdetails_${index}`}  
-              name={`designationdetails_${index}`} 
             />
           </td>
           <td>
@@ -150,9 +122,9 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
                 required
               />
             </div>
-          </td>
+          </td> 
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -166,7 +138,7 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
         </tr>
         <tr>
           <td>
-            <label className="form-label">PAN Number{index+1}</label>
+            <label className="form-label">PAN Number</label>
             <input
               type="text"
               className="form-control"
@@ -176,18 +148,6 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
               id={`pan_${index}`}  
               name={`pan_${index}`} 
               required
-            />
-          </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={director.pandetails || ''}
-              onChange={(e) => handleInputChange(e, 'pandetails', index)}
-              id={`pandetails_${index}`}  
-              name={`pandetails_${index}`} 
             />
           </td>
           <td>
@@ -206,7 +166,7 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -220,7 +180,7 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
         </tr>
         <tr>
           <td>
-            <label className="form-label">AADHAAR Number{index+1}</label>
+            <label className="form-label">AADHAAR Number</label>
             <input
               type="text"
               className="form-control"
@@ -230,18 +190,6 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
               id={`aadhaar_${index}`}  
               name={`aadhaar_${index}`} 
               required
-            />
-          </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={director.aadhaardetails || ''}
-              onChange={(e) => handleInputChange(e, 'aadhaardetails', index)}
-              id={`aadhaardetails_${index}`}  
-              name={`aadhaardetails_${index}`} 
             />
           </td>
           <td>
@@ -260,7 +208,7 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -273,8 +221,8 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
           </td>
         </tr>
         <tr>
-          <td>
-            <label className="form-label">Mobile Number{index+1}</label>
+          <td colspan="1">
+            <label className="form-label">Mobile Number</label>
             <input
               type="number"
               className="form-control"
@@ -283,22 +231,11 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
               onChange={(e) => handleInputChange(e, 'mobile', index)}
               id={`mobile_${index}`}  
               name={`mobile_${index}`} 
+              required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={director.mobiledetail || ''}
-              onChange={(e) => handleInputChange(e, 'mobiledetail', index)}
-              id={`mobiledetail_${index}`}  
-              name={`mobiledetail_${index}`} 
-            />
-          </td>
-          <td>
-            <label className="form-label">Remarks{index+1}</label>
+          <td colspan="2">
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -311,8 +248,8 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
           </td>
         </tr>
         <tr>
-          <td>
-            <label className="form-label">Email{index+1}</label>
+          <td colspan="1">
+            <label className="form-label">Email</label>
             <input
               type="email"
               className="form-control"
@@ -321,22 +258,11 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
               onChange={(e) => handleInputChange(e, 'email', index)}
               id={`email_${index}`}  
               name={`email_${index}`} 
+              required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={director.emaildetails || ''}
-              onChange={(e) => handleInputChange(e, 'emaildetails', index)}
-              id={`emaildetails_${index}`}  
-              name={`emaildetails_${index}`} 
-            />
-          </td>
-          <td>
-            <label className="form-label">Remark{index+1}</label>
+          <td colspan="2">
+            <label className="form-label">Remark</label>
             <input
               type="text"
               className="form-control"
@@ -349,8 +275,8 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
           </td>
         </tr>
         <tr>
-          <td>
-            <label className="form-label">Authorized Letter{index+1}</label>
+          <td colspan="1">
+            <label className="form-label">Authorized Letter</label>
             <input
               type="text"
               className="form-control"
@@ -359,22 +285,26 @@ function DynamicHTMLGeneratorB2({ formData, setFormData }) {
               onChange={(e) => handleInputChange(e, 'authletter', index)}
               id={`authletter_${index}`}  
               name={`authletter_${index}`} 
+              required
             />
           </td>
           <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={director.authletterdetails || ''}
-              onChange={(e) => handleInputChange(e, 'authletterdetails', index)}
-              id={`authletterdetails${index}`}  
-              name={`authletterdetails${index}`} 
-            />
+            <div className="form-group files1">
+              <input
+                type="file"
+                multiple=""
+                accept="image/*,application/pdf"
+                className="form-control"
+                style={{ height: '10px' }}
+                onChange={(e) => handleInputChange(e, 'authletterimage', index)}
+                id={`authletterimage_${index}`}  
+                name={`authletterimage_${index}`} 
+                required
+              />
+            </div>
           </td>
-          <td>
-            <label className="form-label">Remark{index+1}</label>
+          <td colspan="2">
+            <label className="form-label">Remark</label>
             <input
               type="text"
               className="form-control"

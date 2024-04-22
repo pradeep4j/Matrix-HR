@@ -227,7 +227,7 @@ const Companyinteractionlicense = () => {
           setciLicenseId(cilarr);
           setDataSource(companyInteractionlicenseArr);
       },[companyInteractionLGetOnCreateInfo])
-      console.log(ciLicenseId);
+      // console.log(ciLicenseId);
       const resetForm = () => {
         // alert(state)
         //  setState('');

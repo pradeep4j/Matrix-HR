@@ -30,7 +30,7 @@ const Companylicense = () => {
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const getCompL = useSelector((state) => state.getCompL);
     const { loadingLicenseget,companyLGetInfo } = getCompL; 
-     console.log(companyLGetInfo);
+    //  console.log(companyLGetInfo);
     //console.log(checklistInfoOnCreate);
     //console.log(usersInfo);
     const companyLFilter = useSelector((state) => state.companyLFilter);
@@ -214,7 +214,7 @@ const Companylicense = () => {
           setcLicenseId(clarr)
           setDataSource(licenseOnCreateArr);
     },[companyLGetInfo])
-    console.log(cLicenseId);
+    // console.log(cLicenseId);
     const resetForm = () => {
          setCompany('');
     }

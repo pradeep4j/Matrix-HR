@@ -316,6 +316,22 @@ const CompanyEdit = (props) => {
     useEffect(()=>{
         if(companyGetByIdInfo && companyGetByIdInfo.length > 0 ) {
             const data = companyGetByIdInfo[0]; 
+            console.log(data)
+            setFormData(data.RegistrationB1)
+            setFormData1(data.RegistrationB2)
+            setFormData2(data.RegistrationB3)
+            setFormData4(data.ClientcontactC2)
+            setFormData5(data.ClientcontactC3)
+            setFormData6(data.ClientcontactC4)
+            setFormData7(data.OtherRegsitrationD1PFsubcodes)
+            setFormData8(data.OtherRegsitrationD1ESIsubcodes)
+            setFormData10(data.OtherRegsitrationD3NSP)
+            setFormData11(data.OtherRegsitrationD3OTP)
+            setFormData12(data.OtherRegsitrationD3WOE)
+            setFormData13(data.OtherRegsitrationD3TD)
+            setFormData14(data.OtherRegsitrationD3MSME)
+            setFormData15(data.OtherRegsitrationD3BOCW)
+            setFormData16(data.OtherRegsitrationD3IMW)
             setcompanyname(data.companyname)
             setcompanyimage(data.companyimage)
             setcompanyremark(data.companyremark)

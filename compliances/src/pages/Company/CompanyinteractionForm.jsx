@@ -32,7 +32,7 @@ const CompanyinteractionForm = () => {
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const companyinteractTableGet = useSelector((state) => state.companyinteractTableGet);
     const { loadingcit,companyinteractionTableGetInfo } = companyinteractTableGet; 
-     console.log(companyinteractionTableGetInfo);
+    //  console.log(companyinteractionTableGetInfo);
     //console.log(checklistInfoOnCreate);
     //console.log(usersInfo);
     const companyProfileFilter = useSelector((state) => state.companyProfileFilter);
