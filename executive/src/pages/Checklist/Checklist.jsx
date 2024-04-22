@@ -293,6 +293,7 @@ const Checklist = () => {
         let acts;
         let images;
         let document;
+        let executives;
           if (typeof (checklistInfoFilter) !== 'undefined' && checklistInfoFilter?.length > 0 ) {
               // alert('compliances')
               setcompliancedata('compliances')
