@@ -47,12 +47,16 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
          //setOpenPopup(false);
         // recordForEdit(false)
      };
-    useEffect(()=>{
+     useEffect(()=>{
         dispatch(categoryGet());
         dispatch(stateGets());
         dispatch(usersGet())
-        dispatch(eLibraryGettingById(recordForEdit))
-    },[dispatch])
+        dispatch(eLibraryGettingById(recordForEdit)).then(() => {
+            if (elibraryGetByIDInfo?.dates) {
+                setDate(new Date(elibraryGetByIDInfo.dates));
+            }
+        });
+    },[dispatch,recordForEdit])
     var initialValues = {
         category: '',
         placeholdername: '',
@@ -269,10 +273,10 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
                         <div className="error">{formik.errors.label}</div>
                         )}
                 </div>
-                <div className="col-md-4 col-lg-4">
+              <div className="col-md-4 col-lg-4">
                     <label for="" className="form-label">Date</label>
                     <input   type="date" className="form-control" 
-                        value={formatDate(elibraryGetByIDInfo?.dates)} 
+                        value={dates ? dates.toISOString().substr(0, 10) : ''}
                         id="dates"
                         name="dates" 
                         // onChange={formik.handleChange} 
