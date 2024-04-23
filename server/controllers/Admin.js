@@ -5656,7 +5656,8 @@ export const elibraryCreate = async (request, response, next) => {
             description: request.body.description,
             image: imageUrl,
             dates: request.body.dates,
-            placeholdername: request.body.placeholdername
+            placeholdername: request.body.placeholdername,
+            executive:request.body.executive
         }
         // console.log(notification);
         const newelibrary = new Elibrary(elibrary);

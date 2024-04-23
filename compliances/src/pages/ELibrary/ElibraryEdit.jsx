@@ -7,7 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Dialog, DialogTitle, DialogContent, Button, ImageListItem,ImageList,styled  } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Modal, Form, TextArea,} from 'antd';
-import {categoryGet,createElibrary,stateGets,eLibraryGettingById,updateElibraryById,rejectsElibrary,elibrarySaveandApproved} from '../../store/actions/otherActions';
+import {categoryGet,createElibrary,stateGets,eLibraryGettingById,updateElibraryById,rejectsElibrary,elibrarySaveandApproved,usersGet} from '../../store/actions/otherActions';
 import * as Yup from 'yup'; // Yup is a JavaScript object schema validator.
 import { useFormik } from 'formik'; //for
 import {useDispatch,useSelector} from 'react-redux';
@@ -30,6 +30,8 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
     const { loadings,stateInfo } = getState;  
     const elibraryGetByIds = useSelector((state) => state.elibraryGetByIds);
     const { loadingebid,elibraryGetByIDInfo } = elibraryGetByIds;
+    const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
     let defaultDate = new Date()
     defaultDate.setDate(defaultDate.getDate() )
     const [dates, setDate] = useState()
@@ -48,6 +50,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
     useEffect(()=>{
         dispatch(categoryGet());
         dispatch(stateGets());
+        dispatch(usersGet())
         dispatch(eLibraryGettingById(recordForEdit))
     },[dispatch])
     var initialValues = {
@@ -117,7 +120,7 @@ const ElibraryEdit = ({ addOrEdit,recordForEdit }) => {
         formData.append("placeholdername", val.placeholdername);
         formData.append("dates", dates);
         formData.append("label", val.label);
-        formData.append("executive", '659d4f2609c9923c9e7b8f72');
+        formData.append("executive", userInfo._id);
         formData.append("description", val.description);
 		formData.append("image", fileto);
         // api call        

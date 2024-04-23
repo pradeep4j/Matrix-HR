@@ -16,6 +16,7 @@ const  DynamicHTMLGeneratorF1 = ({ formData, setFormData,myElementRefTab6,myReft
   const [functionCalledInEffectfactoryRef, setFunctionCalledInEffectfactoryRef] = useState(false);
   const [functionCalledicle, setfunctionCalledicle] = useState(false);
   const factoryRefClicknotshow = useRef(null);
+  console.log(formData)
   const factoryRef = useRef(null);
   const myRefBranch = useRef(null);
   const myRefF1Labour = useRef(null);

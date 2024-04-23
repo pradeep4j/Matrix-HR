@@ -32,7 +32,8 @@ const elibrarySchema = new mongoose.Schema({
         index: true
     },
     image : {
-        type : Object
+        type : Object,
+        default: null
     },
     approvedate: {
         type: Date,

@@ -4,7 +4,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import {categoryGet,createElibrary,stateGets,getElibrary,rejectedElibraryDocs} from '../../store/actions/otherActions';
+import {categoryGet,createElibrary,stateGets,getElibrary,rejectedElibraryDocs,usersGet} from '../../store/actions/otherActions';
 import * as Yup from 'yup'; // Yup is a JavaScript object schema validator.
 import { useFormik } from 'formik'; //for
 import {useDispatch,useSelector} from 'react-redux';
@@ -27,6 +27,8 @@ const Elibrary = () => {
     const catGet = useSelector((state) => state.catGet);
     const { loading, categoryInfo,error } = catGet;
     console.log(categoryInfo);
+    const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
     const getState = useSelector((state) => state.getState);
     const { loadings,stateInfo } = getState;  
     let defaultDate = new Date()
@@ -40,6 +42,7 @@ const Elibrary = () => {
     useEffect(()=>{
         dispatch(categoryGet());
         dispatch(stateGets());
+        dispatch(usersGet())
     },[dispatch])
     var initialValues = {
         category: '',
@@ -79,13 +82,13 @@ const Elibrary = () => {
         }}
     );
     const onElibrary = async (val,action) => {
-        // console.log(fileto);return;
+        // alert(fileto+'submit');return;
         const formData = new FormData();
         formData.append("category", val.category);
         formData.append("placeholdername", val.placeholdername);
         formData.append("dates", date);
         formData.append("label", val.label);
-        formData.append("executive", '659d4f2609c9923c9e7b8f72');
+        formData.append("executive", userInfo._id);
         formData.append("description", val.description);
 		formData.append("image", fileto);
         // api call        
@@ -99,8 +102,9 @@ const Elibrary = () => {
     }
     const handleProductImageUpload= (e) => {
         const file = e.target.files[0];
-        // alert(file);return;
+        // alert(file+'sasas');return;
         setFile(e.target.files[0]);
+        
         TransformFileDataDoc(file);
     };
     //reading image using The FileReader object lets web applications asynchronously read the contents of files (or raw data buffers) stored on the user's computer, using File or Blob objects to specify the file or data to read.
@@ -291,9 +295,8 @@ const Elibrary = () => {
                                         <div className="col-md-7 col-lg-7">
                                             <div class="form-group files">
                                                 <input type="file" name="document" class="form-control" multiple="" accept="image/*" id="input-file-now-custom-2" className="file-upload"
-                                                dataHeight="450" onChange={(e) => {handleProductImageUpload(e);}}
+                                                dataHeight="450" onChange={(e) => {setFile(e.target.files[0]);}}
                                                  />
-                                                {(formik.touched.document && formik.errors.document)?<div className="error">{formik.errors.document}</div>:null}
                                             </div> 
                                         </div>
                                         <div class="col-md-6">
