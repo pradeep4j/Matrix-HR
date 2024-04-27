@@ -78,13 +78,13 @@ const AssignTable = () =>{
     useEffect(() => {
       dispatch(stateGets());
       dispatch(executiveGet());
-      const elementcompanybranch = myElementRefCompany.current;
-      const postBody = {
-        id : elementcompanybranch.value
-      }
-      if (elementcompanybranch) {
-        dispatch(branchGet(postBody));
-      }
+      // const elementcompanybranch = myElementRefCompany.current;
+      // const postBody = {
+      //   id : elementcompanybranch.value
+      // }
+      // if (elementcompanybranch) {
+      //   dispatch(branchGet(postBody));
+      // }
       dispatch(assignGetTable());
       dispatch(companyTableGet());
     },[dispatch])
@@ -116,8 +116,9 @@ const AssignTable = () =>{
     useEffect(() => {
       let vaaArr = [];
         if (typeof (companyFilterVAAInfo) !== 'undefined' && companyFilterVAAInfo?.length > 0 ) {
-            //alert(categoryInfo?.length);
+            
             companyFilterVAAInfo.map((item, index) => {
+              alert(item.executive);
               vaaArr.push({
                 key:index+1,
                 id: item._id,

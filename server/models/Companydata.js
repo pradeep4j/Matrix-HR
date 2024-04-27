@@ -216,6 +216,13 @@ const companySchema = new mongoose.Schema({
         trim: true,
         index: true
     },
+    companyregistrationdate :{
+        type: Date,
+        // required: true,
+        trim: true,
+        default: null,
+        index: true
+    },
     companypan: {
         type: String,
         // required: true,

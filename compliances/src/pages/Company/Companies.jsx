@@ -100,7 +100,7 @@ const Companies = () => {
     const [state, setState] = useState('')
     const [isDisabled, setIsDisabled] = useState(false);
     const [activeTab, setActiveTab] = useState('pills-home-tab1');
-    console.log(companytab1CreateInfo);
+    // console.log(companytab1CreateInfo);
     const handleTabClick = (tabId) => {
         // setTimeout(() => {
             setActiveTab(tabId);  // Update the active tab state when a tab is clicked

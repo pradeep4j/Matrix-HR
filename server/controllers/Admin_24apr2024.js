@@ -27,13 +27,13 @@ export const login = async (req, res, next) => {
     try {
         let adminCheck, userCheck
         const checkemail = req.body.email;
-        if (checkemail === 'matrixcms2024@gmail.com' || checkemail === 'matrix@matrix.com') {
-            adminCheck = await Admin.findOne({ email: checkemail });
+        if(checkemail === 'matrixcms2024@gmail.com' || checkemail=== 'matrix@matrix.com'){
+            adminCheck = await Admin.findOne({ email : checkemail });
         }
-        else {
-            userCheck = await Users.findOne({ email: checkemail });
+        else{
+            userCheck = await Users.findOne({ email : checkemail });
         }
-
+        
         // const idcheck = adminusercheck._id
         let statusupdate;
         if (adminCheck) {
@@ -118,7 +118,7 @@ export const logout = async (request, response, next) => {
     //     else{
     //         userCheck = await Users.findOne({ email : checkemail });
     //     }
-
+        
     //     // const idcheck = adminusercheck._id
     //     let statusupdate;
     //     console.log(adminCheck);return;
@@ -181,13 +181,11 @@ export const auditoreGet = async (request, response, next) => {
 }
 export const executiveGet = async (request, response, next) => {
     try {
-        const executive = await Users.find({
-            $or: [
-                { role: { $eq: "Executive" } },
-                { role: { $eq: "Executive(Matrix)" } },
-                { role: { $eq: "Company CEO" } }
-            ]
-        }).select('-password -realpassword');
+        const executive = await Users.find({ $or: [
+            { role: { $eq: "Executive" } },
+            { role: { $eq: "Executive(Matrix)" } },
+            { role: { $eq: "Company CEO" } }
+        ] }).select('-password -realpassword');
         //or  const sanitizedExecutive = executive.map(({ password, realpassword, ...rest }) => rest);        then send sanitizedExecutive as response
         response.status(201).json(executive);
     } catch (error) {
@@ -279,7 +277,6 @@ export const auditchecklistGetonCreate = async (request, response, next) => {  /
                     frequency: 1,
                     risk: 1,
                     created_at: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -297,16 +294,15 @@ export const auditchecklistGetonCreate = async (request, response, next) => {  /
         ])
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
-            
+            newArr = newArr.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(newArr);
             return;
         }
-
+        
         response.status(201).json(newArr)
     }
     catch (error) {
@@ -460,10 +456,10 @@ export const auditChecklistFilter = async (request, response, next) => {
         ]);
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
@@ -533,7 +529,7 @@ export const gettingAuditDetail = async (request, response, next) => {
                     title: 1,
                     start_date: 1,
                     end_date: 1,
-                    branch: 1,
+                    branch:1,
                     overdue: {
                         $cond: {
                             if: { $lt: ["$end_date", new Date()] },
@@ -558,7 +554,6 @@ export const gettingAuditDetail = async (request, response, next) => {
                     auditstatus: 1,
                     risk: 1,
                     score: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -592,10 +587,10 @@ export const gettingAuditDetail = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            auditData = auditData.filter(docs => docs.userId.equals(id));
+            auditData = auditData.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(auditData);
             return;
@@ -681,7 +676,6 @@ export const gettingAuditorOverdueDashboard = async (request, response, next) =>
                     auditstatus: 1,
                     risk: 1,
                     score: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -840,7 +834,6 @@ export const auditFilter = async (request, response, next) => {
                         }
                     },
                     risk: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -884,10 +877,10 @@ export const auditFilter = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            auditDataFilter = auditDataFilter.filter(docs => docs.userId.equals(id));
+            auditDataFilter = auditDataFilter.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(auditDataFilter);
             return;
@@ -1377,8 +1370,8 @@ export const updateCompliancesById = async (request, response, next) => {
 }
 export const gettingCompliancesOnCreate = async (request, response, next) => { //here we have to manage match stage according to executive and auditor panel
     const matchStage = {}
-    matchStage.status = { $eq: 0 }
-    matchStage.approvalstatus = { $eq: 1 }
+    matchStage.status = {$eq : 0}
+    matchStage.approvalstatus = {$eq : 1}
     try {
         let newArr = await Compliance.aggregate([
             {
@@ -1427,7 +1420,7 @@ export const gettingCompliancesOnCreate = async (request, response, next) => { /
                     created_at: 1,
                     updated_at: 1,
                     duedate: 1,
-                    approvalstatus: 1,
+                    approvalstatus:1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
                     // executive: {
@@ -1438,7 +1431,6 @@ export const gettingCompliancesOnCreate = async (request, response, next) => { /
                     //         { $arrayElemAt: ["$executiveData.lastName", 0] }
                     //     ]
                     // },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -1451,12 +1443,12 @@ export const gettingCompliancesOnCreate = async (request, response, next) => { /
         ])
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             newArr = newArr.filter(docs => {
-                if (docs.approvalstatus === 0  && docs.userId.equals(id)) {
-                    return docs
+                if(docs.approvalstatus === 0){
+                    return docs.executive === username
                 }
             });
         } else {
@@ -1518,10 +1510,9 @@ export const gettingCompliances = async (request, response, next) => { /////////
                     created_at: 1,
                     updated_at: 1,
                     duedate: 1,
-                    approvalstatus: 1,
+                    approvalstatus:1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -1534,15 +1525,15 @@ export const gettingCompliances = async (request, response, next) => { /////////
         ])
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             newArr = newArr.filter(docs => {
-                if (docs.approvalstatus === 0 && docs.userId.equals(id)) {
-                    return docs
+                if(docs.approvalstatus === 0){
+                    return docs.executive === username
                 }
             });
-
+            
         } else {
             response.status(201).json(newArr);
             return;
@@ -1604,7 +1595,6 @@ export const gettingCompliancesAll = async (request, response, next) => {
                     duedate: 1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -1617,11 +1607,10 @@ export const gettingCompliancesAll = async (request, response, next) => {
         ])
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
-            
+            newArr = newArr.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(newArr);
             return;
@@ -1684,7 +1673,6 @@ export const gettingCompliancesReject = async (request, response, next) => {
                     duedate: 1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -1697,11 +1685,10 @@ export const gettingCompliancesReject = async (request, response, next) => {
         ])
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
-            
+            newArr = newArr.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(newArr);
             return;
@@ -1792,7 +1779,6 @@ export const complianceFilter = async (request, response, next) => {
                     created_at: 1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -1806,10 +1792,10 @@ export const complianceFilter = async (request, response, next) => {
         ]);
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
@@ -2062,7 +2048,6 @@ export const gettingCompliancesAllFilter = async (request, response, next) => {
                     updated_at: 1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -2076,15 +2061,15 @@ export const gettingCompliancesAllFilter = async (request, response, next) => {
         ]);
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
         }
-        response.status(201).json(filter);
+        response.status(201).json(filter);     
     } catch (error) {
         next(error);
     }
@@ -2169,7 +2154,6 @@ export const complianceApproveFilter = async (request, response, next) => {
                     duedate: 1,
                     status: 1,
                     created_at: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -2185,10 +2169,10 @@ export const complianceApproveFilter = async (request, response, next) => {
         ]);
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
@@ -2444,7 +2428,6 @@ export const complianceRejectedFilter = async (request, response, next) => {
                     status: 1,
                     created_at: 1,
                     reason: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -2459,10 +2442,10 @@ export const complianceRejectedFilter = async (request, response, next) => {
         ]);
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
@@ -2483,17 +2466,18 @@ export const gettingCompliancesById = async (request, response, next) => {
 export const complianceApporve = async (request, response, next) => {
     try {
         const idsToUpdate = request.body.id;
-        const updateValues = { status: request.body.status, approvedate: request.body.approvedate, approvalstatus: request.body.approvalstatus };
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate,approvalstatus:request.body.approvalstatus };
         const compliancesApprove = await Compliance.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-        if (request.body.type === 'executive') {
+        if(request.body.type==='executive'){
             response.status(202).json(compliancesApprove);
             return;
         }
-        else if (request.body.type === 'auditor') {
+        else if(request.body.type==='auditor'){
             response.status(203).json(compliancesApprove);
             return;
         }
-        else {
+        else
+        {
             response.status(201).json(compliancesApprove);
             return;
         }
@@ -2788,25 +2772,26 @@ export const checklistApporve = async (request, response, next) => {
         const complianceIds = idArray.filter(id => id.includes('-c')); // IDs with "-c"
         // Update Checklist documents
         const checklistApprove = await CheckList.updateMany(
-            { _id: { $in: checklistIds } }, // Update documents with IDs from checklistIds
-            { status: request.body.status, approvedate: request.body.approvedate, approvalstatus: request.body.approvalstatus }
+          { _id: { $in: checklistIds } }, // Update documents with IDs from checklistIds
+          { status: request.body.status, approvedate: request.body.approvedate,approvalstatus:request.body.approvalstatus }
         );
         // Update Compliance documents
-        if (complianceIds) {
+        if(complianceIds){
             const complianceApprove = await Compliance.updateMany(
                 { _id: { $in: complianceIds.map(id => id.replace('-c', '')) } }, // Update documents with IDs from complianceIds without "-c"
-                { status: request.body.status, approvedate: request.body.approvedate, approvalstatus: request.body.approvalstatus }
+                {status: request.body.status, approvedate: request.body.approvedate,approvalstatus:request.body.approvalstatus }
             );
         }
-        if (request.body.type === 'executive') {
+        if(request.body.type==='executive'){
             response.status(202).json(checklistApprove);
             return;
         }
-        else if (request.body.type === 'auditor') {
+        else if(request.body.type==='auditor'){
             response.status(203).json(checklistApprove);
             return;
         }
-        else {
+        else
+        {
             response.status(201).json(checklistApprove);
             return;
         }
@@ -2881,11 +2866,10 @@ export const checklistOnCreateegetting = async (request, response, next) => { //
                     documents: 1,
                     frequency: 1,
                     risk: 1,
-                    state: 1,
+                    state:1,
                     created_at: 1,
-                    approvedate: 1,
-                    approvalstatus: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
+                    approvedate:1,
+                    approvalstatus:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -2920,17 +2904,18 @@ export const checklistOnCreateegetting = async (request, response, next) => { //
                     if (item.company === companyItem.companyname) {
                         item.branchname = companyItem.F1branch.map(item => item.name).join(",")
                     }
+
                 })
             })
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             newArr = newArr.filter(docs => {
-                if (docs.approvalstatus === 0 && gettingCompliances) {
-                    return docs
+                if(docs.approvalstatus === 0){
+                    return docs.executive === username
                 }
             });
         } else {
@@ -3020,7 +3005,6 @@ export const checklistAllgetting = async (request, response, next) => {
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     // branchname: { $arrayElemAt: ["$branchData.name", 0] },
                     compliance: { $arrayElemAt: ["$complianceData.act", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -3042,17 +3026,12 @@ export const checklistAllgetting = async (request, response, next) => {
                 })
             })
         }
-
-        const user = await Users.findOne({ _id: request.user.id });
-        if(!user){
-            response.status(404).json('No such user found'); return;
-        }
-
+        const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
+            newArr = newArr.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(newArr);
             return;
@@ -3135,8 +3114,7 @@ export const checklistApprovegetting = async (request, response, next) => { //he
                     risk: 1,
                     created_at: 1,
                     approvedate: 1,
-                    approvalstatus: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
+                    approvalstatus:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -3165,12 +3143,12 @@ export const checklistApprovegetting = async (request, response, next) => { //he
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             newArr = newArr.filter(docs => {
-                if (docs.approvalstatus === 0 && gettingCompliances) {
-                    return docs
+                if(docs.approvalstatus === 0){
+                    return docs.executive === username
                 }
             });
         } else {
@@ -3254,7 +3232,6 @@ export const checklistOnRejectegetting = async (request, response, next) => {
                     created_at: 1,
                     rejected_at: 1,
                     reason: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -3283,11 +3260,10 @@ export const checklistOnRejectegetting = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
-            
+            newArr = newArr.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(newArr);
             return;
@@ -3650,7 +3626,6 @@ export const checkListAllFilter = async (request, response, next) => {
                     frequency: 1,
                     risk: 1,
                     created_at: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -3681,10 +3656,10 @@ export const checkListAllFilter = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
@@ -4032,7 +4007,6 @@ export const checkListApproveFilter = async (request, response, next) => {
                     frequency: 1,
                     risk: 1,
                     created_at: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -4063,10 +4037,10 @@ export const checkListApproveFilter = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
@@ -4282,7 +4256,7 @@ export const checkListCreateFilter = async (request, response, next) => {
                     approvedate: 1,
                     status: 1,
                     image: 1,
-                    branchname: 1,
+                    branchname:1,
                     documents: 1,
                     rule: 1,
                     description: 1,
@@ -4290,7 +4264,6 @@ export const checkListCreateFilter = async (request, response, next) => {
                     frequency: 1,
                     risk: 1,
                     created_at: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -4385,9 +4358,9 @@ export const checkListCreateFilter = async (request, response, next) => {
         console.log('here')
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
             if (companyFilter !== undefined && companyFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
                 console.log([...filter, ...newArr])
                 response.status(201).json([...filter, ...newArr]);
@@ -4408,7 +4381,7 @@ export const checkListCreateFilter = async (request, response, next) => {
             }
             return;
         }
-
+       
 
     } catch (error) {
         next(error);
@@ -4746,13 +4719,12 @@ export const checkListRejectedFilter = async (request, response, next) => {
                     documents: 1,
                     rule: 1,
                     description: 1,
-                    branch: 1,
+                    branch:1,
                     question: 1,
                     frequency: 1,
                     risk: 1,
                     created_at: 1,
                     reason: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -4783,10 +4755,10 @@ export const checkListRejectedFilter = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
@@ -5021,9 +4993,8 @@ export const liseRegGetting = async (request, response, next) => {
                     status: 1,
                     applicationStatus: 1,
                     docRemark: 1,
-                    created_at: 1,
-                    approvedate: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
+                    created_at:1,
+                    approvedate:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -5053,9 +5024,9 @@ export const liseRegGetting = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            liseReg = liseReg.filter(docs => docs.userId.equals(id));
+            liseReg = liseReg.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(liseReg);
             return;
@@ -5527,8 +5498,7 @@ export const liseRegHistoryFilter = async (request, response, next) => {
                     created_at: 1,
                     regNo: 1,
                     branch: 1,
-                    status: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
+                    status:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -5556,10 +5526,10 @@ export const liseRegHistoryFilter = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filter);
             return;
@@ -5575,15 +5545,16 @@ export const regsApporve = async (request, response, next) => {
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const regsApprove = await Lisereg.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-        if (request.body.type === 'executive') {
+        if(request.body.type==='executive'){
             response.status(202).json(regsApprove);
             return;
         }
-        else if (request.body.type === 'auditor') {
+        else if(request.body.type==='auditor'){
             response.status(203).json(regsApprove);
             return;
         }
-        else {
+        else
+        {
             response.status(201).json(regsApprove);
             return;
         }
@@ -5594,7 +5565,7 @@ export const regsApporve = async (request, response, next) => {
 export const regsReject = async (request, response, next) => {
     try {
         const idsToUpdate = request.body.id;
-        const objectreject = { status: request.body.status, rejected_at: request.body.rejected_at, reason: request.body.reason }
+        const objectreject = { status: request.body.status, rejected_at: request.body.rejected_at,reason:request.body.reason }
         const riseregsReject = await Lisereg.updateOne({ _id: { $in: idsToUpdate } }, { $set: objectreject },)
         response.status(201).json(riseregsReject);
     } catch (error) {
@@ -5607,22 +5578,22 @@ export const liseRegGettingById = async (request, response, next) => {
         const newObj = {};
         {
             newObj._id = liseRegGettingByIDobj._id,
-                newObj.regNo = liseRegGettingByIDobj.regNo,
-                newObj.rate = liseRegGettingByIDobj.rate.toString(),
-                newObj.documents = liseRegGettingByIDobj.documents,
-                newObj.docReqDate = liseRegGettingByIDobj.docReqDate,
-                newObj.docReqFollow = liseRegGettingByIDobj.docReqFollow,
-                newObj.docReviewDate = liseRegGettingByIDobj.docReviewDate,
-                newObj.docStatus = liseRegGettingByIDobj.docStatus,
-                newObj.appliedDate = liseRegGettingByIDobj.appliedDate,
-                newObj.remark = liseRegGettingByIDobj.remark,
-                newObj.applicationStatus = liseRegGettingByIDobj.applicationStatus,
-                newObj.applicationRemark = liseRegGettingByIDobj.applicationRemark,
-                newObj.acknowledge = liseRegGettingByIDobj.acknowledge,
-                newObj.challlanFees = liseRegGettingByIDobj.challlanFees.toString(),
-                newObj.challanNumber = liseRegGettingByIDobj.challanNumber,
-                newObj.challanDate = liseRegGettingByIDobj.challanDate,
-                newObj.challanUpload = liseRegGettingByIDobj.challanUpload
+            newObj.regNo = liseRegGettingByIDobj.regNo,
+            newObj.rate = liseRegGettingByIDobj.rate.toString(),
+            newObj.documents = liseRegGettingByIDobj.documents,
+            newObj.docReqDate = liseRegGettingByIDobj.docReqDate,
+            newObj.docReqFollow = liseRegGettingByIDobj.docReqFollow,
+            newObj.docReviewDate = liseRegGettingByIDobj.docReviewDate,
+            newObj.docStatus = liseRegGettingByIDobj.docStatus,
+            newObj.appliedDate = liseRegGettingByIDobj.appliedDate,
+            newObj.remark = liseRegGettingByIDobj.remark,
+            newObj.applicationStatus = liseRegGettingByIDobj.applicationStatus,
+            newObj.applicationRemark = liseRegGettingByIDobj.applicationRemark,
+            newObj.acknowledge = liseRegGettingByIDobj.acknowledge,
+            newObj.challlanFees = liseRegGettingByIDobj.challlanFees.toString(),
+            newObj.challanNumber = liseRegGettingByIDobj.challanNumber,
+            newObj.challanDate = liseRegGettingByIDobj.challanDate,
+            newObj.challanUpload = liseRegGettingByIDobj.challanUpload
             newObj.directExpenses = liseRegGettingByIDobj.directExpenses.toString(),
                 newObj.inDirectExpenses = liseRegGettingByIDobj.inDirectExpenses.toString(),
                 newObj.totalExpenses = liseRegGettingByIDobj.totalExpenses.toString(),
@@ -5686,7 +5657,7 @@ export const elibraryCreate = async (request, response, next) => {
             image: imageUrl,
             dates: request.body.dates,
             placeholdername: request.body.placeholdername,
-            executive: request.body.executive
+            executive:request.body.executive
         }
         // console.log(notification);
         const newelibrary = new Elibrary(elibrary);
@@ -5700,72 +5671,71 @@ export const elibraryCreate = async (request, response, next) => {
 export const elibraryGet = async (request, response, next) => {
     try {
         let elibraryData = await Elibrary.aggregate([
-            {
-                $match: { status: { $ne: 2 } } // Exclude documents with status 2
-            },
-            // {
-            //     $lookup: {
-            //         from: "companydatas",
-            //         localField: "company",
-            //         foreignField: "_id",
-            //         as: "companyData"
-            //     },
-            // },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "executive",
-                    foreignField: "_id",
-                    as: "executiveData"
+                {
+                    $match: { status: { $ne: 2 } } // Exclude documents with status 2
                 },
-            },
-            {
-                $lookup: {
-                    from: "states",
-                    localField: "state",
-                    foreignField: "_id",
-                    as: "stateData"
-                },
-            },
-            {
-                $lookup: {
-                    from: "categories",
-                    localField: "category",
-                    foreignField: "_id",
-                    as: "categoryData"
-                }
-            },
-            {
-                $project: {
-                    _id: 1,
-                    image: 1,
-                    placeholdername: 1,
-                    label: 1,
-                    status: 1,
-                    approvedate: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
-                    executive: {
-                        $concat: [
-                            { $arrayElemAt: ["$executiveData.firstName", 0] },
-                            " ",
-                            { $arrayElemAt: ["$executiveData.lastName", 0] }
-                        ]
+                // {
+                //     $lookup: {
+                //         from: "companydatas",
+                //         localField: "company",
+                //         foreignField: "_id",
+                //         as: "companyData"
+                //     },
+                // },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "executive",
+                        foreignField: "_id",
+                        as: "executiveData"
                     },
-                    state: { $arrayElemAt: ["$stateData.name", 0] },
-                    category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    // company: { $arrayElemAt: ["$companyData.companyname", 0] },
+                },
+                {
+                    $lookup: {
+                        from: "states",
+                        localField: "state",
+                        foreignField: "_id",
+                        as: "stateData"
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "category",
+                        foreignField: "_id",
+                        as: "categoryData"
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        image:1,
+                        placeholdername:1,
+                        label:1,
+                        status:1,
+                        approvedate:1,
+                        executive: {
+                            $concat: [
+                                { $arrayElemAt: ["$executiveData.firstName", 0] },
+                                " ",
+                                { $arrayElemAt: ["$executiveData.lastName", 0] }
+                            ]
+                        },
+                        state: { $arrayElemAt: ["$stateData.name", 0] },
+                        category: { $arrayElemAt: ["$categoryData.name", 0] },
+                        // company: { $arrayElemAt: ["$companyData.companyname", 0] },
+                    }
                 }
-            }
-        ])
+            ])
         // }
-
+          
         // let elibraryData = await Elibrary.aggregate(aggregation)
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            elibraryData = elibraryData.filter(docs => docs.userId.equals(id));
+            elibraryData = elibraryData.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(elibraryData);
             return;
@@ -5780,7 +5750,7 @@ export const elibraryGetById = async (request, response, next) => {
     try {
         const elibraryId = request.params.id
         const checkingElibraryId = await Elibrary.findById({ _id: elibraryId })
-
+        
         response.status(200).json(checkingElibraryId)
     } catch (error) {
         next(error)
@@ -5812,7 +5782,7 @@ export const elibraryUpdateById = async (request, response, next) => {
                     fs.mkdirSync(uploadsDirectory + imageDirectory, { recursive: true });
                 }
             });
-
+        
             // if (imageFile.mimetype === 'image/jpeg' || imageFile.mimetype === 'image/jpg' || imageFile.mimetype === 'image/png') {
             const formattedImageFileName = Date.now() + '-' + imageFile.originalname.split(' ').join('-');
             imageUrl = url + '/' + imageDirectory + formattedImageFileName;
@@ -5825,7 +5795,7 @@ export const elibraryUpdateById = async (request, response, next) => {
         const imageInRequest = async (requestImageName) => {
             if (request.files.find(img => img.fieldname === requestImageName)) {
                 return await uploadImage(request.files.find(img => img.fieldname === requestImageName))
-
+                
                 // elibrary.requestImageName
                 // console.log(elibrary.image);
             }
@@ -5834,8 +5804,8 @@ export const elibraryUpdateById = async (request, response, next) => {
         //     return response.status(404).json("No such elibrary exists")
         // }
         const data = request.body
-        const { category, placeholdername, executive, label, dates, description, approvedate, status, created_at, updated_at } = data
-
+        const { category,placeholdername, executive, label, dates, description, approvedate, status, created_at, updated_at } = data
+  
         elibrary = {
             category, placeholdername, executive, label, dates, description, approvedate, status, created_at, updated_at
         }
@@ -5851,7 +5821,7 @@ export const elibraryRejectedDocs = async (request, response, next) => {
         let aggregation = [
             {
                 $match: {
-                    status: { $eq: 2 }
+                    status : {$eq : 2}
                 }
             },
             {
@@ -5881,8 +5851,7 @@ export const elibraryRejectedDocs = async (request, response, next) => {
             {
                 $project: {
                     _id: 1,
-                    placeholdername: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
+                    placeholdername:1,
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -5895,23 +5864,23 @@ export const elibraryRejectedDocs = async (request, response, next) => {
                         _id: { $arrayElemAt: ["$categoryData._id", 0] },
                         name: { $arrayElemAt: ["$categoryData.name", 0] }
                     },
-                    label: 1,
-                    image: 1,
-                    created_at: 1,
-                    status: 1,
-                    rejected_at: 1,
-                    description: 1,
-                    reason: 1,
+                    label:1,
+                    image:1,
+                    created_at : 1,
+                    status : 1, 
+                    rejected_at :1,
+                    description:1,
+                    reason : 1,
                 }
             }
         ]
         let elibraryData = await Elibrary.aggregate(aggregation)
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            elibraryData = elibraryData.filter(docs => docs.userId.equals(id));
+            elibraryData = elibraryData.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(elibraryData);
             return;
@@ -5921,21 +5890,22 @@ export const elibraryRejectedDocs = async (request, response, next) => {
         next(error)
     }
 }
-export const elibrarySaveandApprove = async (request, response, next) => {
+export const elibrarySaveandApprove = async (request, response, next) => { 
     try {
         //console.log(request.body);return;
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const elibraryApprove = await Elibrary.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-        if (request.body.type === 'executive') {
+        if(request.body.type==='executive'){
             response.status(202).json(elibraryApprove);
             return;
         }
-        else if (request.body.type === 'auditor') {
+        else if(request.body.type==='auditor'){
             response.status(203).json(elibraryApprove);
             return;
         }
-        else {
+        else
+        {
             response.status(201).json(elibraryApprove);
             return;
         }
@@ -5946,12 +5916,12 @@ export const elibrarySaveandApprove = async (request, response, next) => {
 export const elibraryReject = async (request, response, next) => {
     try {
         const updateValues = { status: request.body.status, reason: request.body.reason, rejected_at: request.body.rejected_at };
-        const idsToUpdate = request.body.id;
+        const idsToUpdate = request.body.id;  
         const elibraries = await Elibrary.updateMany(
             { _id: { $in: idsToUpdate } }, // Match documents with IDs in the array
             { $set: updateValues }, // Set the update values
             { multi: true } // Update multiple documents
-        );
+          );
         response.status(201).json(elibraries);
     } catch (error) {
         next(error);
@@ -6210,7 +6180,7 @@ export const createCompany = async (request, response, next) => {
         }
 
         // ***********************-------- F Dynamic Image Handling ----------***********************
-        let dataF1branch, dataF54NSP, dataF54OTP, dataF54WOE, dataF54TL, branchstatus = 'branch'
+        let dataF1branch, dataF54NSP, dataF54OTP, dataF54WOE, dataF54TL,branchstatus='branch'
         if (F1branch !== undefined && F1branch.length > 0 && F54NSP !== undefined && F54NSP.length > 0 && F54WOE !== undefined && F54WOE.length > 0 && F54TL !== undefined && F54TL.length > 0 && F54OTP !== undefined && F54OTP.length > 0) {
             dataF1branch = await Promise.all(F1branch.map(async (item, index) => {
                 return {
@@ -6378,7 +6348,7 @@ export const createCompany = async (request, response, next) => {
             }
         }
         // G Starts
-        if (g12ncw && g12ncwdate && g12ncwdatevalid && g12ncwnow && g12ncwcoe && g14dcwc && g14dncc && g14dars && g14dls || (g13form && g13form5date && g13form5dateofcommence && g13form5licenece && g13form5licensedol && g13form5licensedolvalid && g13form5licensedoldor && g13form5licenseworkers && g13form5licensemanresp && g13form5licensefee && g13form5securityfee)) {
+        if (g12ncw && g12ncwdate && g12ncwdatevalid && g12ncwnow && g12ncwcoe  && g14dcwc && g14dncc && g14dars && g14dls || (g13form && g13form5date && g13form5dateofcommence && g13form5licenece && g13form5licensedol && g13form5licensedolvalid && g13form5licensedoldor && g13form5licenseworkers && g13form5licensemanresp && g13form5licensefee && g13form5securityfee)) {
             company = {
                 g12ncwimage: await uploadImage(request.files.find(img => img.fieldname === "g12ncwimage")),
                 g12ncwcoeimage: await uploadImage(request.files.find(img => img.fieldname === "g12ncwcoeimage")),
@@ -6386,8 +6356,8 @@ export const createCompany = async (request, response, next) => {
                 g13form5liceneceimage: await uploadImage(request.files.find(img => img.fieldname === "g13form5liceneceimage")),
                 g13form5licensefeeimage: await uploadImage(request.files.find(img => img.fieldname === "g13form5licensefeeimage")),
                 g13form5securityfeeimage: await uploadImage(request.files.find(img => img.fieldname === "g13form5securityfeeimage")),
-                g12ncw, g12ncwremark, g12ncwdate, g12ncwdatevalid, g12ncwnow, g12ncwcoe, g12ncwcoeremark, g13form, g13formremark, g13form5date, g13form5dateofcommence, g13form5licenece, g13form5liceneceremark, g13form5licensedol, g13form5licensedolvalid, g13form5licensedoldor, g13form5licenseworkers, g13form5licensemanresp, g13form5licensefee, g13form5licensefeeremark, g13form5securityfee, g13form5securityfeeremark, g14dcwc, g14dncc, g14dars, g14dls, created_at,
-                GCC4TL: dataGCC4TL, created_at: new Date()
+                g12ncw, g12ncwremark, g12ncwdate, g12ncwdatevalid, g12ncwnow, g12ncwcoe, g12ncwcoeremark, g13form, g13formremark, g13form5date, g13form5dateofcommence, g13form5licenece, g13form5liceneceremark, g13form5licensedol, g13form5licensedolvalid, g13form5licensedoldor, g13form5licenseworkers, g13form5licensemanresp, g13form5licensefee, g13form5licensefeeremark, g13form5securityfee, g13form5securityfeeremark, g14dcwc, g14dncc,g14dars, g14dls, created_at,
+                GCC4TL: dataGCC4TL, created_at : new Date()
             }
         }
         // console.log(g12ncw , g12ncwdate , g12ncwdatevalid , g12ncwnow , g12ncwcoe , g13form , g13form5date , g13form5dateofcommence , g13form5licenece , g13form5licensedol , g13form5licensedolvalid , g13form5licensedoldor , g13form5licenseworkers , g13form5licensemanresp , g13form5licensefee , g13form5securityfee , g14dcwc , g14dncc , g14dars , g14dls,dataGCC4TL)
@@ -6427,7 +6397,7 @@ export const gettingCompanyTable = async (request, response, next) => {
 
         // })
         const company = await Companydata.aggregate([
-
+            
             {
                 $lookup: {
                     from: "users",
@@ -6467,7 +6437,6 @@ export const gettingCompanyTable = async (request, response, next) => {
                     totalBranches: 1,
                     created_at: 1,
                     updated_at: 1,
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -6765,7 +6734,7 @@ export const gettingCompanyById = async (request, response, next) => {
                     F54TL: 1,
 
                     // G Starts
-                    GCC4TL:1,
+
                     g12ncw: 1,
                     g12ncwremark: 1,
                     g12ncwdate: 1,
@@ -7426,15 +7395,16 @@ export const companySaveandApprove = async (request, response, next) => {
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const companyApprove = await Companydata.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-        if (request.body.type === 'executive') {
+        if(request.body.type==='executive'){
             response.status(202).json(companyApprove);
             return;
         }
-        else if (request.body.type === 'auditor') {
+        else if(request.body.type==='auditor'){
             response.status(203).json(companyApprove);
             return;
         }
-        else {
+        else
+        {
             response.status(201).json(companyApprove);
             return;
         }
@@ -7445,7 +7415,7 @@ export const companySaveandApprove = async (request, response, next) => {
 export const companyLcreate = async (request, response, next) => {
     try {
         const data = request.body
-        const { licenseTitle, company, activatedDate, renewalDate, expiryDate, details } = data
+        const { licenseTitle, company, activatedDate, renewalDate, expiryDate,details } = data
         const uploadImage = async (imageFile) => {
             // console.log(imageFile);
             let imageUrl
@@ -7487,7 +7457,7 @@ export const companyLcreate = async (request, response, next) => {
             }
             return imageUrl;
         };
-        const companyLicense = { licenseTitle, licenseUpload: await uploadImage(request.files.find(img => img.fieldname === "licenseUpload")), company, activatedDate, renewalDate, expiryDate, details }
+        const companyLicense = { licenseTitle, licenseUpload:await uploadImage(request.files.find(img => img.fieldname === "licenseUpload")), company,activatedDate, renewalDate, expiryDate,details }
         const newCompanyLicense = new License(companyLicense)
         await newCompanyLicense.save()
         response.status(201).json(newCompanyLicense)
@@ -7501,15 +7471,61 @@ export const companyL = async (request, response, next) => { ///getting licence 
             {
                 $match: {}
             },
+            // {
+            //     $lookup: {
+            //         from: 'companydatas',
+            //         localField: 'company',
+            //         foreignField: "_id",
+            //         as: "companyData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "states",
+            //         localField: "state",
+            //         foreignField: "_id",
+            //         as: "stateData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branch",
+            //         foreignField: "_id",
+            //         as: "branchData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "users",
+            //         localField: "executive",
+            //         foreignField: "_id",
+            //         as: "executiveData"
+            //     }
+            // },
             {
                 $project: {
                     licenseTitle: 1,
                     licenseUpload: 1,
                     company: 1,
+                    // state: 1,
+                    // branch: 1,
+                    // executive: 1,
                     activatedDate: 1,
+                    // approved_at: 1,
                     expiryDate: 1,
-                    renewalDate: 1,
-                    details: 1,
+                    renewalDate:1,
+                    details:1,
+                    // company: { $arrayElemAt: ["$companyData", 0] },
+                    // state: { $arrayElemAt: ["$stateData", 0] },
+                    // branch: { $arrayElemAt: ["branchData", 0] },
+                    // executive: {
+                    //     $concat: [
+                    //         { $arrayElemAt: ["executiveData.firstName", 0] },
+                    //         " ",
+                    //         { $arrayElemAt: ["executiveData.lastName", 0] }
+                    //     ]
+                    // }
                 }
             }
         ])
@@ -7568,15 +7584,16 @@ export const companyLUpdateById = async (request, response, next) => { ////updat
             return imageUrl;
         };
         const data = request.body
-
-        const { licenseTitle, company, activatedDate, renewalDate, expiryDate, details } = data;
-
+        
+        const { licenseTitle, company,activatedDate, renewalDate, expiryDate,details} =  data;
+       
         let imageload;
-        if (request.files.find(img => img.fieldname === "licenseUpload") !== undefined) {
+        if(request.files.find(img => img.fieldname === "licenseUpload") !== undefined )
+        {
             imageload = await uploadImage(request.files.find(img => img.fieldname === "licenseUpload"))
         }
         const companylicenceupdated = {
-            licenseTitle, details, licenseUpload: imageload, company, activatedDate, renewalDate, expiryDate, details
+            licenseTitle, details, licenseUpload: imageload,company,activatedDate, renewalDate, expiryDate,details
         }
         const updatedCompLicense = await License.findByIdAndUpdate({ _id: companyLicenseId }, companylicenceupdated, { new: true })
         response.status(201).json(updatedCompLicense)
@@ -7605,15 +7622,16 @@ export const apporveCompanyL = async (request, response, next) => {
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const companyLApprove = await License.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-        if (request.body.type === 'executive') {
+        if(request.body.type==='executive'){
             response.status(202).json(companyLApprove);
             return;
         }
-        else if (request.body.type === 'auditor') {
+        else if(request.body.type==='auditor'){
             response.status(203).json(companyLApprove);
             return;
         }
-        else {
+        else
+        {
             response.status(201).json(companyLApprove);
             return;
         }
@@ -7626,7 +7644,7 @@ export const companyLicenseFilter = async (request, response, next) => {
         const data = request.body;
         const { company } = data;
         const matchStage = {};
-        if (company !== undefined && company !== "") {
+        if(company !== undefined && company !== ""){
             matchStage['company'] = new mongoose.Types.ObjectId(company.toString())
         }
         // console.log(matchStage);return;
@@ -7647,10 +7665,10 @@ export const companyLicenseFilter = async (request, response, next) => {
         ]);
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(filteredData);
             return;
@@ -7665,7 +7683,7 @@ export const companyLicenseFilter = async (request, response, next) => {
 export const createCompanyProfile = async (request, response, next) => {
     try {
         const data = request.body
-        const { companyTitle, details, remark, company } = data;
+        const { companyTitle, details, remark,company } = data;
         const uploadImage = async (imageFile) => {
             // console.log(imageFile);
             let imageUrl
@@ -7725,6 +7743,38 @@ export const gettingCompanyInractionTable = async (request, response, next) => {
             {
                 $match: {}
             },
+            // {
+            //     $lookup: {
+            //         from: 'companydatas',
+            //         localField: 'company',
+            //         foreignField: "_id",
+            //         as: "companyData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "states",
+            //         localField: "state",
+            //         foreignField: "_id",
+            //         as: "stateData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branch",
+            //         foreignField: "_id",
+            //         as: "branchData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "users",
+            //         localField: "executive",
+            //         foreignField: "_id",
+            //         as: "executiveData"
+            //     }
+            // },
             {
                 $project: {
                     companyTitle: 1,
@@ -7732,21 +7782,34 @@ export const gettingCompanyInractionTable = async (request, response, next) => {
                     companyUpload: 1,
                     remark: 1,
                     company: 1,
-                    status: 1,
+                    status:1,
+                    // state: 1,
+                    // branch: 1,
+                    // createdAt: 1,
+                    // company: { $arrayElemAt: ["$companyData", 0] },
+                    // state: { $arrayElemAt: ["$stateData", 0] },
+                    // branch: { $arrayElemAt: ["branchData", 0] },
+                    // executive: {
+                    //     $concat: [
+                    //         { $arrayElemAt: ["executiveData.firstName", 0] },
+                    //         " ",
+                    //         { $arrayElemAt: ["executiveData.lastName", 0] }
+                    //     ]
+                    // }
                 }
             }
         ])
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            companyProfile = companyProfile.filter(docs => docs.userId.equals(id));
+            companyProfile = companyProfile.filter(docs => docs.executive === username);
         } else {
             response.status(201).json(companyProfile);
             return;
         }
-
+        
         response.status(201).json(companyProfile)
     } catch (error) {
         next(error)
@@ -7814,9 +7877,10 @@ export const companyProfileUpdateById = async (request, response, next) => {
             return response.status(404).json("Given company profile id does not exists")
         }
         const data = request.body
-        const { companyTitle, details, remark, company } = data
+        const { companyTitle, details, remark, company} = data
         let imageload;
-        if (request.files.find(img => img.fieldname === "companyUpload") !== undefined) {
+        if(request.files.find(img => img.fieldname === "companyUpload") !== undefined )
+        {
             imageload = await uploadImage(request.files.find(img => img.fieldname === "companyUpload"))
         }
         // else
@@ -7824,7 +7888,7 @@ export const companyProfileUpdateById = async (request, response, next) => {
         //     imageload = 
         // }
         const companyProfile = {
-            companyTitle, details, companyUpload: imageload, remark, company
+            companyTitle, details, companyUpload:imageload , remark, company
         }
         const updatedCompProfile = await Companyprofile.findByIdAndUpdate({ _id: companyProfileId }, companyProfile, { new: true })
         response.status(201).json(updatedCompProfile)
@@ -7838,7 +7902,7 @@ export const apporveCompanyInteraction = async (request, response, next) => {
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const apporveCompanyInteraction = await Companyprofile.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-
+          
         response.status(201).json(apporveCompanyInteraction);
     } catch (error) {
         next(error);
@@ -7850,7 +7914,7 @@ export const companyProfileFilter = async (request, response, next) => {
         const { company } = data
         // console.log(company);
         const matchStage = {};
-        if (company !== undefined && company !== "") {
+        if(company !== undefined && company !== ""){
             matchStage['company'] = new mongoose.Types.ObjectId(company.toString())
         }
         const filteredData = await Companyprofile.aggregate([
@@ -7868,10 +7932,10 @@ export const companyProfileFilter = async (request, response, next) => {
         ])
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(filteredData);
             return;
@@ -7886,7 +7950,7 @@ export const companyProfileFilter = async (request, response, next) => {
 export const licenseCompanyInteractcreate = async (request, response, next) => {
     try {
         const data = request.body
-        const { licenseTitle, details, activatedDate, renewalDate, expiryDate, company } = data;
+        const { licenseTitle, details, activatedDate,renewalDate,expiryDate,company } = data;
         const uploadImage = async (imageFile) => {
             // console.log(imageFile);
             let imageUrl
@@ -7930,7 +7994,7 @@ export const licenseCompanyInteractcreate = async (request, response, next) => {
         };
 
         const companyProfilelicense = {
-            licenseTitle, licenseUpload: await uploadImage(request.files.find(img => img.fieldname === "licenseUpload")), details, activatedDate, renewalDate, expiryDate, company/*, state, branch, executive*/
+            licenseTitle, licenseUpload: await uploadImage(request.files.find(img => img.fieldname === "licenseUpload")), details, activatedDate,renewalDate,expiryDate,company/*, state, branch, executive*/
         }
         const newCompanyProfilelicense = new Companylicenses(companyProfilelicense)
         await newCompanyProfilelicense.save()
@@ -8001,14 +8065,15 @@ export const companyinteractLicUpdateById = async (request, response, next) => {
         };
 
         const data = request.body
-        const { licenseTitle, details, activatedDate, renewalDate, expiryDate, company } = data
+        const { licenseTitle, details, activatedDate,renewalDate,expiryDate,company} = data
         let imageload;
-        if (request.files.find(img => img.fieldname === "licenseUpload") !== undefined) {
+        if(request.files.find(img => img.fieldname === "licenseUpload") !== undefined )
+        {
             imageload = await uploadImage(request.files.find(img => img.fieldname === "licenseUpload"))
         }
 
         const companyProfileLicence = {
-            licenseTitle, licenseUpload: imageload, details, activatedDate, renewalDate, expiryDate, company
+            licenseTitle, licenseUpload: imageload, details, activatedDate,renewalDate,expiryDate,company
         }
         const updatedCompProfilelicense = await Companylicenses.findByIdAndUpdate({ _id: companyProfilelicenseId }, companyProfileLicence, { new: true })
         response.status(201).json(updatedCompProfilelicense)
@@ -8022,6 +8087,38 @@ export const licenseCompanyInteractGetOnCreate = async (request, response, next)
             {
                 $match: {}
             },
+            // {
+            //     $lookup: {
+            //         from: 'companydatas',
+            //         localField: 'company',
+            //         foreignField: "_id",
+            //         as: "companyData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "states",
+            //         localField: "state",
+            //         foreignField: "_id",
+            //         as: "stateData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "branches",
+            //         localField: "branch",
+            //         foreignField: "_id",
+            //         as: "branchData"
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: "users",
+            //         localField: "executive",
+            //         foreignField: "_id",
+            //         as: "executiveData"
+            //     }
+            // },
             {
                 $project: {
                     licenseTitle: 1,
@@ -8031,16 +8128,27 @@ export const licenseCompanyInteractGetOnCreate = async (request, response, next)
                     company: 1,
                     renewalDate: 1,
                     expiryDate: 1,
-                    status: 1,
+                    status:1,
+                    // createdAt: 1,
+                    // company: { $arrayElemAt: ["$companyData", 0] },
+                    // state: { $arrayElemAt: ["$stateData", 0] },
+                    // branch: { $arrayElemAt: ["branchData", 0] },
+                    // executive: {
+                    //     $concat: [
+                    //         { $arrayElemAt: ["executiveData.firstName", 0] },
+                    //         " ",
+                    //         { $arrayElemAt: ["executiveData.lastName", 0] }
+                    //     ]
+                    // }
                 }
             }
         ])
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            companyProfilelicense = companyProfilelicense.filter(docs => docs.userId.equals(id));
+            companyProfilelicense = companyProfilelicense.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(companyProfilelicense);
             return;
@@ -8056,7 +8164,7 @@ export const apporveCompanyInteractionLicense = async (request, response, next) 
         const idsToUpdate = request.body.id;
         const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
         const apporveCompanyInteractionLicense = await Companyprofile.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
-
+          
         response.status(201).json(apporveCompanyInteractionLicense);
     } catch (error) {
         next(error);
@@ -8067,7 +8175,7 @@ export const companyLicenseIntractFilter = async (request, response, next) => {
         const data = request.body;
         const { company } = data;
         const matchStage = {};
-        if (company !== undefined && company !== "") {
+        if(company !== undefined && company !== ""){
             matchStage['company'] = new mongoose.Types.ObjectId(company.toString())
         }
         let filteredData = await Companylicenses.aggregate([
@@ -8087,10 +8195,10 @@ export const companyLicenseIntractFilter = async (request, response, next) => {
         ]);
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
-
+        const username = user.userName;
+        
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(filteredData);
             return;
@@ -8104,7 +8212,7 @@ export const gettingCompliaceCSById = async (request, response, next) => { //get
     try {
         const catid = request.params.cid;
         const staid = request.params.sid;
-
+        
         const newArr = await Compliance.aggregate([
             { $match: { category: new mongoose.Types.ObjectId(catid), state: new mongoose.Types.ObjectId(staid) } },
             {
@@ -8151,7 +8259,6 @@ export const gettingCompliaceCSById = async (request, response, next) => { //get
                     duedate: 1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -8192,10 +8299,10 @@ export const createAssign = async (request, response, next) => {
     try {
         const data = request.body
         // console.log(data);return;
-        const { state, company, branchname, executive, assigndate } = data;
-
+        const { state, company, branchname,executive,assigndate } = data;
+        
         const assignCreate = {
-            state, company, branchname, executive, assigndate
+            state, company, branchname,executive,assigndate
         }
         const newassignCreate = new Assigncompany(assignCreate)
         await newassignCreate.save()
@@ -8224,12 +8331,12 @@ export const assignsUpdateById = async (request, response, next) => {
         if (!checkCompassignId) {
             return response.status(404).json("Given company profile id does not exists")
         }
-
+        
         const data = request.body
-        const { state, company, branchname, executive, assigndate } = data
-
+        const { state, company, branchname,executive,assigndate} = data
+       
         const companyassigns = {
-            state, company, branchname, executive, assigndate
+            state, company, branchname,executive,assigndate
         }
         const updatedcompanyassigns = await Assigncompany.findByIdAndUpdate({ _id: assignId }, companyassigns, { new: true })
         response.status(201).json(updatedcompanyassigns)
@@ -8267,10 +8374,9 @@ export const assignTableGet = async (request, response, next) => {
             {
                 $project: {
                     branchname: 1,
-                    assigndate: 1,
+                    assigndate:1,
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     state: { $arrayElemAt: ["$stateData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -8280,7 +8386,7 @@ export const assignTableGet = async (request, response, next) => {
                     },
                 }
             },
-
+           
         ]);
         if (assigncompanyarr.length > 0) {
             const gettingCompany = await Companydata.find({})
@@ -8296,10 +8402,10 @@ export const assignTableGet = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            assigncompanyarr = assigncompanyarr.filter(docs => docs.userId.equals(id));
+            assigncompanyarr = assigncompanyarr.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(assigncompanyarr);
             return;
@@ -8339,10 +8445,9 @@ export const getAssignOnCreate = async (request, response, next) => {
             {
                 $project: {
                     branchname: 1,
-                    assigndate: 1,
+                    assigndate:1,
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     state: { $arrayElemAt: ["$stateData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -8352,7 +8457,7 @@ export const getAssignOnCreate = async (request, response, next) => {
                     },
                 }
             },
-
+           
         ]);
         if (assigncompanyarr.length > 0) {
             const gettingCompany = await Companydata.find({})
@@ -8368,14 +8473,15 @@ export const getAssignOnCreate = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            assigncompanyarr = assigncompanyarr.filter(docs => docs.userId.equals(id));
+            assigncompanyarr = assigncompanyarr.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(assigncompanyarr);
             return;
         }
+        console.log(assigncompanyarr);
         response.status(200).json(assigncompanyarr);
     } catch (error) {
         next(error);
@@ -8434,9 +8540,8 @@ export const viewAllAssignedCompanyFilter = async (request, response, next) => {
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     created_at: 1,
                     branchname: 1,
-                    assigndate: 1,
+                    assigndate:1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -8461,10 +8566,10 @@ export const viewAllAssignedCompanyFilter = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(filteredData);
             return;
@@ -8474,6 +8579,88 @@ export const viewAllAssignedCompanyFilter = async (request, response, next) => {
         next(error)
     }
 }
+// export const assignedCompanyFilter = async (request, response, next) => {
+//     try {
+//         const data = request.body
+//         const { company, state, branch, executive } = data
+//         const filters = { company, state, branch, executive }
+//         let matchStage = {}
+//         const filterKeys = Object.keys(filters).filter(key => filters[key] !== undefined && filters[key] !== "");
+
+//         // Build match stage based on filters
+//         console.log(filterKeys);
+//         if (filterKeys.length > 0) {
+//             for (const key of filterKeys) {
+//                 if (key === "company" || key === "state" || key === "executive") {
+//                     matchStage[key] = new mongoose.Types.ObjectId(filters[key]);
+//                 }
+//                 else if (key === "branch") {
+//                     matchStage[key] = branch
+//                 }
+//             }
+//         }
+
+//         const filteredData = await Assigncompany.aggregate([
+//             { $match: matchStage },
+//             {
+//                 $lookup: {
+//                     from: "states",
+//                     localField: "state",
+//                     foreignField: "_id",
+//                     as: "stateData"
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: "companydatas",
+//                     localField: "company",
+//                     foreignField: "_id",
+//                     as: "companyData"
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: "users",
+//                     localField: "executive",
+//                     foreignField: "_id",
+//                     as: "executiveData"
+//                 }
+//             },
+//             {
+//                 // Project stage corrected with object wrapper
+//                 $project: {
+//                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
+//                     created_at: 1,
+//                     branchname: 1,
+//                     assigndate:1,
+//                     state: { $arrayElemAt: ["$stateData.name", 0] },
+//                     executive: {
+//                         $concat: [
+//                             { $arrayElemAt: ["$executiveData.firstName", 0] },
+//                             " ",
+//                             { $arrayElemAt: ["$executiveData.lastName", 0] }
+//                         ]
+//                     }
+//                 }
+//             },
+//         ])
+//         if (filteredData.length > 0) {
+//             const gettingCompany = await Companydata.find({})
+//             gettingCompany.forEach(companyItem => {
+//                 companyItem.F1branch.forEach(branch => {
+//                     filteredData.forEach(filteredItem => {
+//                         if (branch.id === filteredItem.branchname) {
+//                             filteredItem.branchname = branch.name
+//                         }
+//                     })
+//                 })
+//             })
+//         }
+//         response.status(200).json(filteredData)
+//     } catch (error) {
+//         next(error)
+//     }
+// }
 export const assignedCompanyFilter = async (request, response, next) => {
     try {
         const data = request.body
@@ -8527,9 +8714,8 @@ export const assignedCompanyFilter = async (request, response, next) => {
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
                     created_at: 1,
                     branchname: 1,
-                    assigndate: 1,
+                    assigndate:1,
                     state: { $arrayElemAt: ["$stateData.name", 0] },
-                    userId: { $arrayElemAt: ["$executiveData._id", 0] },
                     executive: {
                         $concat: [
                             { $arrayElemAt: ["$executiveData.firstName", 0] },
@@ -8554,10 +8740,10 @@ export const assignedCompanyFilter = async (request, response, next) => {
         }
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
-        const id = user._id;
+        const username = user.userName;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.executive === username);
         } else {
             response.status(200).json(filteredData);
             return;

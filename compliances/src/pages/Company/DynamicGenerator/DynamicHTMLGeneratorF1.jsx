@@ -9,14 +9,13 @@ import DynamicHTMLGeneratorF54TL from './DynamicHTMLGeneratorF54TL'
 import { useDispatch, useSelector } from 'react-redux';
 import Loading1 from '../../../components/layout/Loading1';
 import { stateGets,companytab6create } from "../../../store/actions/otherActions";
-const  DynamicHTMLGeneratorF1 = ({ formData, setFormData,myElementRefTab6,myReftab6buttun,myElementRefTab7,activeTab,setActiveTab,F54NSPData,F54OTPdata,F54WOEdata,F54TLdata }) =>{
+const  DynamicHTMLGeneratorF1 = ({ formData, setFormData,myElementRefTab6,myReftab6buttun,myElementRefTab7,activeTab,setActiveTab }) =>{
   const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(true);
   const [functionCalledInEffect, setFunctionCalledInEffect] = useState(false);
   const [functionCalledInEffectfactoryRef, setFunctionCalledInEffectfactoryRef] = useState(false);
   const [functionCalledicle, setfunctionCalledicle] = useState(false);
   const factoryRefClicknotshow = useRef(null);
-  console.log(formData)
   const factoryRef = useRef(null);
   const myRefBranch = useRef(null);
   const myRefF1Labour = useRef(null);
@@ -533,12 +532,7 @@ const  DynamicHTMLGeneratorF1 = ({ formData, setFormData,myElementRefTab6,myReft
   useEffect(() => {
     dispatch(stateGets())
   }, [dispatch]);
-  useEffect(() => {
-    setFormData21(F54NSPData);
-    setFormData22(F54OTPdata);
-    setFormData23(F54WOEdata);
-    setFormData24(F54TLdata);
-  }, []);
+
   branchcount = formData?.length;
   var dateObj = new Date();
   // Convert the Date object to a Unix timestamp (in milliseconds)
@@ -2469,15 +2463,15 @@ const handleSubmitTab61 = async (e) => {
         
       </tbody>
     </table>
-    <table className="table  creat_tbl">
+    {/* <table className="table  creat_tbl">
         <tr>
                 <td colspan="3" >
                     <div class="col-6 col-lg-6 col-md-6 mb-2" >
-                        <button type="submit" ref={myReftab6buttun} class="w-100 btn btn-primary" /*disabled={isDisabled}*/ onClick={handleSubmitTab61}>Next</button>{loadingtab6 && <Loading1 /> }
+                        <button type="submit" ref={myReftab6buttun} class="w-100 btn btn-primary" /*disabled={isDisabled} onClick={handleSubmitTab61}>Next</button>{loadingtab6 && <Loading1 /> }
                     </div>
                 </td>
             </tr> 
-        </table>
+        </table> */}
     </>
     :
     (<form  name="branchform" method="post" onSubmit={handleSubmitTab6}>
