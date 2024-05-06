@@ -46,7 +46,7 @@ const  DynamicHTMLGeneratorF54OTP = ({ formData, setFormData }) =>{
           <td>
               <label className="form-label">License Number</label>
                 <input
-                type="number"
+                type="text"
                 className="form-control"
                 placeholder="Licence Number"
                 value={person.licensenumber || ''}

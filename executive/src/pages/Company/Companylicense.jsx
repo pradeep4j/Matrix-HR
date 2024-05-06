@@ -30,7 +30,7 @@ const Companylicense = () => {
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const getCompL = useSelector((state) => state.getCompL);
     const { loadingLicenseget,companyLGetInfo } = getCompL; 
-     console.log(companyLGetInfo);
+    //  console.log(companyLGetInfo);
     //console.log(checklistInfoOnCreate);
     //console.log(usersInfo);
     const companyLFilter = useSelector((state) => state.companyLFilter);
@@ -214,7 +214,7 @@ const Companylicense = () => {
           setcLicenseId(clarr)
           setDataSource(licenseOnCreateArr);
     },[companyLGetInfo])
-    console.log(cLicenseId);
+    // console.log(cLicenseId);
     const resetForm = () => {
          setCompany('');
     }
@@ -340,8 +340,10 @@ const Companylicense = () => {
   
     const saveandapprove = () => {
         const postBody = {
-            approvedate: defaultDate,
-            status:1
+          approvedate: defaultDate,
+          status:0,
+          type:'executive',
+          approvalstatus:0
         }
         dispatch(companylicenseSaveandApprove(postBody));//relodreport
         relodreport();
@@ -405,11 +407,8 @@ const Companylicense = () => {
                 </div>
                 
             </div>
-            {/* <div style={{ width:'100%' }}> */}
-            <form name="save" onSubmit={saveandapprove}>
-                <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove}>Save And Approve</button>
-                {/* </div> */}
-            </form>
+                <button type="button" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove}>Save And Get an Approval</button>
+                {/* </div> **/}
         </div>
     </React.Fragment>
     )

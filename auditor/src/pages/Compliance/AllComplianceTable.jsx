@@ -99,7 +99,7 @@ const AllComplianceTable = () =>{
     useEffect(() => {
         dispatch(stateGets());
         dispatch(usersGet());
-        dispatch(companyTableGet());
+        // dispatch(companyTableGet());
         dispatch(compliancesGetAll());
     },[dispatch])
     useEffect(() => {

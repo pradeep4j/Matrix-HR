@@ -186,11 +186,6 @@ const liseRegSchema = new mongoose.Schema({
         ref: "State",
         default: null
     },
-    branch: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Branch",
-        default: null
-    },
     approvedate : { 
         type: Date, 
         index: true 

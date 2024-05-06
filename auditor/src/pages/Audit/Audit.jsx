@@ -2,7 +2,7 @@ import React,{useState,useEffect,useRef} from 'react'
 import { Link,NavLink, useNavigate } from 'react-router-dom'
 import { FormLabel,styled} from '@mui/material';
 import { Modal } from 'antd';
-import {stateGets,branchGet,companyGet,auditGetDataAll,auditOnCreate,checklistGetonCreateAudit,companyTableGet} from "../../store/actions/otherActions";
+import {stateGets,branchGet,usersGet,auditGetDataAll,auditOnCreate,checklistGetonCreateAudit,companyTableGet} from "../../store/actions/otherActions";
 import { useDispatch,useSelector } from 'react-redux';
 import AuditTable from './AuditTable';
 import AuditChecklistTable from './AuditChecklistTable';
@@ -54,6 +54,8 @@ const Audit = () => {
     const { auditorInfo } = getAuditor; 
     const onCreateChecklistAudit = useSelector((state) => state.onCreateChecklistAudit);
     const { loadingoncreate,auditorChecklistInfoOncreate } = onCreateChecklistAudit; 
+    const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
     useEffect(()=>{
         dispatch(stateGets());
         // const elementcompanybranch = myElementCompany.current;
@@ -65,7 +67,7 @@ const Audit = () => {
         // }
         dispatch(companyTableGet());
         dispatch(auditGetDataAll())
-        // dispatch(getExecutive())
+        dispatch(usersGet())
         dispatch(checklistGetonCreateAudit());
     },[dispatch]);
     const getBbranchs = (company) => {
@@ -103,7 +105,7 @@ const Audit = () => {
         elementtitle.innerText='';
         elementcompany.innerText='';
         elementstate.innerText='';
-        elementbranch.innerText='';
+        // elementbranch.innerText='';
         elementsdate.innerText='';
         elementedate.innerText='';  
         elementrisk.innerText='';
@@ -203,16 +205,16 @@ const Audit = () => {
             elementstate.innerText='';
         }
         // alert(i+'3')
-        if( branch === '')
-        {
-            elementbranch.focus();
-            elementbranch.innerText='Please select a Branch!';
-            i=false;
-        }
-        else{
-            // elementbranch.style.display='none';
-            elementbranch.innerText='';
-        }
+        // if( branch === '')
+        // {
+        //     elementbranch.focus();
+        //     elementbranch.innerText='Please select a Branch!';
+        //     i=false;
+        // }
+        // else{
+        //     // elementbranch.style.display='none';
+        //     elementbranch.innerText='';
+        // }
         // alert(i+'4')
         if(startDate === '')
         {
@@ -321,7 +323,7 @@ const Audit = () => {
             formData.append("branch", branch);
             formData.append("start_date", startDate);
             formData.append("end_date", endDate);
-            formData.append("executive", '659d4f2609c9923c9e7b8f72');
+            formData.append("executive", userInfo._id);
             formData.append("auditor", auditor);
             formData.append("scope", scope);
             formData.append("briefauditor", briefauditor);
@@ -367,7 +369,7 @@ const Audit = () => {
             elementtitle.innerText='';
             elementcompany.innerText='';
             elementstate.innerText='';
-            elementbranch.innerText='';
+            // elementbranch.innerText='';
             elementsdate.innerText='';
             elementedate.innerText='';  
             elementrisk.innerText='';
@@ -378,7 +380,7 @@ const Audit = () => {
             unsetRefValue(elementtitle);
             unsetRefValue(elementcompany);
             unsetRefValue(elementstate);
-            unsetRefValue(elementbranch);
+            // unsetRefValue(elementbranch);
             unsetRefValue(elementrisk);
             unsetRefValue(elementauditstatus);
             unsetRefValue(elementauditor);
@@ -515,13 +517,13 @@ const Audit = () => {
                                         </div>
                                         <div className="col-md-3">
                                             <label for="" className="form-label">Select Branch</label>
-                                                <select className="form-select"  onChange={(e)=>{setBranch(e.target.value);}} value={branch}  required>
+                                                <select className="form-select"  onChange={(e)=>{setBranch(e.target.value);}} value={branch} >
                                                     <option value="">Select Branch</option>
                                                     {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
                                                     <option value={item._id}>{item.name}</option>
                                                     )};
                                                 </select>
-                                                <Spanning ref={myElementRefBranch}></Spanning>
+                                                {/* <Spanning ref={myElementRefBranch}></Spanning> */}
                                         </div>
                                         <div className="col-md-6">
                                             <label for="" className="form-label">Start Date</label>

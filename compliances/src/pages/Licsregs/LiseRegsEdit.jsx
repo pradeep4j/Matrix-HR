@@ -22,6 +22,7 @@ const LiseRegsEdit = (props) => {
     const [isDisabled, setIsDisabled] = useState(false);
     const getCompanyTable = useSelector(state => state.getCompanyTable)
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
+    // console.log(companyGetTableInfo);
     const myElementRefCompany = useRef(null);
     /**reg name and create start*/
     const [rate,setRate] = useState('');
@@ -138,7 +139,8 @@ const LiseRegsEdit = (props) => {
     const getRegsById = useSelector(state => state.getRegsById)
     const { regsGetByIdInfo } = getRegsById;
     console.log(regsGetByIdInfo)      
-    
+    const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
     let defaultDate = new Date()
     defaultDate.setDate(defaultDate.getDate() )
 
@@ -291,7 +293,7 @@ const LiseRegsEdit = (props) => {
         formData.append("company",company);
         formData.append("state",state);
         formData.append("branch",branch);
-        formData.append("executive",'659d4f2609c9923c9e7b8f72'); //super admin Opject Id
+        formData.append("executive",userInfo._id); 
         formData.append("created_at",date);
         dispatch(companyInfoDispatchUpdate(formData,regsGetByIdInfo._id))
         // if(isDisabled === true){
@@ -324,7 +326,7 @@ const LiseRegsEdit = (props) => {
         if (elementcompanybranch) {
           dispatch(branchGet(postBody));
         }
-        dispatch(companyGet());
+        // dispatch(companyGet());
         dispatch(liseRegGettingById(editId));
         dispatch(companyTableGet());
         // setIsDisabled(isDisabled);
@@ -332,7 +334,7 @@ const LiseRegsEdit = (props) => {
     const getBbranch = (company) => {
         const elementcompanybranch = myElementRefCompany.current;
         const postBody = {
-         id : elementcompanybranch.value
+         id : company
        }
         dispatch(branchGet(postBody));
     }
@@ -361,16 +363,8 @@ const LiseRegsEdit = (props) => {
         const elementbranch = myElementRefBranch.current;
         const elementuser =  myElementRefUser.current;
         const elementdate = myElementRefDate.current;
-        // alert(elementcompany)
-        // elementcompany.style.display='none';
-        // // elementstate.style.display='none';
-        // elementbranch.style.display='none';
-        // elementuser.style.display='none';
-        // elementdate.style.display='none';
         if(typeof(regsGetByIdInfo) !== 'undefined' && regsGetByIdInfo !== null) {
-            
-
-            // alert(regsGetByIdInfo.docReqDate)
+            console.log(regsGetByIdInfo.company);
             setCompany(regsGetByIdInfo.company);
             setState(regsGetByIdInfo.state);
             setBranch(regsGetByIdInfo.branch);
@@ -414,58 +408,6 @@ const LiseRegsEdit = (props) => {
                 }
         }    
     },[regsGetByIdInfo])
-   // const createnew = () => {
-    //     setTimeout(() => {
-    //         const elementTab1 = myElementRefTab1.current;
-    //         if (elementTab1) {
-    //             elementTab1.click();
-    //         }
-    //         setCompany('');
-    //         setState('');
-    //         setBranch('');
-    //         setExecutive('');
-    //         setIsDisabled(isDisabled);
-    //         setRate('');
-    //         setRn('');
-    //         //  alert(myElementRefDocImage.current.value)
-    //         if (myElementRefDocImage.current) {
-    //             myElementRefDocImage.current.value='';
-    //         }
-    //         setDateReq('');
-    //         setDateFol('');
-    //         setDateRev('');
-    //         setStatus('');
-    //         setRemark('');
-    //         setDateAppD('');
-    //         setStatusAppD('');
-    //         setRemarkAppD('');
-    //         if (myElementRefAckImage.current) {
-    //             myElementRefAckImage.current.value='';
-    //         }
-    //         setChallanFee('');
-    //         setChallanNumber('');
-    //         setDateChallanExpense('');
-    //         if (myElementRefChallanImage.current.value!=='') {
-    //             myElementRefChallanImage.current.value='';
-    //         }
-    //         setChallanDExpense('');
-    //         setChallanInDExpense('');
-    //         setChallanTotDExpense('');
-    //         setDateIssue('');
-    //         setDateRenew('');
-    //         setDateExpire('');
-    //         if (myElementRefLicImage.current.value!=='') {
-    //             myElementRefLicImage.current.value='';
-    //         }
-    //         setInvoiceType('');
-    //         setDateInvoice('');
-    //         setInvoiceNumber('');
-    //         setDateInvoiceSubD('');
-    //         setDateInvoice('');
-    //         setDateInvoice('');
-
-    //     }, 2000);
-    // }
     const editclick = () =>{
         const elementB1 = myElementRefButton1.current;
         const elementB2 = myElementRefButton2.current;
@@ -1141,7 +1083,7 @@ const LiseRegsEdit = (props) => {
                                                                                 <div className="col-lg-4 col-md-4">
                                                                                 <select className="form-select" aria-label="Default select example" id="company" name="company" ref={myElementRefCompany} value={company} onChange={(e)=>{setCompany(e.target.value);getBbranch(e.target.value)}} required>
                                                                                             <option value="">Select Company</option>
-                                                                                            {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                                                                                            {companyGetTableInfo != undefined && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
                                                                                                 <option value={item._id}>{item.companyname}</option>
                                                                                             )};
                                                                                     </select>
@@ -1152,7 +1094,7 @@ const LiseRegsEdit = (props) => {
                                                                             <th scope="row" className='bg-light w-lg-25'>Branch</th>
                                                                             <td>
                                                                                 <div className="col-lg-4 col-md-4">
-                                                                                <select className="form-select" aria-label="Default select example" id="branch" name="branch" value={branch} onChange={(e)=>setBranch(e.target.value)}  required>
+                                                                                <select className="form-select" aria-label="Default select example" id="branch" name="branch" value={branch} onChange={(e)=>setBranch(e.target.value)} >
                                                                                         <option value="">Select Branch</option>
                                                                                         {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
                                                                                             <option value={item._id}>{item.name}</option>

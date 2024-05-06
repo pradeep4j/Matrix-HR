@@ -9,7 +9,7 @@ import DynamicHTMLGeneratorF54TL from './DynamicHTMLGeneratorF54TL'
 import { useDispatch, useSelector } from 'react-redux';
 import Loading1 from '../../../components/layout/Loading1';
 import { stateGets,companytab6create } from "../../../store/actions/otherActions";
-const  DynamicHTMLGeneratorF1 = ({ formData, setFormData,myElementRefTab6,myReftab6buttun,myElementRefTab7,activeTab,setActiveTab }) =>{
+const  DynamicHTMLGeneratorF1 = ({ formData, setFormData,myElementRefTab6,myReftab6buttun,myElementRefTab7,activeTab,setActiveTab,F54NSPData,F54OTPdata,F54WOEdata,F54TLdata }) =>{
   const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(true);
   const [functionCalledInEffect, setFunctionCalledInEffect] = useState(false);
@@ -532,7 +532,26 @@ const  DynamicHTMLGeneratorF1 = ({ formData, setFormData,myElementRefTab6,myReft
   useEffect(() => {
     dispatch(stateGets())
   }, [dispatch]);
-
+  useMemo(() => {
+    if(F54NSPData !== undefined && F54NSPData.length >0){
+        setFormData21(F54NSPData);
+    }
+    if(F54OTPdata !== undefined && F54OTPdata.length >0){
+        setFormData22(F54NSPData);
+    }
+    if(F54WOEdata !== undefined && F54WOEdata.length >0){
+        setFormData23(F54WOEdata);
+    }
+    if(F54TLdata !== undefined && F54TLdata.length >0){
+        setFormData24(F54TLdata);
+    }
+    // setFormData21(F54NSPData);
+    // setFormData22(F54OTPdata);
+    // setFormData23(F54WOEdata);
+    // setFormData24(F54TLdata);
+  }, [F54NSPData,F54OTPdata,F54WOEdata,F54TLdata,formData21,formData22,formData23,formData24]);
+  console.log(F54NSPData,F54OTPdata,F54WOEdata,F54TLdata);
+  console.log(formData21,formData22,formData23,formData24);
   branchcount = formData?.length;
   var dateObj = new Date();
   // Convert the Date object to a Unix timestamp (in milliseconds)

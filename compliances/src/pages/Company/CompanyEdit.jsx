@@ -56,7 +56,7 @@ const CompanyEdit = (props) => {
     const useRefnoOfEmpDeployedAgreementE2 = useRef(null);
     const getByIdCompany = useSelector(state => state.getByIdCompany)
     const {loadingcompanygetbyid, companyGetByIdInfo } = getByIdCompany;
-    console.log(companyGetByIdInfo)
+    // console.log(companyGetByIdInfo)
     const refnoshowgclrashow = useRef(null);
     const refshowgclrashow = useRef(null);
     const inputRefsclra  = {
@@ -110,7 +110,7 @@ const CompanyEdit = (props) => {
     const [state, setState] = useState('')
     const [isDisabled, setIsDisabled] = useState(false);
     const [activeTab, setActiveTab] = useState('pills-home-tab1');
-    console.log(companytab1CreateInfo);
+    // console.log(companytab1CreateInfo);
     const handleTabClick = (tabId) => {
         // setTimeout(() => {
             setActiveTab(tabId);  // Update the active tab state when a tab is clicked
@@ -321,7 +321,7 @@ const CompanyEdit = (props) => {
     useEffect(()=>{
         if(companyGetByIdInfo && companyGetByIdInfo.length > 0 ) {
             const data = companyGetByIdInfo[0]; 
-            console.log((data.F54NSP).length);
+            // console.log((data.GCC4TL));
             setF54NSPData(data.F54NSP)
             setF54WOEdata(data.F54WOE)
             setF54OTPdata(data.F54OTP)
@@ -461,6 +461,38 @@ const CompanyEdit = (props) => {
             setregistrationptrD3remark(data.registrationptrD3remark)
             setdoregistrationptrD3(formatDate(data.doregistrationptrD3))
             setlabourEngaged(data.labourEngaged)
+            setg12ncw(data.g12ncw)
+            setg12ncwimage(data.g12ncwimage)
+            setg12ncwremark(data.g12ncwremark)
+            setg12ncwdate(formatDate(data.g12ncwdate))
+            setg12ncwdatevalid(formatDate(data.g12ncwdatevalid))
+            setg12ncwnow(data.g12ncwnow)
+            setg12ncwcoe(data.g12ncwcoe)
+            setg12ncwcoeimage(data.g12ncwcoeimage)
+            setg12ncwcoeremark(data.g12ncw)
+            setg13form(data.g13form)
+            setg13formimage(data.g13formimage)
+            setg13formremark(data.g13formremark)
+            setg13form5date(data.g13form5date)
+            setg13form5dateofcommence(data.g13form5dateofcommence)
+            setg13form5licenece(data.g13form5licenece)
+            setg13form5liceneceimage(data.g13form5liceneceimage)
+            setg13form5liceneceremark(data.g13form5liceneceremark)
+            setg13form5licensedol(formatDate(data.g13form5licensedol))
+            setg13form5licensedolvalid(formatDate(data.g13form5licensedolvalid))
+            setg13form5licensedoldor(formatDate(data.g13form5licensedoldor))
+            setg13form5licenseworkers(data.g13form5licenseworkers)
+            setg13form5licensemanresp(data.g13form5licensemanresp)
+            setg14dcwc(formatDate(data.g14dcwc))
+            setg14dncc(formatDate(data.g14dncc))
+            setg14dars(formatDate(data.g14dars))
+            setg14dls(formatDate(data.g14dars))
+            setg13form5licensefee(data.g13form5licensefee);
+            setg13form5licensefeeimage(data.g13form5licensefeeimage);
+            setg13form5licensefeeremark(data.g13form5licensefeeremark);
+            setg13form5securityfee(data.g13form5securityfee);
+            setg13form5securityfeeimage(data.g13form5securityfeeimage);
+            setg13form5securityfeeremark(data.g13form5securityfeeremark);
         }
     },[companyGetByIdInfo])
     // console.log(F54NSPData, F54OTPdata,F54WOEdata,F54TLdata);
@@ -901,7 +933,7 @@ const CompanyEdit = (props) => {
         myRefGLabour.current.style.display = 'none'
     }
     const noshowgshow = () => {
-        setFormData25([]);
+        // setFormData25([]);
         myRefGLabour.current.style.display = 'inline'
     }
     const showgclrashow = () => {
@@ -1357,7 +1389,8 @@ const CompanyEdit = (props) => {
     const saveandapprove = () => {
         const postBody = {
             approvedate: defaultDate,
-            status:1
+            status:1,
+            approvalstatus1:1
         }
         dispatch(SaveandApproveCompany(postBody));//relodreport
         // relodreport();
@@ -3163,9 +3196,7 @@ const CompanyEdit = (props) => {
                                             </div>
                                             
                                         </div>
-                                        <form name="save" onSubmit={saveandapprove}>
                                             <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove} disabled={companytab1CreateInfo && companytab1CreateInfo.created_at === null?'disabled':''}>Save And Approve</button>
-                                        </form>
                                     </div>
                                 </div>
                             </div>

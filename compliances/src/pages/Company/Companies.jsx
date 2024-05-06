@@ -51,7 +51,12 @@ const Companies = () => {
     const factoryRefClicknotshowmain = useRef(null);
     const myRefE3div = useRef(null);
     const useRefnoOfEmpDeployedAgreementE2 = useRef(null);
-     
+    const getByIdCompany = useSelector(state => state.getByIdCompany)
+    const {loadingcompanygetbyid, companyGetByIdInfo } = getByIdCompany;
+    const [F54NSPData, setF54NSPData] = useState([]);
+    const [F54OTPdata, setF54OTPdata] = useState([]);
+    const [F54WOEdata, setF54WOEdata] = useState([]);
+    const [F54TLdata, setF54TLdata] = useState([]);
     const refnoshowgclrashow = useRef(null);
     const refshowgclrashow = useRef(null);
     const inputRefsclra  = {
@@ -96,6 +101,7 @@ const Companies = () => {
     const { loadingtab6,companytab6CreateInfo } = createCompanytab6;
     const createCompanytab7 = useSelector((state) => state.createCompanytab7);
     const { loadingtab7,companytab7CreateInfo } = createCompanytab7;
+    console.log(companytab7CreateInfo)  
     const [category, setCategory] = useState('')
     const [state, setState] = useState('')
     const [isDisabled, setIsDisabled] = useState(false);
@@ -686,7 +692,8 @@ const Companies = () => {
         dispatch(stateGets())
         dispatch(companyTableGet());
         // if(companytab1CreateInfo?._id){
-        //     dispatch(companyGettingById(companytab1CreateInfo?._id))
+            // console.log(companytab7CreateInfo?._id)  
+            // dispatch(companyGettingById(companytab7CreateInfo?._id))
         // }
     }, [dispatch]); 
     const showSubcodes = () => {
@@ -732,7 +739,7 @@ const Companies = () => {
         myRefGLabour.current.style.display = 'none'
     }
     const noshowgshow = () => {
-        setFormData25([]);
+        // setFormData25([]);
         myRefGLabour.current.style.display = 'inline'
     }
     const showgclrashow = () => {
@@ -1188,7 +1195,8 @@ const Companies = () => {
     const saveandapprove = () => {
         const postBody = {
             approvedate: defaultDate,
-            status:1
+            status:1,
+            approvalstatus:1
         }
         dispatch(SaveandApproveCompany(postBody));//relodreport
         // relodreport();
@@ -2712,7 +2720,8 @@ const Companies = () => {
                                             <div className="card p-3 position-relative">
                                                 <div className="table-responsive">
                                                     {/* <h4>F. Details of the Branch's(1)</h4> */}
-                                                                <DynamicHTMLGeneratorF1 formData={formData17} setFormData={setFormData17} myElementRefTab6={myElementRefTab6} myReftab6buttun={myReftab6buttun} myElementRefTab7={myElementRefTab7} activeTab={activeTab} setActiveTab={setActiveTab} />
+                                                                <DynamicHTMLGeneratorF1 formData={formData17} setFormData={setFormData17} myElementRefTab6={myElementRefTab6} myReftab6buttun={myReftab6buttun} myElementRefTab7={myElementRefTab7} activeTab={activeTab} setActiveTab={setActiveTab} F54NSPData={F54NSPData} F54OTPdata={F54OTPdata} 
+                                                                F54WOEdata={F54WOEdata} F54TLdata={F54TLdata}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -2994,10 +3003,8 @@ const Companies = () => {
                                             </div>
                                             
                                         </div>
-                                        <form name="save" onSubmit={saveandapprove}>
-                                            <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove} disabled={companytab1CreateInfo && companytab1CreateInfo.created_at === null?'disabled':''}>Save And Approve</button>
-                                        </form>
-                                    </div>
+                                            <button type="button" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove} disabled={companytab1CreateInfo && companytab1CreateInfo.created_at === null?'disabled':''}>Save And Approve</button>
+                                        </div>
                                 </div>
                             </div>
                         </div>

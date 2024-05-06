@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 const  DynamicHTMLGeneratorGCC = ({ formData, setFormData }) =>{
-  // alert(formData?.length)
+  // console.log(formData)
+  useEffect(() => {
+    // Call handlenumberOfPersonsChange when the component mounts
+    handlenumberOfPersonsChange({ target: { value: formData.length } });
+  }, []);
   const getState = useSelector((state) => state.getState);
   const { loadings, stateInfo } = getState;
   const handlenumberOfPersonsChange = (e) => {
-    const numberOfPersons = parseInt(e.target.value);
+    const numberOfPersons = 1;//parseInt(e.target.value);
     const newFormData = Array.from({ length: numberOfPersons }, () => ({
       clientname: '',
       clientdetail: '',
@@ -44,7 +48,7 @@ const  DynamicHTMLGeneratorGCC = ({ formData, setFormData }) =>{
       <React.Fragment key={index}>
         <tr>
           <td>
-            <label className="form-label">Client{index+1}</label>
+            <label className="form-label">Client</label>
             <input
               type="text"
               className="form-control"
@@ -54,18 +58,6 @@ const  DynamicHTMLGeneratorGCC = ({ formData, setFormData }) =>{
               id={`clientname_${index}`}  
               name={`clientname_${index}`} 
               required
-            />
-          </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text" 
-              className="form-control"
-              placeholder="Details"
-              value={person.clientdetail || ''}
-              onChange={(e) => handleInputChange(e, 'clientdetail', index)}
-              id={`clientdetail_${index}`}  
-              name={`clientdetail_${index}`} 
             />
           </td>
           <td>
@@ -84,7 +76,7 @@ const  DynamicHTMLGeneratorGCC = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -98,7 +90,7 @@ const  DynamicHTMLGeneratorGCC = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td>
-          <label for="">Regsitered Office address of Client{index+1}</label>
+          <label for="">Regsitered Office address of Client</label>
             <table>
                 <tr>
                     <td>
@@ -154,18 +146,6 @@ const  DynamicHTMLGeneratorGCC = ({ formData, setFormData }) =>{
             </table>
           </td>
           <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.clientaddressdetails || ''}
-              onChange={(e) => handleInputChange(e, 'clientaddressdetails', index)}
-              id={`clientaddressdetails_${index}`}  
-              name={`clientaddressdetails_${index}`} 
-            />
-          </td>
-          <td>
             <div className="form-group files1">
               <input
                 type="file"
@@ -181,7 +161,7 @@ const  DynamicHTMLGeneratorGCC = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -202,13 +182,14 @@ const  DynamicHTMLGeneratorGCC = ({ formData, setFormData }) =>{
       <tbody>
         <tr>
           <td colSpan="4">
-            <label className="form-label">Number of Client</label>
-            <input
+          {/* <label className="form-label">Number</label>  */}
+          <input
               type="number"
               className="form-control"
-              placeholder="Number of Client"
+              placeholder="Number of Subcodes"
               value={formData.length}
               onChange={handlenumberOfPersonsChange}
+              style={{ display:'none' }}
             />
           </td>
         </tr>

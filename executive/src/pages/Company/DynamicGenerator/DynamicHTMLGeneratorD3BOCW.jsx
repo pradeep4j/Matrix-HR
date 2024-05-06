@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 
 const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
+  useEffect(() => {
+    // Call handlenumberOfPersonsChange when the component mounts
+    handlenumberOfPersonsChange({ target: { value: formData.length } });
+  }, []);
   const handlenumberOfPersonsChange = (e) => {
-    const numberOfPersons = parseInt(e.target.value);
-    const newFormData = Array.from({ length: numberOfPersons }, () => ({
+      const numberOfPersons = 1;//parseInt(e.target.value);
+      const newFormData = Array.from({ length: numberOfPersons }, () => ({
+      licensenumber: '',
+      licenseimage: '',
+      licenseremark: '',
       dor: '',
       doe: '',
       doddr: '',
@@ -39,8 +46,41 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
     return formData.map((person, index) => (
       <React.Fragment key={index}>
         <tr>
+          <td>
+              <label className="form-label">License Number</label>
+                <input
+                type="text"
+                className="form-control"
+                placeholder="Licence Number"
+                value={person.licensenumber || ''}
+                id={`licensenumber_${index}`}  
+                name={`licensenumber_${index}`} 
+                onChange={(e)=>handleInputChange(e, 'licensenumber', index)}
+                required/>
+            </td>
+            <td colspan="2"> 
+            <div>
+                    <div class="form-group files1">
+                        <input type="file" class="form-control" multiple="" accept="image/*,application/pdf" style={{ height:'10px' }}
+                        id={`licenseimage_${index}`}  
+                        name={`licenseimage_${index}`} 
+                        onChange={(e) => handleInputChange(e,'licenseimage', index)} required
+                        />
+                    </div>
+                </div>
+            </td>
+            <td>
+            <label for="">Remark</label>
+            <input type="text" class="form-control"  
+            id={`licenseremark_${index}`}  
+            name={`licenseremark_${index}`} 
+            value={person.licenseremark || ''} 
+            onChange={(e) => handleInputChange(e,'licenseremark', index)} placeholder="Write Here"/>
+            </td>
+        </tr>
+        <tr>
           <td colspan="4">
-            <label className="form-label">Date of Registration{index+1}</label>
+            <label className="form-label">Date of Registration</label>
             <input
               type="date"
               className="form-control"
@@ -53,7 +93,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -80,7 +120,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -94,7 +134,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Date of Expiry{index+1}</label>
+            <label className="form-label">Date of Expiry</label>
             <input
               type="date"
               className="form-control"
@@ -107,7 +147,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -134,7 +174,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -148,7 +188,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Due Date of Renewal{index+1}</label>
+            <label className="form-label">Due Date of Renewal</label>
             <input
               type="date"
               className="form-control"
@@ -161,7 +201,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -188,7 +228,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -202,7 +242,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Number of the Worker{index+1}</label>
+            <label className="form-label">Number of the Worker</label>
             <input
               type="number"
               className="form-control"
@@ -211,11 +251,12 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
               onChange={(e) => handleInputChange(e, 'noe', index)}
               id={`noe_${index}`}  
               name={`noe_${index}`} 
+              min="0" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
               required
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -242,7 +283,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -256,7 +297,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Male{index+1}</label>
+            <label className="form-label">Male</label>
             <input
               type="number"
               className="form-control"
@@ -265,11 +306,12 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
               onChange={(e) => handleInputChange(e, 'nom', index)}
               id={`nom_${index}`}  
               name={`nom_${index}`} 
+              min="0" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
               required
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -296,7 +338,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -310,7 +352,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Female{index+1}</label>
+            <label className="form-label">Female</label>
             <input
               type="number"
               className="form-control"
@@ -319,11 +361,12 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
               onChange={(e) => handleInputChange(e, 'nof', index)}
               id={`nof_${index}`}  
               name={`nof_${index}`} 
+              min="0" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
               required
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -350,7 +393,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -363,8 +406,8 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
           </td> */}
         </tr>
         <tr>
-          <td>
-                <label className="form-label">Issuing Authority{index+1}</label>
+          <td colspan="2">
+                <label className="form-label">Issuing Authority</label>
                 <input type="text" class="form-control" 
                 placeholder="Issuing Authority" 
                 value={person.issuingauth || ''}
@@ -373,8 +416,8 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
                 id={`issuingauth_${index}`}  
                 required/>
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -384,7 +427,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
               id={`issuingauthdetails_${index}`}  
               name={`issuingauthdetails_${index}`} 
             />
-          </td> 
+          </td>  */}
           <td>
             <div className="form-group files1">
               <input
@@ -401,7 +444,7 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -420,15 +463,16 @@ const  DynamicHTMLGeneratorD3BOCW = ({ formData, setFormData }) =>{
   return (
     <table className="table  creat_tbl">
       <tbody>
-        <tr>
+      <tr>
           <td colSpan="4">
-            <label className="form-label">Number</label>
+            {/* <label className="form-label">Number</label> */}
             <input
-              type="number"
+              type="text"
               className="form-control"
               placeholder="Number of Subcodes"
               value={formData.length}
               onChange={handlenumberOfPersonsChange}
+              style={{ display:'none' }}
             />
           </td>
         </tr>

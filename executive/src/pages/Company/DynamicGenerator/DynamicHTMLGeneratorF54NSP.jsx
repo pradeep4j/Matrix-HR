@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 
 const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
+
+  useEffect(() => {
+    // Call handlenumberOfPersonsChange when the component mounts
+    handlenumberOfPersonsChange({ target: { value: formData.length } });
+  }, []);
   const handlenumberOfPersonsChange = (e) => {
-    const numberOfPersons = parseInt(e.target.value);
-    const newFormData = Array.from({ length: numberOfPersons }, () => ({
+      const numberOfPersons = 1;//parseInt(e.target.value);
+      const newFormData = Array.from({ length: numberOfPersons }, () => ({
+      licensenumber: '',
+      licenseimage: '',
+      licenseremark: '',
       dor: '',
       doe: '',
       doddr: '',
@@ -20,8 +28,6 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
     
     if((fieldName).indexOf('image') != -1)
     {
-      // alert((fieldName).indexOf('image')+'asasa')
-      // newFormData = [...formData];
       newFormData[index][fieldName] = e.target.files[0];
       setFormData(newFormData);
     }
@@ -36,8 +42,41 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
     return formData.map((person, index) => (
       <React.Fragment key={index}>
         <tr>
+          <td>
+              <label className="form-label">License Number</label>
+                <input
+                type="text"
+                className="form-control"
+                placeholder="Licence Number"
+                value={person.licensenumber || ''}
+                id={`licensenumber_${index}`}  
+                name={`licensenumber_${index}`} 
+                onChange={(e)=>handleInputChange(e, 'licensenumber', index)}
+                />
+            </td>
+            <td colspan="2"> 
+            <div>
+                    <div class="form-group files1">
+                        <input type="file" class="form-control" multiple="" accept="image/*,application/pdf" style={{ height:'10px' }}
+                        id={`licenseimage_${index}`}  
+                        name={`licenseimage_${index}`} 
+                        onChange={(e) => handleInputChange(e,'licenseimage', index)} required
+                        />
+                    </div>
+                </div>
+            </td>
+            <td>
+            <label for="">Remark</label>
+            <input type="text" class="form-control"  
+            id={`licenseremark_${index}`}  
+            name={`licenseremark_${index}`} 
+            value={person.licenseremark || ''} 
+            onChange={(e) => handleInputChange(e,'licenseremark', index)} placeholder="Write Here"/>
+            </td>
+        </tr>
+        <tr>
           <td colspan="4">
-            <label className="form-label">Date of Registration{index+1}</label>
+            <label className="form-label">Date of Registration</label>
             <input
               type="date"
               className="form-control"
@@ -49,49 +88,10 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
               required
             />
           </td>
-          {/* <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.esidetails || ''}
-              onChange={(e) => handleInputChange(e, 'esidetails', index)}
-              id={`esidetails_${index}`}  
-              name={`esidetails_${index}`} 
-            />
-          </td>
-          <td>
-            <div className="form-group files1">
-              <input
-                type="file"
-                multiple=""
-                accept="image/*,application/pdf"
-                className="form-control"
-                style={{ height: '10px' }}
-                onChange={(e) => handleInputChange(e, 'esiimage', index)}
-                id={`esiimage_${index}`}  
-                name={`esiimage_${index}`} 
-                required
-              />
-            </div>
-          </td>
-          <td>
-            <label className="form-label">Remarks{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Remark"
-              value={person.remarks || ''}
-              onChange={(e) => handleInputChange(e, 'esiremarks', index)}
-              id={`esiremarks_${index}`}  
-              name={`esiremarks_${index}`} 
-            />
-          </td> */}
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Date of Expiry{index+1}</label>
+            <label className="form-label">Date of Expiry</label>
             <input
               type="date"
               className="form-control"
@@ -103,49 +103,10 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
               required
             />
           </td>
-          {/* <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.esidocdetails || ''}
-              onChange={(e) => handleInputChange(e, 'esidocdetails', index)}
-              id={`esidocdetails_${index}`}  
-              name={`esidocdetails_${index}`} 
-            />
-          </td>
-          <td>
-            <div className="form-group files1">
-              <input
-                type="file"
-                multiple=""
-                accept="image/*,application/pdf"
-                className="form-control"
-                style={{ height: '10px' }}
-                onChange={(e) => handleInputChange(e, 'esidocimage', index)}
-                id={`esidocimage_${index}`}  
-                name={`esidocimage_${index}`} 
-                required
-              />
-            </div>
-          </td>
-          <td>
-            <label className="form-label">Remarks{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Remark"
-              value={person.esidocremark || ''}
-              onChange={(e) => handleInputChange(e, 'esidocremark', index)}
-              id={`esidocremark_${index}`}  
-              name={`esidocremark_${index}`} 
-            />
-          </td> */}
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Due Date of Renewal{index+1}</label>
+            <label className="form-label">Due Date of Renewal</label>
             <input
               type="date"
               className="form-control"
@@ -157,49 +118,10 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
               required
             />
           </td>
-          {/* <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.esidocdetails || ''}
-              onChange={(e) => handleInputChange(e, 'esidocdetails', index)}
-              id={`esidocdetails_${index}`}  
-              name={`esidocdetails_${index}`} 
-            />
-          </td>
-          <td>
-            <div className="form-group files1">
-              <input
-                type="file"
-                multiple=""
-                accept="image/*,application/pdf"
-                className="form-control"
-                style={{ height: '10px' }}
-                onChange={(e) => handleInputChange(e, 'esidocimage', index)}
-                id={`esidocimage_${index}`}  
-                name={`esidocimage_${index}`} 
-                required
-              />
-            </div>
-          </td>
-          <td>
-            <label className="form-label">Remarks{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Remark"
-              value={person.esidocremark || ''}
-              onChange={(e) => handleInputChange(e, 'esidocremark', index)}
-              id={`esidocremark_${index}`}  
-              name={`esidocremark_${index}`} 
-            />
-          </td> */}
         </tr>
         <tr>
-          <td>
-                <label className="form-label">Issuing Authority{index+1}</label>
+          <td colspan="2">
+                <label className="form-label">Issuing Authority</label>
                 <input type="text" class="form-control" 
                 placeholder="Issuing Authority" 
                 value={person.issuingauth || ''}
@@ -208,8 +130,8 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
                 id={`issuingauth_${index}`}  
                 required/>
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -219,7 +141,7 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
               id={`issuingauthdetails_${index}`}  
               name={`issuingauthdetails_${index}`} 
             />
-          </td> 
+          </td>  */}
           <td>
             <div className="form-group files1">
               <input
@@ -236,7 +158,7 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -255,15 +177,16 @@ const  DynamicHTMLGeneratorF54NSP = ({ formData, setFormData }) =>{
   return (
     <table className="table  creat_tbl">
       <tbody>
-        <tr>
+      <tr>
           <td colSpan="4">
-            <label className="form-label">Number</label>
+            {/* <label className="form-label">Number</label> */}
             <input
-              type="number"
+              type="text"
               className="form-control"
               placeholder="Number of Subcodes"
               value={formData.length}
               onChange={handlenumberOfPersonsChange}
+              style={{ display:'none' }}
             />
           </td>
         </tr>

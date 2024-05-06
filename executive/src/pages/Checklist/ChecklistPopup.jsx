@@ -418,8 +418,8 @@ const ChecklistPopup = ({ addOrEdit,recordForEdit }) => {
                 </select>
             </div>
             <div class="col-md-12 col-lg-12 mb-2">
-                <label for="cat" class="form-label">Branch *</label>
-                <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);}} value={branch} required>
+                <label for="cat" class="form-label">Branch</label>
+                <select className="form-select" aria-label="Default select example" id="branchs" name="branch" ref={myElementRefBranch} onChange={(e)=>{setBranch(e.target.value);}} value={branch}>
                     <option value="">Select Branch</option>
                     {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
                         <option value={item.id}>{item.name}</option>

@@ -32,7 +32,7 @@ const CompanyinteractionForm = () => {
     const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     const companyinteractTableGet = useSelector((state) => state.companyinteractTableGet);
     const { loadingcit,companyinteractionTableGetInfo } = companyinteractTableGet; 
-     console.log(companyinteractionTableGetInfo);
+    //  console.log(companyinteractionTableGetInfo);
     //console.log(checklistInfoOnCreate);
     //console.log(usersInfo);
     const companyProfileFilter = useSelector((state) => state.companyProfileFilter);
@@ -425,11 +425,7 @@ const CompanyinteractionForm = () => {
                 </div>
                 
             </div>
-            {/* <div style={{ width:'100%' }}> */}
-            {/* <form name="save" onSubmit={saveandapprove}> */}
-                <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove}>Save And Submit</button>
-                {/* </div> */}
-            {/* </form> */}
+                <button type="button" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" /*onClick={saveandapprove}*/ >Save And Submit</button>
         </div>
     </React.Fragment>
     )

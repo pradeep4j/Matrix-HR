@@ -31,7 +31,7 @@ const Login = () => {
         password: Yup.string('')
             .min(8, 'The password must be at least 8 characters.')
             .required('Password is required')
-            .matches(/^(?=(?:[^A-Z]*[A-Z]){1})(?=(?:[^0-9]*[0-9]){1})(?=(?:[^!@#$%^&*()_+|~\-=`{}\[\]:";'<>?,.\/]*[!@#$%^&*()_+|~\-=`{}\[\]:";'<>?,.\/]){1})[A-Za-z0-9!@#$%^&*()_+|~\-=`{}\[\]:";'<>?,.\/]{8}$/,"Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and a special characters!"),
+            .matches(/^(?=(?:[^A-Z]*[A-Z]){1})(?=(?:[^0-9]*[0-9]){1})(?=(?:[^!@#$%^&*()_+|~\-=`{}\[\]:";'<>?,.\/]*[!@#$%^&*()_+|~\-=`{}\[\]:";'<>?,.\/]){1})[A-Za-z0-9!@#$%^&*()_+|~\-=`{}\[\]:";'<>?,.\/]+$/,"Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and a special characters!"),
     });
     //for inline validations via Yup and formik
     const formik = useFormik({

@@ -300,7 +300,7 @@ export const auditchecklistGetonCreate = async (request, response, next) => {  /
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
+            newArr = newArr.filter(docs => docs.userId && docs.userId.equals(id));
             
         } else {
             response.status(201).json(newArr);
@@ -463,7 +463,7 @@ export const auditChecklistFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filter);
             return;
@@ -595,7 +595,7 @@ export const gettingAuditDetail = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            auditData = auditData.filter(docs => docs.userId.equals(id));
+            auditData = auditData.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(auditData);
             return;
@@ -725,7 +725,7 @@ export const auditFilter = async (request, response, next) => {
         const matchStage = {};
         const { company, state, branch, executive, auditor, start_date, end_date, overdue, auditstatus, risk } = data;
 
-        let auditDataFilter
+        let auditDataFilter;
 
         // Define filters
         const filters = { company, state, branch, executive, auditor, start_date, end_date, auditstatus, risk };
@@ -738,11 +738,7 @@ export const auditFilter = async (request, response, next) => {
                     matchStage[key] = new mongoose.Types.ObjectId(filters[key]);
                 } else if (key === "auditstatus" || key === "risk" || key === "branch") {
                     matchStage[key] = filters[key];
-                }
-                // else if(key === "overdue"){
-
-                // }
-                else if (key === "start_date" || key === "end_date") {
+                } else if (key === "start_date" || key === "end_date") {
                     const dateObject = new Date(filters[key]);
                     const nextDay = new Date(dateObject);
                     nextDay.setDate(dateObject.getDate() + 1);
@@ -753,9 +749,6 @@ export const auditFilter = async (request, response, next) => {
                 }
             }
         }
-        // else {
-
-        // }
 
         // Perform aggregation
         auditDataFilter = await Audit.aggregate([
@@ -764,7 +757,7 @@ export const auditFilter = async (request, response, next) => {
             {
                 $lookup: {
                     from: "users",
-                    localField: "auditor",
+                    localField: "executive",
                     foreignField: "_id",
                     as: "executiveData"
                 }
@@ -858,45 +851,51 @@ export const auditFilter = async (request, response, next) => {
                     state: { $arrayElemAt: ["$stateData.name", 0] },
                     category: { $arrayElemAt: ["$categoryData.name", 0] },
                     company: { $arrayElemAt: ["$companyData.companyname", 0] },
-                    // branch: { $arrayElemAt: ["$branchData.name", 0] }
+                    // branch: { $arrayElemAt: ["$branchData.name", 0] } // Commented out due to null issue
                 }
             }
-
         ]);
+
         if (auditDataFilter.length > 0) {
-            const gettingCompany = await Companydata.find({})
+            const gettingCompany = await Companydata.find({});
             gettingCompany.forEach(companyItem => {
                 companyItem.F1branch.forEach(branch => {
                     auditDataFilter.forEach(filteredItem => {
                         if (branch.id === filteredItem.branch) {
-                            filteredItem.branch = branch.name
+                            filteredItem.branch = branch.name;
                         }
-                    })
-                })
-            })
-        }
-        // console.log(auditDataFilter);
-        if (overdue !== undefined && overdue !== "") {
-            // const currentDate = new Date();
-            auditDataFilter = auditDataFilter.filter(doc => {
-                return doc.overdue == overdue
+                    });
+                });
             });
         }
+
+        // Apply additional filters
+        if (overdue !== undefined && overdue !== "") {
+            auditDataFilter = auditDataFilter.filter(doc => doc.overdue == overdue);
+        }
+
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
         const id = user._id;
 
-        if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            auditDataFilter = auditDataFilter.filter(docs => docs.userId.equals(id));
+        if (
+            role === "Auditor" ||
+            role === "Executive" ||
+            role === "Executive(Matrix)" ||
+            role === "Company CEO"
+        ) {
+            auditDataFilter = auditDataFilter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(auditDataFilter);
             return;
         }
+
         response.status(200).json(auditDataFilter);
     } catch (error) {
         next(error);
     }
-}
+};
+
 export const catCreate = async (request, response, next) => {
     try {
         const name = await Category.findOne({ name: request.body.name });
@@ -1455,7 +1454,7 @@ export const gettingCompliancesOnCreate = async (request, response, next) => { /
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             newArr = newArr.filter(docs => {
-                if (docs.approvalstatus === 0  && docs.userId.equals(id)) {
+                if (docs.approvalstatus === 0 && docs.userId && docs.userId.equals(id)) {
                     return docs
                 }
             });
@@ -1474,7 +1473,10 @@ export const gettingCompliances = async (request, response, next) => { /////////
         let newArr = await Compliance.aggregate([
             {
                 $match: {
-                    status: { $eq: 0 }
+                    $and: [
+                        { status: { $eq: 0 } },
+                        { executive: { $ne: new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72") } }
+                    ]
                 }
             },
             {
@@ -1538,7 +1540,7 @@ export const gettingCompliances = async (request, response, next) => { /////////
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             newArr = newArr.filter(docs => {
-                if (docs.approvalstatus === 0 && docs.userId.equals(id)) {
+                if (docs.approvalstatus === 0 && docs.userId && docs.userId.equals(id)) {
                     return docs
                 }
             });
@@ -1620,9 +1622,10 @@ export const gettingCompliancesAll = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
+            newArr = newArr.filter(docs => docs.userId && docs.userId.equals(id));
             
         } else {
+            // console.log("else");
             response.status(201).json(newArr);
             return;
         }
@@ -1700,7 +1703,7 @@ export const gettingCompliancesReject = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
+            newArr = newArr.filter(docs => docs.userId && docs.userId.equals(id));
             
         } else {
             response.status(201).json(newArr);
@@ -1809,7 +1812,7 @@ export const complianceFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filter);
             return;
@@ -2079,7 +2082,7 @@ export const gettingCompliancesAllFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filter);
             return;
@@ -2188,7 +2191,7 @@ export const complianceApproveFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filter);
             return;
@@ -2462,7 +2465,7 @@ export const complianceRejectedFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filter);
             return;
@@ -2929,7 +2932,7 @@ export const checklistOnCreateegetting = async (request, response, next) => { //
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             newArr = newArr.filter(docs => {
-                if (docs.approvalstatus === 0 && gettingCompliances) {
+                if (docs.approvalstatus === 0 && docs.userId && docs.userId.equals(id)) {
                     return docs
                 }
             });
@@ -3052,7 +3055,7 @@ export const checklistAllgetting = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
+            newArr = newArr.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(newArr);
             return;
@@ -3069,8 +3072,13 @@ export const checklistApprovegetting = async (request, response, next) => { //he
         let newArr = await CheckList.aggregate([
             {
                 $match: {
-                    status: { $eq: 0 }
+                    $and: [
+                        { status: { $eq: 0 } },
+                        { executive: { $ne: new mongoose.Types.ObjectId("659d4f2609c9923c9e7b8f72") } },
+                        // Add additional conditions as needed
+                    ]
                 }
+                
             },
             {
                 $lookup: {
@@ -3169,7 +3177,7 @@ export const checklistApprovegetting = async (request, response, next) => { //he
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
             newArr = newArr.filter(docs => {
-                if (docs.approvalstatus === 0 && gettingCompliances) {
+                if (docs.approvalstatus === 0 && docs.userId && docs.userId.equals(id)) {
                     return docs
                 }
             });
@@ -3286,7 +3294,7 @@ export const checklistOnRejectegetting = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            newArr = newArr.filter(docs => docs.userId.equals(id));
+            newArr = newArr.filter(docs => docs.userId && docs.userId.equals(id));
             
         } else {
             response.status(201).json(newArr);
@@ -3684,7 +3692,7 @@ export const checkListAllFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filter);
             return;
@@ -4066,7 +4074,7 @@ export const checkListApproveFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filter);
             return;
@@ -4224,7 +4232,7 @@ export const checkListCreateFilter = async (request, response, next) => {
 
 
         // console.log(matchStage);
-        const filter = await CheckList.aggregate([
+        let filter = await CheckList.aggregate([
             {
                 $match: matchStage,
             },
@@ -4354,19 +4362,20 @@ export const checkListCreateFilter = async (request, response, next) => {
         let newArr = [];
 
         filter.forEach(item => {
-            gettingCompany.forEach(companyItem => {
+            gettingCompany.forEach(companyItem => {console.log(companyItem.companycategory,item.category._id);
                 gettingCompliance.forEach(complianceItem => {
-                    if (
-                        item.category._id.equals(companyItem.companycategory) &&
-                        item.state._id.equals(companyItem.companystate)
-                    ) {
+                    
+                    // if (
+                    //     item.category._id.equals(companyItem.companycategory) &&
+                    //     item.state._id.equals(companyItem.companystate)
+                    // ) {
                         if (
                             companyItem.companycategory._id.equals(complianceItem.category._id.toString()) &&
                             companyItem.companystate._id.equals(complianceItem.state._id.toString())
                         ) {
                             newArr.push(complianceItem);
                         }
-                    }
+                    // }
                 });
             });
         });
@@ -4382,12 +4391,11 @@ export const checkListCreateFilter = async (request, response, next) => {
                 })
             })
         }
-        console.log('here')
         const user = await Users.findOne({ _id: request.user._id });
         const role = user.role;
         const id = user._id;
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
             if (companyFilter !== undefined && companyFilter !== "" && stateFilter !== undefined && stateFilter !== "") {
                 console.log([...filter, ...newArr])
                 response.status(201).json([...filter, ...newArr]);
@@ -4786,7 +4794,7 @@ export const checkListRejectedFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filter = filter.filter(docs => docs.userId.equals(id));
+            filter = filter.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filter);
             return;
@@ -5055,7 +5063,7 @@ export const liseRegGetting = async (request, response, next) => {
         const role = user.role;
         const id = user._id;
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            liseReg = liseReg.filter(docs => docs.userId.equals(id));
+            liseReg = liseReg.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(liseReg);
             return;
@@ -5078,7 +5086,7 @@ export const liseRegUpdateById = async (request, response, next) => {
 
         let { rate, docReqDate, docReqFollow, docReviewDate, docRemark, docStatus, appliedDate, applicationStatus, applicationRemark, challlanFees, challanNumber, challanDate, directExpenses, inDirectExpenses, totalExpenses, dateOfIssue, expireDate, renewalDate, invoiceType, invoiceDate, submissionDate, company, executive, state, branch, updated_at
         } = data
-
+        
         let docImageUrl, ackImageUrl, challanImageUrl, licImageUrl, formattedDocName, formattedAckName, formattedChallanName, formattedLicName, documents, acknowledge, licenseUpload, challanUpload, newLiseReg, liseReg;
 
         // console.log(data);
@@ -5765,7 +5773,7 @@ export const elibraryGet = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            elibraryData = elibraryData.filter(docs => docs.userId.equals(id));
+            elibraryData = elibraryData.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(elibraryData);
             return;
@@ -5911,7 +5919,7 @@ export const elibraryRejectedDocs = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            elibraryData = elibraryData.filter(docs => docs.userId.equals(id));
+            elibraryData = elibraryData.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(elibraryData);
             return;
@@ -6426,7 +6434,7 @@ export const gettingCompanyTable = async (request, response, next) => {
         //             matchStage,
 
         // })
-        const company = await Companydata.aggregate([
+        let company = await Companydata.aggregate([
 
             {
                 $lookup: {
@@ -6482,7 +6490,6 @@ export const gettingCompanyTable = async (request, response, next) => {
             }
 
         ])
-
         response.status(200).json(company)
     }
     catch (error) {
@@ -6493,7 +6500,7 @@ export const gettingCompanyTable = async (request, response, next) => {
 export const gettingCompanyById = async (request, response, next) => {
     try {
         const companyId = request.params.id
-        // console.log(companyId);
+        console.log(companyId);
         const company = await Companydata.aggregate([
             {
                 $match: {
@@ -7423,9 +7430,9 @@ export const companyUpdateById = async (request, response, next) => {
 export const companySaveandApprove = async (request, response, next) => {
     try {
         //console.log(request.body);return;
-        const idsToUpdate = request.body.id;
-        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
-        const companyApprove = await Companydata.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+        // const idsToUpdate = request.body.id;
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate,approvalstatus:request.body.approvalstatus };
+        const companyApprove = await Companydata.updateMany({}, { $set: updateValues });
         if (request.body.type === 'executive') {
             response.status(202).json(companyApprove);
             return;
@@ -7601,10 +7608,8 @@ export const companyLById = async (request, response, next) => { ////getting lic
 }
 export const apporveCompanyL = async (request, response, next) => {
     try {
-        //console.log(request.body);return;
-        const idsToUpdate = request.body.id;
-        const updateValues = { status: request.body.status, approvedate: request.body.approvedate };
-        const companyLApprove = await License.updateMany({ _id: { $in: idsToUpdate } }, { $set: updateValues });
+        const updateValues = { status: request.body.status, approvedate: request.body.approvedate,approvalstatus:request.body.approvalstatus };
+        const companyLApprove = await License.updateMany({}, { $set: updateValues });
         if (request.body.type === 'executive') {
             response.status(202).json(companyLApprove);
             return;
@@ -7650,7 +7655,7 @@ export const companyLicenseFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(201).json(filteredData);
             return;
@@ -7741,13 +7746,14 @@ export const gettingCompanyInractionTable = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            companyProfile = companyProfile.filter(docs => docs.userId.equals(id));
+            companyProfile = companyProfile.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
-            response.status(201).json(companyProfile);
+            console.log("else");
+            response.status(200).json(companyProfile);
             return;
         }
 
-        response.status(201).json(companyProfile)
+        response.status(200).json(companyProfile)
     } catch (error) {
         next(error)
     }
@@ -7871,7 +7877,7 @@ export const companyProfileFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(filteredData);
             return;
@@ -8040,7 +8046,7 @@ export const licenseCompanyInteractGetOnCreate = async (request, response, next)
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            companyProfilelicense = companyProfilelicense.filter(docs => docs.userId.equals(id));
+            companyProfilelicense = companyProfilelicense.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(companyProfilelicense);
             return;
@@ -8090,7 +8096,7 @@ export const companyLicenseIntractFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(filteredData);
             return;
@@ -8299,7 +8305,7 @@ export const assignTableGet = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            assigncompanyarr = assigncompanyarr.filter(docs => docs.userId.equals(id));
+            assigncompanyarr = assigncompanyarr.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(assigncompanyarr);
             return;
@@ -8371,7 +8377,7 @@ export const getAssignOnCreate = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            assigncompanyarr = assigncompanyarr.filter(docs => docs.userId.equals(id));
+            assigncompanyarr = assigncompanyarr.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(assigncompanyarr);
             return;
@@ -8464,7 +8470,7 @@ export const viewAllAssignedCompanyFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(filteredData);
             return;
@@ -8557,7 +8563,7 @@ export const assignedCompanyFilter = async (request, response, next) => {
         const id = user._id;
 
         if (role === "Auditor" || role === "Executive" || role === "Executive(Matrix)" || role === "Company CEO") {
-            filteredData = filteredData.filter(docs => docs.userId.equals(id));
+            filteredData = filteredData.filter(docs => docs.userId && docs.userId.equals(id));
         } else {
             response.status(200).json(filteredData);
             return;

@@ -21,7 +21,7 @@ const CompanyinteractionFormpopup = ({ addOrEdit,recordForEdit }) => {
     }
     const checklistAllComliance = useSelector((state) => state.checklistAllComliance);
     const { checklistAllComp } = checklistAllComliance; 
-    console.log(checklistAllComp)
+    // console.log(checklistAllComp)
     const catGet = useSelector((state) => state.catGet);
     const { loading, categoryInfo,error } = catGet;  
     const getState = useSelector((state) => state.getState);

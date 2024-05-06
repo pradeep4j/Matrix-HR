@@ -1,8 +1,8 @@
 import axios from 'axios';
 import {getToken} from '../utils/localStorage'
-const URL = 'http://localhost:8000/api/admin'; 
+// const URL = 'http://localhost:8000/api/admin'; 
 
-// const URL = 'http://103.160.107.21:8000/api/admin'; 
+const URL = 'http://103.160.107.21:8000/api/admin'; 
 axios.defaults.withCredentials = true;  
 ///api of users starts
 export const login = async(data) => {

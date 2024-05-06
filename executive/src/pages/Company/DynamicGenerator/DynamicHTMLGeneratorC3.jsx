@@ -49,8 +49,8 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
     return formData.map((person, index) => (
       <React.Fragment key={index}>
         <tr>
-          <td>
-            <label className="form-label">Name{index+1}</label>
+          <td >
+            <label className="form-label">Name</label>
             <input
               type="text"
               className="form-control"
@@ -62,19 +62,7 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
               required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.details || ''}
-              onChange={(e) => handleInputChange(e, 'details', index)}
-              id={`details_${index}`}  
-              name={`details_${index}`} 
-            />
-          </td>
-          <td>
+          <td colspan="2">
             <div className="form-group files1">
               <input
                 type="file"
@@ -89,8 +77,8 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
               />
             </div>
           </td>
-          <td>
-            <label className="form-label">Remarks{index+1}</label>
+          <td >
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -104,7 +92,7 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td>
-            <label className="form-label">Designation{index+1}</label>
+            <label className="form-label">Designation</label>
             <input
               type="text"
               className="form-control"
@@ -116,19 +104,7 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
               required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.designationdetails || ''}
-              onChange={(e) => handleInputChange(e, 'designationdetails', index)}
-              id={`designationdetails_${index}`}  
-              name={`designationdetails_${index}`} 
-            />
-          </td>
-          <td>
+          <td colspan="2">
             <div className="form-group files1">
               <input
                 type="file"
@@ -142,9 +118,9 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
                 required
               />
             </div>
-          </td>
+          </td> 
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -158,7 +134,7 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td>
-            <label className="form-label">Mobile Number{index+1}</label>
+            <label className="form-label">Mobile Number</label>
             <input
               type="number"
               className="form-control"
@@ -167,24 +143,12 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
               onChange={(e) => handleInputChange(e, 'mobile', index)}
               id={`mobile_${index}`}  
               name={`mobile_${index}`} 
-            />
+              required/>
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          <td colspan="3">
+            <label className="form-label">Remarks</label>
             <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.mobiledetail || ''}
-              onChange={(e) => handleInputChange(e, 'mobiledetail', index)}
-              id={`mobiledetail_${index}`}  
-              name={`mobiledetail_${index}`} 
-            />
-          </td>
-          <td>
-            <label className="form-label">Remarks{index+1}</label>
-            <input
-              type="text"
+              type="text"s
               className="form-control"
               placeholder="Remark"
               value={person.mobileremark || ''}
@@ -196,7 +160,7 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td>
-            <label className="form-label">WhatsApp Number{index+1}</label>
+            <label className="form-label">WhatsApp Number</label>
             <input
               type="number"
               className="form-control"
@@ -208,20 +172,8 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
               required
             />
           </td>
-          <td>
-            <label className="form-label">whatsAppdetails{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.whatsAppdetails || ''}
-              onChange={(e) => handleInputChange(e, 'whatsAppdetails', index)}
-              id={`whatsAppdetails_${index}`}  
-              name={`whatsAppdetails_${index}`} 
-            />
-          </td>
-          <td>
-            <label className="form-label">whatsAppremark{index+1}</label>
+          <td colspan="3">
+            <label className="form-label">whatsAppremark</label>
             <input
               type="text"
               className="form-control"
@@ -235,7 +187,7 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td>
-            <label className="form-label">Email{index+1}</label>
+            <label className="form-label">Email</label>
             <input
               type="email"
               className="form-control"
@@ -246,20 +198,8 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
               name={`email_${index}`} 
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.emaildetails || ''}
-              onChange={(e) => handleInputChange(e, 'emaildetails', index)}
-              id={`emaildetails_${index}`}  
-              name={`emaildetails_${index}`} 
-            />
-          </td>
-          <td>
-            <label className="form-label">Remark{index+1}</label>
+          <td colspan="3">
+            <label className="form-label">Remark</label>
             <input
               type="text"
               className="form-control"
@@ -273,32 +213,18 @@ const  DynamicHTMLGeneratorC3 = ({ formData, setFormData }) =>{
         </tr>        
         <tr>
           <td>
-            <label className="form-label">Preffered Means Communication{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Preffered Means Communication"
-              value={person.prefferedMComm || ''}
-              onChange={(e) => handleInputChange(e, 'prefferedMComm', index)}
-              id={`prefferedMComm_${index}`}  
-              name={`prefferedMComm_${index}`} 
-              required
-            />
+            <label className="form-label">Preffered Means Communication</label>
+            <select className="form-select" aria-label="Default select example" id={`email_${index}`}  
+              name={`email_${index}`}  value={person.prefferd || ''} onChange={(e) => handleInputChange(e, 'prefferd', index)} placeholder="Prefferd means Of Communication" required>
+                  <option value="">Prefferd means Of Communication</option>
+                  <option value="1">Call</option>
+                  <option value="2">SMS</option>
+                  <option value="3">WhatsApp</option>
+                  <option value="4">Email</option>
+            </select>      
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.prefferedMCommdetails || ''}
-              onChange={(e) => handleInputChange(e, 'prefferedMCommdetails', index)}
-              id={`prefferedMCommdetails_${index}`}  
-              name={`prefferedMCommdetails_${index}`} 
-            />
-          </td>
-          <td>
-            <label className="form-label">Remark{index+1}</label>
+          <td colspan="3">
+            <label className="form-label">Remark</label>
             <input
               type="text"
               className="form-control"

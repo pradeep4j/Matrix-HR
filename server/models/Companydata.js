@@ -2245,6 +2245,11 @@ const companySchema = new mongoose.Schema({
         index: true,
         default: 0
     },
+    approvalstatus  : { 
+        type: Number, 
+        index: true, 
+        default: 0
+    },
     created_at: {
         type: Date,
         default: null,

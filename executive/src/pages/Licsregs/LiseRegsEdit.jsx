@@ -138,7 +138,8 @@ const LiseRegsEdit = (props) => {
     const getRegsById = useSelector(state => state.getRegsById)
     const { regsGetByIdInfo } = getRegsById;
     console.log(regsGetByIdInfo)      
-    
+    const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
     let defaultDate = new Date()
     defaultDate.setDate(defaultDate.getDate() )
 
@@ -291,7 +292,7 @@ const LiseRegsEdit = (props) => {
         formData.append("company",company);
         formData.append("state",state);
         formData.append("branch",branch);
-        formData.append("executive",'659d4f2609c9923c9e7b8f72'); //super admin Opject Id
+        formData.append("executive",userInfo._id); 
         formData.append("created_at",date);
         dispatch(companyInfoDispatchUpdate(formData,regsGetByIdInfo._id))
         // if(isDisabled === true){
@@ -332,7 +333,7 @@ const LiseRegsEdit = (props) => {
     const getBbranch = (company) => {
         const elementcompanybranch = myElementRefCompany.current;
         const postBody = {
-         id : elementcompanybranch.value
+         id : company
        }
         dispatch(branchGet(postBody));
     }
@@ -1153,7 +1154,7 @@ const LiseRegsEdit = (props) => {
                                                                             <th scope="row" className='bg-light w-lg-25'>Branch</th>
                                                                             <td>
                                                                                 <div className="col-lg-4 col-md-4">
-                                                                                <select className="form-select" aria-label="Default select example" id="branch" name="branch" value={branch} onChange={(e)=>setBranch(e.target.value)}  required>
+                                                                                <select className="form-select" aria-label="Default select example" id="branch" name="branch" value={branch} onChange={(e)=>setBranch(e.target.value)} >
                                                                                         <option value="">Select Branch</option>
                                                                                         {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
                                                                                             <option value={item._id}>{item.name}</option>

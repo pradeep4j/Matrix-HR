@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 
 const  DynamicHTMLGeneratorF54WOE = ({ formData, setFormData }) =>{
+  console.log(formData);
   useEffect(() => {
     // Call handlenumberOfPersonsChange when the component mounts
     handlenumberOfPersonsChange({ target: { value: formData.length } });

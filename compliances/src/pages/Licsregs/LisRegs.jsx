@@ -5,7 +5,7 @@ import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { CloudUploadOutlined } from '@ant-design/icons';
-import {stateGets,usersGet,branchGet,companyGet,nameRateCreate,documentCollection,appDetailsDispatch,expenseDispatch,licenseInfoDispatch,invoiceInfoDispatch,companyInfoDispatch,regsGets,lisregsSaveandApprove} from "../../store/actions/otherActions";
+import {stateGets,usersGet,branchGet,companyGet,nameRateCreate,documentCollection,appDetailsDispatch,expenseDispatch,licenseInfoDispatch,invoiceInfoDispatch,companyInfoDispatch,regsGets,lisregsSaveandApprove,companyTableGet} from "../../store/actions/otherActions";
 import { useDispatch,useSelector } from 'react-redux';
 import LisRegsTables from './LisRegsTables';
 import Swal from 'sweetalert2';
@@ -16,6 +16,8 @@ const LiseRegs = () => {
     const [branch,setBranch] = useState('');
     const [executive, setExecutive] = useState('');
     const [isDisabled, setIsDisabled] = useState(false);
+    const getCompanyTable = useSelector(state => state.getCompanyTable)
+    const {loadingcompanytable, companyGetTableInfo } = getCompanyTable;
     // alert(isDisabled)
     /**reg name and create start*/
     const [rate,setRate] = useState('');
@@ -72,6 +74,7 @@ const LiseRegs = () => {
     const myElementRefReqDate = useRef(null);
     const myElementRefFolDate = useRef(null);
     const myElementRefRecDate = useRef(null);
+    const myElementRefCompany = useRef(null);
     ////image upload refs start
     const myElementRefDocImage = useRef(null);
     const myElementRefAckImage = useRef(null);
@@ -104,14 +107,15 @@ const LiseRegs = () => {
     const namerate = useSelector(state => state.namerate)
     const { namerateCreateInfo } = namerate;
     console.log(namerateCreateInfo) 
-
     const createDoc = useSelector(state => state.createDoc)
     const { docCreateInfo } = createDoc;
     console.log(docCreateInfo) 
     const createAppD = useSelector(state => state.createAppD)
     const { appDetailsCreateInfo } = createAppD;
     console.log(appDetailsCreateInfo) 
-
+    const userLogin = useSelector(state=>state.userLogin);
+    const {userInfo} = userLogin;
+    console.log(userInfo);
     // const getRegs = useSelector(state => state.getRegs)
     // const { regsInfoDetailsGetInfo } = getRegs;
     // console.log(regsInfoDetailsGetInfo)    
@@ -229,7 +233,7 @@ const LiseRegs = () => {
         formData.append("company",company);
         formData.append("state",state);
         formData.append("branch",branch);
-        formData.append("executive",'659d4f2609c9923c9e7b8f72'); //super admin Opject Id
+        formData.append("executive",userInfo._id); 
         formData.append("created_at",date);
         dispatch(companyInfoDispatch(formData))
         // if(isDisabled === true){
@@ -256,9 +260,17 @@ const LiseRegs = () => {
         dispatch(stateGets());
         dispatch(usersGet());
         dispatch(branchGet());
-        dispatch(companyGet());
+        dispatch(companyTableGet());
         // setIsDisabled(isDisabled);
     },[dispatch]);
+    const getBbranch = (company) => {
+        // alert(company)
+        const elementcompanybranch = myElementRefCompany.current;
+        const postBody = {
+         id : company
+       }
+        dispatch(branchGet(postBody));
+      }
     useEffect(() => {
         setRn(expenseDetailsCreateInfo?.regNo)
         if(namerateCreateInfo?.regNo && expenseDetailsCreateInfo?.regNo && expenseDetailsCreateInfo?.docRemark && expenseDetailsCreateInfo?.applicationRemark && expenseDetailsCreateInfo?.challanNumber && licenseDetailsCreateInfo?.licenseUpload && licenseDetailsCreateInfo?.licenseUpload  && invoiceDetailsCreateInfo?.invoiceType && companyInfoDetailsCreateInfo?.branch){
@@ -499,7 +511,7 @@ const LiseRegs = () => {
                                         {/* <Spanning id="states"></Spanning> */}
                                         </div>
                                         <div className="col-md-4 col-lg-15 mb-2 mb-lg-3 mb-md-3" style={{ display:'none' }}>
-                                            <select className="form-select" aria-label="Default select example" id="branch" name="branch" onChange={(e)=>setBranch(e.target.value)} value={branch} required>
+                                            <select className="form-select" aria-label="Default select example" id="branch" name="branch" onChange={(e)=>setBranch(e.target.value)} value={branch} >
                                                 <option value="">Select Branch</option>
                                                 {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
                                                     <option value={item._id}>{item.name}</option>
@@ -948,11 +960,11 @@ const LiseRegs = () => {
                                                                                         <th scope="row" className='bg-light w-lg-25'>Company</th>
                                                                                         <td>
                                                                                             <div className="col-lg-4 col-md-4">
-                                                                                            <select className="form-select" aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>setCompany(e.target.value)} required>
+                                                                                            <select className="form-select" aria-label="Default select example" id="company" name="company" value={company} onChange={(e)=>{setCompany(e.target.value);getBbranch(e.target.value)}} required>
                                                                                                         <option value="">Select Company</option>
-                                                                                                    {companyInfo != 'undefind' && companyInfo?.length > 0 && companyInfo.map(item => 
-                                                                                                        <option value={item._id}>{item.companyname}</option>
-                                                                                                    )};
+                                                                                                        {companyGetTableInfo != 'undefind' && companyGetTableInfo?.length > 0 && companyGetTableInfo.map(item => 
+                                                                                                <option value={item._id}>{item.companyname}</option>
+                                                                                            )};
                                                                                                 </select>
                                                                                             </div>
                                                                                         </td>
@@ -961,7 +973,7 @@ const LiseRegs = () => {
                                                                                         <th scope="row" className='bg-light w-lg-25'>Branch</th>
                                                                                         <td>
                                                                                             <div className="col-lg-4 col-md-4">
-                                                                                            <select className="form-select" aria-label="Default select example" id="branch" name="branch" value={branch} onChange={(e)=>setBranch(e.target.value)}  required>
+                                                                                            <select className="form-select" aria-label="Default select example" id="branch" name="branch" value={branch} onChange={(e)=>setBranch(e.target.value)} >
                                                                                                     <option value="">Select Branch</option>
                                                                                                     {branchInfo != 'undefind' && branchInfo?.length > 0 && branchInfo.map(item => 
                                                                                                         <option value={item._id}>{item.name}</option>

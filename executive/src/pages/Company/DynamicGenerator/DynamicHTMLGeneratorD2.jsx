@@ -47,7 +47,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
       <React.Fragment key={index}>
         <tr>
           <td>
-            <label className="form-label">ESI Subcodes{index+1}</label>
+            <label className="form-label">ESI Subcodes</label>
             <input
               type="text"
               className="form-control"
@@ -59,8 +59,8 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
               required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text" 
               className="form-control"
@@ -70,7 +70,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
               id={`esidetails_${index}`}  
               name={`esidetails_${index}`} 
             />
-          </td>
+          </td> */}
           <td>
             <div className="form-group files1">
               <input
@@ -87,7 +87,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -101,7 +101,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Date of Coverage{index+1}</label>
+            <label className="form-label">Date of Coverage</label>
             <input
               type="date"
               className="form-control"
@@ -114,7 +114,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -141,7 +141,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -156,7 +156,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
 
         <tr>
           <td>
-          <label for="">Office Address as per Registration{index+1}</label>
+          <label for="">Office Address as per Registration</label>
             <table>
                 <tr>
                     <td>
@@ -211,8 +211,8 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
                 </tr>
             </table>
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -222,7 +222,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
               id={`esioffaddressdetails_${index}`}  
               name={`esioffaddressdetails_${index}`} 
             />
-          </td>
+          </td> */}
           <td>
             <div className="form-group files1">
               <input
@@ -239,7 +239,7 @@ const  DynamicHTMLGeneratorD2 = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"

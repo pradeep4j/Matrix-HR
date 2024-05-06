@@ -37,6 +37,11 @@ const licenseSchema = new mongoose.Schema({
         index: true, 
         default: 0
     },  
+    approvalstatus  : { 
+        type: Number, 
+        index: true, 
+        default: 0
+    },
 }, {timestamps : true})
 
 const License = mongoose.model ('License', licenseSchema)

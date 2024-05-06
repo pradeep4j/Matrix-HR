@@ -41,13 +41,25 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
       setFormData(newFormData);
     }
   };
-
+  function formatDate(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    
+    if (month.length < 2) 
+      month = '0' + month;
+    if (day.length < 2) 
+      day = '0' + day;
+    
+    return [year, month, day].join('-');
+}
   const generateDirectorsForm = () => {
     return formData.map((person, index) => (
       <React.Fragment key={index}>
         <tr>
           <td>
-            <label className="form-label">Registration Number{index+1}</label>
+            <label className="form-label">Registration Number</label>
             <input
               type="text"
               className="form-control"
@@ -59,8 +71,8 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
               required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -70,7 +82,7 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
               id={`regdetails_${index}`}  
               name={`regdetails_${index}`} 
             />
-          </td>
+          </td> */}
           <td>
             <div className="form-group files1">
               <input
@@ -87,7 +99,7 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -101,12 +113,12 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Date of Coverage{index+1}</label>
+            <label className="form-label">Date of Coverage</label>
             <input
               type="date"
               className="form-control"
               placeholder="Date of Coverage"
-              value={person.doc || ''}
+              value={formatDate(person.doc) || ''}
               onChange={(e) => handleInputChange(e, 'doc', index)}
               id={`doc_${index}`}  
               name={`doc_${index}`} 
@@ -114,7 +126,7 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -141,7 +153,7 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -156,7 +168,7 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
 
         <tr>
           <td>
-          <label for="">Office Address as per Registration{index+1}</label>
+          <label for="">Office Address as per Registration</label>
             <table>
                 <tr>
                     <td>
@@ -171,13 +183,6 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
                 </tr>
                 <tr>
                     <td>
-                        {/* <input type="text" class="form-control" 
-                         placeholder="State" 
-                         value={person.offstate || ''}
-                         onChange={(e)=>handleInputChange(e, 'offstate', index)} 
-                         name={`offstate_${index}`}  
-                         id={`offstate_${index}`}  
-                         required/> */}
                          <select className="form-select" aria-label="Default select example" id={`offstate_${index}`} name={`offstate_${index}`} value={person.offstate || ''} onChange={(e)=>handleInputChange(e, 'offstate', index)} required>
                                   <option value="">Select State</option>
                               {stateInfo != 'undefind' && stateInfo?.length > 0 && stateInfo.map(item => 
@@ -211,18 +216,6 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
             </table>
           </td>
           <td>
-            <label className="form-label">Details{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Details"
-              value={person.offaddressdetails || ''}
-              onChange={(e) => handleInputChange(e, 'offaddressdetails', index)}
-              id={`offaddressdetails_${index}`}  
-              name={`offaddressdetails_${index}`} 
-            />
-          </td>
-          <td>
             <div className="form-group files1">
               <input
                 type="file"
@@ -238,7 +231,7 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -253,7 +246,7 @@ const  DynamicHTMLGeneratorD1 = ({ formData, setFormData }) =>{
       </React.Fragment>
     ));
   };
-
+  
   return (
     <table className="table  creat_tbl">
       <tbody>

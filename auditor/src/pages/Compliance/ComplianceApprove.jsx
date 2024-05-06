@@ -88,7 +88,7 @@ const ComplianceApprove = () =>{
         dispatch(compliancesGet());
         dispatch(stateGets());
         dispatch(usersGet());
-        dispatch(companyTableGet());
+        // dispatch(companyTableGet());
     },[dispatch])
     useEffect(() => {
       setShowTable1(showTable1);

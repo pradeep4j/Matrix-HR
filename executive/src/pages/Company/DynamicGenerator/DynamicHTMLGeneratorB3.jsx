@@ -51,11 +51,11 @@ function MainComponent({ formData, setFormData }) {
       <React.Fragment key={index}>
         <tr>
           <td>
-            <label className="form-label">Name{index+1}</label>
+            <label className="form-label">Name</label>
             <input
               type="text"
               className="form-control"
-              // placeholder={`Name of Director`+{{  }}}
+              placeholder="Name"
               value={director.name || ''}
               onChange={(e) => handleInputChange(e, 'name', index)}
               id={`name_${index}`}  
@@ -63,18 +63,18 @@ function MainComponent({ formData, setFormData }) {
               required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
-              // placeholder="Details"
+              placeholder="Details"
               value={director.details || ''}
               onChange={(e) => handleInputChange(e, 'details', index)}
               id={`details_${index}`}  
               name={`details_${index}`} 
             />
-          </td>
+          </td> */}
           <td>
             <div className="form-group files1">
               <input
@@ -91,11 +91,11 @@ function MainComponent({ formData, setFormData }) {
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
-              // placeholder="Details"
+              placeholder="Remarks"
               value={director.remarks || ''}
               onChange={(e) => handleInputChange(e, 'remarks', index)}
               id={`remarks_${index}`}  
@@ -105,11 +105,11 @@ function MainComponent({ formData, setFormData }) {
         </tr>
         <tr>
           <td>
-            <label className="form-label">PAN Number{index+1}</label>
+            <label className="form-label">PAN Number</label>
             <input
               type="text"
               className="form-control"
-              // placeholder="PAN Number"
+              placeholder="PAN Number"
               value={director.pan || ''}
               onChange={(e) => handleInputChange(e, 'pan', index)}
               id={`pan_${index}`}  
@@ -117,18 +117,18 @@ function MainComponent({ formData, setFormData }) {
               required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
-              // placeholder="Details"
+              placeholder="Details"
               value={director.pandetails || ''}
               onChange={(e) => handleInputChange(e, 'pandetails', index)}
               id={`pandetails_${index}`}  
               name={`pandetails_${index}`} 
             />
-          </td>
+          </td> */}
           <td>
             <div className="form-group files1">
               <input
@@ -145,7 +145,7 @@ function MainComponent({ formData, setFormData }) {
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -159,7 +159,7 @@ function MainComponent({ formData, setFormData }) {
         </tr>
         <tr>
           <td>
-            <label className="form-label">AADHAAR Number{index+1}</label>
+            <label className="form-label">AADHAAR Number</label>
             <input
               type="text"
               className="form-control"
@@ -171,8 +171,8 @@ function MainComponent({ formData, setFormData }) {
               required
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -182,7 +182,7 @@ function MainComponent({ formData, setFormData }) {
               id={`aadhaardetails_${index}`}  
               name={`aadhaardetails_${index}`} 
             />
-          </td>
+          </td> */}
           <td>
             <div className="form-group files1">
               <input
@@ -199,7 +199,7 @@ function MainComponent({ formData, setFormData }) {
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -212,20 +212,20 @@ function MainComponent({ formData, setFormData }) {
           </td>
         </tr>
         <tr>
-          <td>
-            <label className="form-label">Mobile Number{index+1}</label>
+          <td colspan="1">
+            <label className="form-label">Mobile Number</label>
             <input
               type="text"
               className="form-control"
-              // placeholder="Mobile Number"
+              placeholder="Mobile Number"
               value={director.mobile || ''}
               onChange={(e) => handleInputChange(e, 'mobile', index)}
               id={`mobile_${index}`}  
               name={`mobile_${index}`} 
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -235,13 +235,13 @@ function MainComponent({ formData, setFormData }) {
               id={`mobiledetail_${index}`}  
               name={`mobiledetail_${index}`} 
             />
-          </td>
-          <td>
-            <label className="form-label">Remarks{index+1}</label>
+          </td> */}
+          <td colspan="2">
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
-              // placeholder="Details"
+              placeholder="Remark"
               value={director.mobileremark || ''}
               onChange={(e) => handleInputChange(e, 'mobileremark', index)}
               id={`mobileremark_${index}`}  
@@ -250,20 +250,20 @@ function MainComponent({ formData, setFormData }) {
           </td>
         </tr>
         <tr>
-          <td>
-            <label className="form-label">Email{index+1}</label>
+          <td colspan="1">
+            <label className="form-label">Email</label>
             <input
               type="email"
               className="form-control"
-              // placeholder="Email"
+              placeholder="Email"
               value={director.email || ''}
               onChange={(e) => handleInputChange(e, 'email', index)}
               id={`email_${index}`}  
               name={`email_${index}`} 
             />
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -273,13 +273,13 @@ function MainComponent({ formData, setFormData }) {
               id={`emaildetails_${index}`}  
               name={`emaildetails_${index}`} 
             />
-          </td>
-          <td>
-            <label className="form-label">Remark{index+1}</label>
+          </td> */}
+          <td colspan="2">
+            <label className="form-label">Remark</label>
             <input
               type="text"
               className="form-control"
-              // placeholder="Details"
+              placeholder="Remark"
               value={director.emailremark || ''}
               onChange={(e) => handleInputChange(e, 'emailremark', index)}
               id={`emailremark_${index}`}  
@@ -288,20 +288,19 @@ function MainComponent({ formData, setFormData }) {
           </td>
         </tr>
         <tr>
-          <td>
-            <label className="form-label">Prefferd means Of Communication{index+1}</label>
-            <input
-              type="text"
-              className="form-control"
-              // placeholder="Email"
-              value={director.prefferd || ''}
-              onChange={(e) => handleInputChange(e, 'prefferd', index)}
-              id={`email_${index}`}  
-              name={`email_${index}`} 
-            />
+          <td colspan="1">
+            <label className="form-label">Prefferd means Of Communication</label>
+            <select className="form-select" aria-label="Default select example" id={`email_${index}`}  
+              name={`email_${index}`}  value={director.prefferd || ''} onChange={(e) => handleInputChange(e, 'prefferd', index)} placeholder="Prefferd means Of Communication" required>
+                  <option value="">Prefferd means Of Communication</option>
+                  <option value="1">Call</option>
+                  <option value="2">SMS</option>
+                  <option value="3">WhatsApp</option>
+                  <option value="4">Email</option>
+            </select>
           </td>
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -311,9 +310,9 @@ function MainComponent({ formData, setFormData }) {
               id={`emaildetails_${index}`}  
               name={`emaildetails_${index}`} 
             />
-          </td>
-          <td>
-            <label className="form-label">Remark{index+1}</label>
+          </td> */}
+          <td colspan="2">
+            <label className="form-label">Remark</label>
             <input
               type="text"
               className="form-control"

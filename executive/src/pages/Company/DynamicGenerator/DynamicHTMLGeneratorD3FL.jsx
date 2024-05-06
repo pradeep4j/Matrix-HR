@@ -44,7 +44,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
       <React.Fragment key={index}>
         <tr>
           <td colspan="4">
-            <label className="form-label">Date of Registration{index+1}</label>
+            <label className="form-label">Date of Registration</label>
             <input
               type="date"
               className="form-control"
@@ -57,7 +57,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -84,7 +84,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -98,7 +98,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Date of Expiry{index+1}</label>
+            <label className="form-label">Date of Expiry</label>
             <input
               type="date"
               className="form-control"
@@ -111,7 +111,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -138,7 +138,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -152,7 +152,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Due Date of Renewal{index+1}</label>
+            <label className="form-label">Due Date of Renewal</label>
             <input
               type="date"
               className="form-control"
@@ -165,7 +165,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -192,7 +192,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -205,8 +205,8 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
           </td> */}
         </tr>
         <tr>
-          <td>
-                <label className="form-label">Manager Name of the License{index+1}</label>
+          <td colspan="2">
+                <label className="form-label">Manager Name of the License</label>
                 <input 
                 type="text" 
                 class="form-control" 
@@ -218,8 +218,8 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
                 required/>
           </td>
 
-          <td>
-            <label className="form-label">Details{index+1}</label>
+          {/* <td>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -229,7 +229,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
               id={`managerlicensedetails_${index}`}  
               name={`managerlicensedetails_${index}`} 
             />
-          </td> 
+          </td>  */}
           <td>
             <div className="form-group files1">
               <input
@@ -246,7 +246,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -260,7 +260,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Number of the Employees{index+1}</label>
+            <label className="form-label">Number of the Employees</label>
             <input
               type="number"
               className="form-control"
@@ -273,7 +273,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -300,7 +300,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -314,7 +314,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Male{index+1}</label>
+            <label className="form-label">Male</label>
             <input
               type="number"
               className="form-control"
@@ -327,7 +327,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -354,7 +354,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -368,7 +368,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td colspan="4">
-            <label className="form-label">Female{index+1}</label>
+            <label className="form-label">Female</label>
             <input
               type="number"
               className="form-control"
@@ -381,7 +381,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             />
           </td>
           {/* <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -408,7 +408,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -422,7 +422,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
         </tr>
         <tr>
           <td>
-                <label className="form-label">Issuing Authority{index+1}</label>
+                <label className="form-label">Issuing Authority</label>
                 <input type="text" class="form-control" 
                 placeholder="Issuing Authority" 
                 value={person.issuingauth || ''}
@@ -432,7 +432,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
                 required/>
           </td>
           <td>
-            <label className="form-label">Details{index+1}</label>
+            <label className="form-label">Details</label>
             <input
               type="text"
               className="form-control"
@@ -459,7 +459,7 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
             </div>
           </td>
           <td>
-            <label className="form-label">Remarks{index+1}</label>
+            <label className="form-label">Remarks</label>
             <input
               type="text"
               className="form-control"
@@ -480,9 +480,9 @@ const  DynamicHTMLGeneratorD3FL = ({ formData, setFormData }) =>{
       <tbody>
         <tr>
           <td colSpan="4">
-            <label className="form-label">Number</label>
+            <label className="form-label">Licence Number</label>
             <input
-              type="number"
+              type="text"
               className="form-control"
               placeholder="Number of Subcodes"
               value={formData.length}

@@ -372,12 +372,12 @@ const Companyprofile = (props) => {
             key: 'totalBranches',
             width: 70,
         },
-        {
-            title: 'Executive',
-            dataIndex: 'executive',
-            key: 'executive',
-            width: 70,
-        },   
+        // {
+        //     title: 'Executive',
+        //     dataIndex: 'executive',
+        //     key: 'executive',
+        //     width: 70,
+        // },   
         {
             title: 'Onborad Date',
             dataIndex: 'created_at',

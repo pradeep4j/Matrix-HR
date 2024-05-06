@@ -56,7 +56,7 @@ const CompanyEdit = (props) => {
     const useRefnoOfEmpDeployedAgreementE2 = useRef(null);
     const getByIdCompany = useSelector(state => state.getByIdCompany)
     const {loadingcompanygetbyid, companyGetByIdInfo } = getByIdCompany;
-    console.log(companyGetByIdInfo)
+    // console.log(companyGetByIdInfo)
     const refnoshowgclrashow = useRef(null);
     const refshowgclrashow = useRef(null);
     const inputRefsclra  = {
@@ -86,6 +86,11 @@ const CompanyEdit = (props) => {
     const myReftab7buttun= useRef(null);
 
     const numberOfBranchesInputRef = useRef(null);
+    // let F54NSPData, F54OTPdata,F54WOEdata,F54TLdata
+    const [F54NSPData, setF54NSPData] = useState([]);
+    const [F54OTPdata, setF54OTPdata] = useState([]);
+    const [F54WOEdata, setF54WOEdata] = useState([]);
+    const [F54TLdata, setF54TLdata] = useState([]);
     
     const createCompanytab1 = useSelector((state) => state.createCompanytab1);
     const { loadingtab1,companytab1CreateInfo } = createCompanytab1; 
@@ -316,6 +321,29 @@ const CompanyEdit = (props) => {
     useEffect(()=>{
         if(companyGetByIdInfo && companyGetByIdInfo.length > 0 ) {
             const data = companyGetByIdInfo[0]; 
+            console.log((data.F54NSP).length);
+            setF54NSPData(data.F54NSP)
+            setF54WOEdata(data.F54WOE)
+            setF54OTPdata(data.F54OTP)
+            setF54TLdata(data.F54TL)
+            setFormData25(data.GCC4TL)
+            setFormData(data.RegistrationB1)
+            setFormData1(data.RegistrationB2)
+            setFormData2(data.RegistrationB3)
+            setFormData4(data.ClientcontactC2)
+            setFormData5(data.ClientcontactC3)
+            setFormData6(data.ClientcontactC4)
+            setFormData7(data.OtherRegsitrationD1PFsubcodes)
+            setFormData8(data.OtherRegsitrationD1ESIsubcodes)
+            setFormData10(data.OtherRegsitrationD3NSP)
+            setFormData11(data.OtherRegsitrationD3OTP)
+            setFormData12(data.OtherRegsitrationD3WOE)
+            setFormData13(data.OtherRegsitrationD3TD)
+            setFormData14(data.OtherRegsitrationD3MSME)
+            setFormData15(data.OtherRegsitrationD3BOCW)
+            setFormData16(data.OtherRegsitrationD3IMW)
+            setFormData17(data.F1branch)
+            setFormData26(data.Tab5E)
             setcompanyname(data.companyname)
             setcompanyimage(data.companyimage)
             setcompanyremark(data.companyremark)
@@ -346,7 +374,7 @@ const CompanyEdit = (props) => {
             setcompanyauthority(data.companyauthority)
             setcompanyauthorityimage(data.companyauthorityimage)
             setcompanyauthorityremark(data.companyauthorityremark)
-            setcompanyregistrationdate(data.companyregistrationdate)
+            setcompanyregistrationdate(new Date(data.companyregistrationdate))
             setcompanytan(data.companytan)
             setcompanytandetails(data.companytandetails)
             setcompanytanimage(data.companytanimage)
@@ -374,7 +402,7 @@ const CompanyEdit = (props) => {
             setesinumber(data.esinumber)
             setesiimage(data.esiimage)
             setesidremark(data.esidremark)
-            setesidoc(data.esidoc)
+            setesidoc(formatDate(data.esidoc))
             setesiaddress(data.esiaddress)
             setesistate(data.esistate)
             setesidistrict(data.esidistrict)
@@ -384,9 +412,9 @@ const CompanyEdit = (props) => {
             setregistrationD3(data.registrationD3)
             setregistrationD3image(data.registrationD3image)
             setregistrationD3remark(data.registrationD3remark)
-            setdoregistrationD3(data.doregistrationD3)
-            setdoeregistrationD3(data.doeregistrationD3)
-            setdoddrregistrationD3(data.doddrregistrationD3)
+            setdoregistrationD3(formatDate(data.doregistrationD3))
+            setdoeregistrationD3(formatDate(data.doeregistrationD3))
+            setdoddrregistrationD3(formatDate(data.doddrregistrationD3))
             setmanagernameD3(data.managernameD3)
             setmanagernameD3image(data.managernameD3image)
             setmanagernameD3remark(data.managernameD3remark)
@@ -414,7 +442,7 @@ const CompanyEdit = (props) => {
             setfpD3(data.fpD3)
             setfpD3image(data.fpD3image)
             setfpD3remark(data.fpD3remark)
-            setdoapp(data.doapp)
+            setdoapp(formatDate(data.doapp))
             setissueauthfpD3(data.issueauthfpD3)
             setissueauthfpD3image(data.issueauthfpD3image)
             setissueauthfpD3remark(data.issueauthfpD3remark)
@@ -427,14 +455,47 @@ const CompanyEdit = (props) => {
             setregistrationlwfD3(data.registrationlwfD3)
             setregistrationlwfD3image(data.registrationlwfD3image)
             setregistrationlwfD3remark(data.registrationlwfD3remark)
-            setdoregistrationlwfD3(data.doregistrationlwfD3)
+            setdoregistrationlwfD3(formatDate(data.doregistrationlwfD3))
             setregistrationptrD3(data.registrationptrD3)
             setregistrationptrD3image(data.registrationptrD3image)
             setregistrationptrD3remark(data.registrationptrD3remark)
-            setdoregistrationptrD3(data.doregistrationptrD3)
+            setdoregistrationptrD3(formatDate(data.doregistrationptrD3))
             setlabourEngaged(data.labourEngaged)
+            setg12ncw(data.g12ncw)
+            setg12ncwimage(data.g12ncwimage)
+            setg12ncwremark(data.g12ncwremark)
+            setg12ncwdate(formatDate(data.g12ncwdate))
+            setg12ncwdatevalid(formatDate(data.g12ncwdatevalid))
+            setg12ncwnow(data.g12ncwnow)
+            setg12ncwcoe(data.g12ncwcoe)
+            setg12ncwcoeimage(data.g12ncwcoeimage)
+            setg12ncwcoeremark(data.g12ncw)
+            setg13form(data.g13form)
+            setg13formimage(data.g13formimage)
+            setg13formremark(data.g13formremark)
+            setg13form5date(data.g13form5date)
+            setg13form5dateofcommence(data.g13form5dateofcommence)
+            setg13form5licenece(data.g13form5licenece)
+            setg13form5liceneceimage(data.g13form5liceneceimage)
+            setg13form5liceneceremark(data.g13form5liceneceremark)
+            setg13form5licensedol(formatDate(data.g13form5licensedol))
+            setg13form5licensedolvalid(formatDate(data.g13form5licensedolvalid))
+            setg13form5licensedoldor(formatDate(data.g13form5licensedoldor))
+            setg13form5licenseworkers(data.g13form5licenseworkers)
+            setg13form5licensemanresp(data.g13form5licensemanresp)
+            setg14dcwc(formatDate(data.g14dcwc))
+            setg14dncc(formatDate(data.g14dncc))
+            setg14dars(formatDate(data.g14dars))
+            setg14dls(formatDate(data.g14dars))
+            setg13form5licensefee(data.g13form5licensefee);
+            setg13form5licensefeeimage(data.g13form5licensefeeimage);
+            setg13form5licensefeeremark(data.g13form5licensefeeremark);
+            setg13form5securityfee(data.g13form5securityfee);
+            setg13form5securityfeeimage(data.g13form5securityfeeimage);
+            setg13form5securityfeeremark(data.g13form5securityfeeremark);
         }
     },[companyGetByIdInfo])
+    // console.log(F54NSPData, F54OTPdata,F54WOEdata,F54TLdata);
     const catGet = useSelector((state) => state.catGet);
     const { loading, categoryInfo, error } = catGet;
     const getState = useSelector((state) => state.getState);
@@ -807,6 +868,19 @@ const CompanyEdit = (props) => {
             // text: "But, Please click On Save and Approve button to Approve all Information. Before going to other page else information will be lost!"
         });
     }
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        
+        if (month.length < 2) 
+          month = '0' + month;
+        if (day.length < 2) 
+          day = '0' + day;
+        
+        return [year, month, day].join('-');
+    }
     useEffect(() => {
         dispatch(categoryGet());
         dispatch(stateGets())
@@ -859,7 +933,7 @@ const CompanyEdit = (props) => {
         myRefGLabour.current.style.display = 'none'
     }
     const noshowgshow = () => {
-        setFormData25([]);
+        // setFormData25([]);
         myRefGLabour.current.style.display = 'inline'
     }
     const showgclrashow = () => {
@@ -1315,7 +1389,9 @@ const CompanyEdit = (props) => {
     const saveandapprove = () => {
         const postBody = {
             approvedate: defaultDate,
-            status:1
+            status:0,
+            type:'executive',
+            approvalstatus:0
         }
         dispatch(SaveandApproveCompany(postBody));//relodreport
         // relodreport();
@@ -2838,7 +2914,8 @@ const CompanyEdit = (props) => {
                                             <div className="card p-3 position-relative">
                                                 <div className="table-responsive">
                                                     {/* <h4>F. Details of the Branch's(1)</h4> */}
-                                                                <DynamicHTMLGeneratorF1 formData={formData17} setFormData={setFormData17} myElementRefTab6={myElementRefTab6} myReftab6buttun={myReftab6buttun} myElementRefTab7={myElementRefTab7} activeTab={activeTab} setActiveTab={setActiveTab} />
+                                                                <DynamicHTMLGeneratorF1 formData={formData17} setFormData={setFormData17} myElementRefTab6={myElementRefTab6} myReftab6buttun={myReftab6buttun} myElementRefTab7={myElementRefTab7} activeTab={activeTab} setActiveTab={setActiveTab} F54NSPData={F54NSPData} F54OTPdata={F54OTPdata} 
+                                                                F54WOEdata={F54WOEdata} F54TLdata={F54TLdata}  />
                                                 </div>
                                             </div>
                                         </div>
@@ -3120,9 +3197,7 @@ const CompanyEdit = (props) => {
                                             </div>
                                             
                                         </div>
-                                        <form name="save" onSubmit={saveandapprove}>
-                                            <button type="submit" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove} disabled={companytab1CreateInfo && companytab1CreateInfo.created_at === null?'disabled':''}>Save And Approve</button>
-                                        </form>
+                                        <button type="button" style={{ width:'100%',marginBottom:'10px' }} className="w-80 btn btn-primary" onClick={saveandapprove} disabled={companytab1CreateInfo && companytab1CreateInfo.created_at === null?'disabled':''}>Save And Get an Approval</button>
                                     </div>
                                 </div>
                             </div>
